@@ -85,7 +85,7 @@ func ReadCredentials() (Credentials, error) {
 
 	credFile, err := os.Open(credentialsPath)
 	if err != nil {
-		return Credentials{}, fmt.Errorf("Can't open base product file: %v", err.Error())
+		return Credentials{}, fmt.Errorf("Can't open credentials file: %v", err.Error())
 	}
 	defer credFile.Close()
 
