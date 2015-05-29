@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"log"
 )
 
 type Repository struct {
@@ -44,6 +45,7 @@ func ParseProduct(reader io.Reader) (Product, error) {
 	product := Product{}
 
 	data, err := ioutil.ReadAll(reader)
+
 	if err != nil {
 		return product, err
 	}
@@ -58,9 +60,9 @@ func ParseProduct(reader io.Reader) (Product, error) {
 // request product information to the registration server
 // url is the registration server url
 // installedProduct is the product you are requesting
-func RequestProduct(regUrl string, credentials Credentials, installed InstalledProduct) (Product, error) {
+func RequestProduct(regUrl url.URL, credentials Credentials, installed InstalledProduct) (Product, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", regUrl, nil)
+	req, err := http.NewRequest("GET", regUrl.String(), nil)
 
 	values := req.URL.Query()
 

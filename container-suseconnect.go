@@ -16,28 +16,44 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
+	"net/url"
+)
+
+const (
+	sccUrlStr = "https://scc.suse.com"
 )
 
 func main () {
 
+	log.SetOutput(os.Stderr)
+
 	credentials, err := ReadCredentials()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
-		os.Exit(1)
+		log.Fatalf(err.Error())
 	}
 
 	installedProduct, err := ReadInstalledProduct()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
-		os.Exit(1)
+		log.Fatalf(err.Error())
+	}
+	log.Printf("Installed product: %v\n", installedProduct)
+
+	regUrlStr := os.Getenv("SCC_URL")
+	if regUrlStr == "" {
+		regUrlStr = sccUrlStr
+	}
+	regUrl, err := url.Parse(regUrlStr)
+	if err != nil {
+		log.Fatalf(err.Error())
 	}
 
-	product, err := RequestProduct("https://scc.suse.com", credentials, installedProduct)
+	log.Printf("Registration server set to %v\n", regUrl.String())
+
+	product, err := RequestProduct(*regUrl, credentials, installedProduct)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
-		os.Exit(1)
+		log.Fatalf(err.Error())
 	}
 
 	DumpRepositories(os.Stdout, product)
