@@ -67,6 +67,7 @@ func RequestProduct(url string, credentials Credentials, installed InstalledProd
 	values.Add("version", installed.Version)
 	values.Add("arch", installed.Arch)
 	req.URL.RawQuery = values.Encode()
+	req.URL.Path = "/connect/systems/products"
 
 	resp, err := client.Do(req)
 	if err != nil {
