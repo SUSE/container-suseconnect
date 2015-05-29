@@ -24,8 +24,7 @@ import (
 )
 
 const (
-	//baseProductLoc string = "/etc/products.d/baseproduct"
-	baseProductLoc string = "baseproduct.xml"
+	baseProductLoc string = "/etc/products.d/baseproduct"
 )
 
 type InstalledProduct struct {
