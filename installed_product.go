@@ -33,6 +33,10 @@ type InstalledProduct struct {
 	Arch string `xml:"arch"`
 }
 
+func (p InstalledProduct) String() string {
+	return fmt.Sprintf("%s-%s-%s", p.Identifier, p.Version, p.Arch)
+}
+
 // parses installed product data
 func ParseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
 	xmlData, err := ioutil.ReadAll(reader)
