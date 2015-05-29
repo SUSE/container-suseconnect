@@ -15,12 +15,20 @@
 //
 package main
 
+import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"encoding/json"
+	"net/http"
+)
+
 type Repository struct {
 	Name string `json:"name"`
 	Description string `json:"description"`
 	Url string `json:"url"`
-	Autorefresh string `json:"autorefresh"`
-	Enabled string `json:"enabled"`
+	Autorefresh bool `json:"autorefresh"`
+	Enabled bool `json:"enabled"`
 }
 
 type Product struct {
@@ -28,4 +36,46 @@ type Product struct {
 	Identifier string `json:"identifier"`
 	Version string `json:"version"`
 	Arch string `json:"arch"`
+	Repositories []Repository `json:"repositories'`
 }
+
+func ParseProduct(reader io.Reader) (Product, error) {
+	product := Product{}
+
+	data, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return product, err
+	}
+
+	err = json.Unmarshal(data, &product)
+	if err != nil {
+		return product, fmt.Errorf("Can't read product information: %v", err.Error())
+	}
+	return product, nil
+}
+
+// request product information to the registration server
+// url is the registration server url
+// installedProduct is the product you are requesting
+func RequestProduct(url string, credentials Credentials, installed InstalledProduct) (Product, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+
+	values := req.URL.Query()
+
+	values.Add("identifier", installed.Identifier)
+	values.Add("version", installed.Version)
+	values.Add("arch", installed.Arch)
+	req.URL.RawQuery = values.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return Product{}, err
+	}
+
+	return ParseProduct(resp.Body)
+}
+
+
+
+
