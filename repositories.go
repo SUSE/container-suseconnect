@@ -16,28 +16,27 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"encoding/json"
 	"net/http"
 	"net/url"
-	"log"
 )
 
 type Repository struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
 	Description string `json:"description"`
-	Url string `json:"url"`
-	Autorefresh bool `json:"autorefresh"`
-	Enabled bool `json:"enabled"`
+	Url         string `json:"url"`
+	Autorefresh bool   `json:"autorefresh"`
+	Enabled     bool   `json:"enabled"`
 }
 
 type Product struct {
-	ProductType string `json:"product_type"`
-	Identifier string `json:"identifier"`
-	Version string `json:"version"`
-	Arch string `json:"arch"`
+	ProductType  string       `json:"product_type"`
+	Identifier   string       `json:"identifier"`
+	Version      string       `json:"version"`
+	Arch         string       `json:"arch"`
 	Repositories []Repository `json:"repositories'`
 }
 
@@ -82,7 +81,3 @@ func RequestProduct(regUrl url.URL, credentials Credentials, installed Installed
 
 	return ParseProduct(resp.Body)
 }
-
-
-
-
