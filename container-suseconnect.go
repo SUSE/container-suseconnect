@@ -17,15 +17,15 @@ package main
 
 import (
 	"log"
-	"os"
 	"net/url"
+	"os"
 )
 
 const (
 	sccUrlStr = "https://scc.suse.com"
 )
 
-func main () {
+func main() {
 
 	log.SetOutput(os.Stderr)
 
@@ -40,7 +40,10 @@ func main () {
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
 
-	regUrlStr := os.Getenv("SCC_URL")
+	regUrlStr, err := ReadSUSEConnectUrl()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 	if regUrlStr == "" {
 		regUrlStr = sccUrlStr
 	}
