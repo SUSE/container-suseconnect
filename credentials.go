@@ -25,6 +25,7 @@ import (
 
 var credentialLocations = []string{
 	"/etc/zypp/credentials.d/SCCcredentials",
+	"/run/secrets/credentials.d/SCCcredentials",
 }
 
 type Credentials struct {
