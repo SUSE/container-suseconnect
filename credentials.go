@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-var credentialLocations = []string {
+var credentialLocations = []string{
 	"/etc/zypp/credentials.d/SCCcredentials",
 }
 
@@ -64,6 +64,15 @@ func ParseCredentials(reader io.Reader) (Credentials, error) {
 	if err := scanner.Err(); err != nil {
 		return credentials, err
 	}
+
+	if credentials.Username == "" {
+		return Credentials{}, fmt.Errorf("Can't find username")
+	}
+
+	if credentials.Password == "" {
+		return Credentials{}, fmt.Errorf("Can't find password")
+	}
+
 	return credentials, nil
 }
 

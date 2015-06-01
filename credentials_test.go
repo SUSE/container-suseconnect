@@ -16,8 +16,8 @@
 package main
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 var credentials = `
@@ -30,11 +30,18 @@ username=SCC_a6994b1d3ae14b35agc7cef46b4fff9a
 password=10yb1x6bd159g741ad420fd5aa5083e4
 
 `
+var credentialsWithoutUsername = `
+password=10yb1x6bd159g741ad420fd5aa5083e4
+`
+var credentialsWithoutPassword = `
+username=SCC_a6994b1d3ae14b35agc7cef46b4fff9a
+`
+
 func TestParseCredentials(t *testing.T) {
 	reader := strings.NewReader(credentials)
 
 	credentials, err := ParseCredentials(reader)
-	if (err != nil) {
+	if err != nil {
 		t.Errorf(err.Error())
 	}
 
@@ -51,7 +58,7 @@ func TestParseCredentialsWithComments(t *testing.T) {
 	reader := strings.NewReader(credentialsWithComments)
 
 	credentials, err := ParseCredentials(reader)
-	if (err != nil) {
+	if err != nil {
 		t.Errorf(err.Error())
 	}
 
@@ -61,5 +68,23 @@ func TestParseCredentialsWithComments(t *testing.T) {
 
 	if credentials.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
 		t.Errorf(credentials.Password)
+	}
+}
+
+func TestParseCredentialsWithoutUsername(t *testing.T) {
+	reader := strings.NewReader(credentialsWithoutUsername)
+
+	_, err := ParseCredentials(reader)
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestParseCredentialsWithoutPassword(t *testing.T) {
+	reader := strings.NewReader(credentialsWithoutPassword)
+
+	_, err := ParseCredentials(reader)
+	if err == nil {
+		t.Fail()
 	}
 }
