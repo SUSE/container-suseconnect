@@ -29,8 +29,8 @@ const (
 
 type InstalledProduct struct {
 	Identifier string `xml:"name"`
-	Version string `xml:"version"`
-	Arch string `xml:"arch"`
+	Version    string `xml:"version"`
+	Arch       string `xml:"arch"`
 }
 
 func (p InstalledProduct) String() string {

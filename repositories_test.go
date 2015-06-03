@@ -17,8 +17,8 @@ package main
 
 import (
 	"fmt"
-	"testing"
 	"strings"
+	"testing"
 )
 
 var sccReply = `
@@ -80,23 +80,24 @@ var sccReply = `
   "cpe": "cpe:/o:suse:sles:12.0"
 }
 `
+
 func TestParseSCCReply(t *testing.T) {
 	reader := strings.NewReader(sccReply)
 
 	product, err := ParseProduct(reader)
-	if (err != nil) {
+	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	n := len(product.Repositories)
-	if  n != 4 {
+	if n != 4 {
 		t.Errorf(fmt.Sprintf("Got: %v", n))
 	}
 
-	if  product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
+	if product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
 		t.Fail()
 	}
-	if  product.Repositories[3].Url != "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug" {
+	if product.Repositories[3].Url != "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug" {
 		t.Fail()
 	}
 }
