@@ -16,8 +16,8 @@
 package main
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 var installedProduct = `
@@ -101,7 +101,7 @@ func TestInstalledProductParsing(t *testing.T) {
 	reader := strings.NewReader(installedProduct)
 
 	product, err := ParseInstalledProduct(reader)
-	if (err != nil) {
+	if err != nil {
 		t.FailNow()
 	}
 
