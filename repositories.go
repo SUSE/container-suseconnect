@@ -16,6 +16,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -59,8 +60,11 @@ func ParseProduct(reader io.Reader) (Product, error) {
 // request product information to the registration server
 // url is the registration server url
 // installedProduct is the product you are requesting
-func RequestProduct(regUrl url.URL, credentials Credentials, installed InstalledProduct) (Product, error) {
-	client := &http.Client{}
+func RequestProduct(regUrl url.URL, credentials Credentials, installed InstalledProduct, insecure bool) (Product, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+	}
+	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", regUrl.String(), nil)
 
 	values := req.URL.Query()

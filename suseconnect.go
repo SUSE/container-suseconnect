@@ -28,8 +28,13 @@ var suseConnectLocations = []string{
 	"/run/secrets/SUSEConnect",
 }
 
-func ParseSUSEConnect(reader io.Reader) (string, error) {
-	url := ""
+type SUSEConnectData struct {
+	SccUrl   string
+	Insecure bool
+}
+
+func ParseSUSEConnect(reader io.Reader) (SUSEConnectData, error) {
+	data := SUSEConnectData{}
 
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -45,22 +50,24 @@ func ParseSUSEConnect(reader io.Reader) (string, error) {
 
 		parts := strings.SplitN(scanner.Text(), ":", 2)
 		if len(parts) != 2 {
-			return url, fmt.Errorf("Can't parse line: %v", scanner.Text())
+			return data, fmt.Errorf("Can't parse line: %v", scanner.Text())
 		}
 		if strings.Trim(parts[0], "\t ") == "url" {
-			url = strings.Trim(parts[1], "\t ")
+			data.SccUrl = strings.Trim(parts[1], "\t ")
+		}
+		if strings.Trim(parts[0], "\t ") == "insecure" {
+			data.Insecure = strings.Trim(parts[1], "\t ") == "true"
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		return url, err
+		return data, err
 	}
 
-	return url, nil
+	return data, nil
 }
 
-func ReadSUSEConnectUrl() (string, error) {
-	var url string = ""
+func ReadSUSEConnect() (SUSEConnectData, error) {
 	var suseConnectPath string = ""
 	for _, path := range suseConnectLocations {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -72,12 +79,12 @@ func ReadSUSEConnectUrl() (string, error) {
 	}
 
 	if suseConnectPath == "" {
-		return url, nil
+		return SUSEConnectData{}, nil
 	}
 
 	file, err := os.Open(suseConnectPath)
 	if err != nil {
-		return url, fmt.Errorf("Can't open %s file: %v", suseConnectPath, err.Error())
+		return SUSEConnectData{}, fmt.Errorf("Can't open %s file: %v", suseConnectPath, err.Error())
 	}
 	defer file.Close()
 

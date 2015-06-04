@@ -40,21 +40,21 @@ func main() {
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
 
-	regUrlStr, err := ReadSUSEConnectUrl()
+	suseConnectData, err := ReadSUSEConnect()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
-	if regUrlStr == "" {
-		regUrlStr = sccUrlStr
+	if suseConnectData.SccUrl == "" {
+		suseConnectData.SccUrl = sccUrlStr
 	}
-	regUrl, err := url.Parse(regUrlStr)
+	regUrl, err := url.Parse(suseConnectData.SccUrl)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	log.Printf("Registration server set to %v\n", regUrl.String())
 
-	product, err := RequestProduct(*regUrl, credentials, installedProduct)
+	product, err := RequestProduct(*regUrl, credentials, installedProduct, suseConnectData.Insecure)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}

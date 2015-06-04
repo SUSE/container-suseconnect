@@ -35,7 +35,7 @@ var suseConnect = `
 # language:
 
 ## Do not verify SSL certificates when using https (default: false)
-insecure: false
+insecure: true
 `
 
 var suseConnectWithoutUrl = `
@@ -52,18 +52,22 @@ var suseConnectWithoutUrl = `
 # language:
 
 ## Do not verify SSL certificates when using https (default: false)
-insecure: false
+# insecure: false
 `
 
 func TestParseSUSEConnect(t *testing.T) {
 	reader := strings.NewReader(suseConnect)
 
-	url, err := ParseSUSEConnect(reader)
+	data, err := ParseSUSEConnect(reader)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if url != "https://smt.test.lan" {
+	if data.SccUrl != "https://smt.test.lan" {
+		t.Fail()
+	}
+
+	if !data.Insecure {
 		t.Fail()
 	}
 }
@@ -71,12 +75,16 @@ func TestParseSUSEConnect(t *testing.T) {
 func TestParseSUSEConnectWithoutUrl(t *testing.T) {
 	reader := strings.NewReader(suseConnectWithoutUrl)
 
-	url, err := ParseSUSEConnect(reader)
+	data, err := ParseSUSEConnect(reader)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if url != "" {
+	if data.SccUrl != "" {
+		t.Fail()
+	}
+
+	if data.Insecure {
 		t.Fail()
 	}
 }
