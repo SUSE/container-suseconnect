@@ -38,7 +38,7 @@ var suseConnect = `
 insecure: true
 `
 
-var suseConnectWithoutUrl = `
+var suseConnectWithoutURL = `
 ---
 ## SUSEConnect configuration file example
 
@@ -63,7 +63,7 @@ func TestParseSUSEConnect(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if data.SccUrl != "https://smt.test.lan" {
+	if data.SccURL != "https://smt.test.lan" {
 		t.Fail()
 	}
 
@@ -73,14 +73,14 @@ func TestParseSUSEConnect(t *testing.T) {
 }
 
 func TestParseSUSEConnectWithoutUrl(t *testing.T) {
-	reader := strings.NewReader(suseConnectWithoutUrl)
+	reader := strings.NewReader(suseConnectWithoutURL)
 
 	data, err := ParseSUSEConnect(reader)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if data.SccUrl != "" {
+	if data.SccURL != "" {
 		t.Fail()
 	}
 

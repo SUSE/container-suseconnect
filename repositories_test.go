@@ -97,7 +97,7 @@ func TestParseSCCReply(t *testing.T) {
 	if product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
 		t.Fail()
 	}
-	if product.Repositories[3].Url != "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug" {
+	if product.Repositories[3].URL != "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug" {
 		t.Fail()
 	}
 }

@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	sccUrlStr = "https://scc.suse.com"
+	sccURLStr = "https://scc.suse.com"
 )
 
 func main() {
@@ -44,17 +44,17 @@ func main() {
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
-	if suseConnectData.SccUrl == "" {
-		suseConnectData.SccUrl = sccUrlStr
+	if suseConnectData.SccURL == "" {
+		suseConnectData.SccURL = sccURLStr
 	}
-	regUrl, err := url.Parse(suseConnectData.SccUrl)
+	regURL, err := url.Parse(suseConnectData.SccURL)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	log.Printf("Registration server set to %v\n", regUrl.String())
+	log.Printf("Registration server set to %v\n", regURL.String())
 
-	product, err := RequestProduct(*regUrl, credentials, installedProduct, suseConnectData.Insecure)
+	product, err := RequestProduct(*regURL, credentials, installedProduct, suseConnectData.Insecure)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}

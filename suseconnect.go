@@ -29,7 +29,7 @@ var suseConnectLocations = []string{
 }
 
 type SUSEConnectData struct {
-	SccUrl   string
+	SccURL   string
 	Insecure bool
 }
 
@@ -53,7 +53,7 @@ func ParseSUSEConnect(reader io.Reader) (SUSEConnectData, error) {
 			return data, fmt.Errorf("Can't parse line: %v", scanner.Text())
 		}
 		if strings.Trim(parts[0], "\t ") == "url" {
-			data.SccUrl = strings.Trim(parts[1], "\t ")
+			data.SccURL = strings.Trim(parts[1], "\t ")
 		}
 		if strings.Trim(parts[0], "\t ") == "insecure" {
 			data.Insecure = strings.Trim(parts[1], "\t ") == "true"
@@ -68,7 +68,7 @@ func ParseSUSEConnect(reader io.Reader) (SUSEConnectData, error) {
 }
 
 func ReadSUSEConnect() (SUSEConnectData, error) {
-	var suseConnectPath string = ""
+	var suseConnectPath string
 	for _, path := range suseConnectLocations {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			continue

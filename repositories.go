@@ -28,7 +28,7 @@ import (
 type Repository struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Url         string `json:"url"`
+	URL         string `json:"url"`
 	Autorefresh bool   `json:"autorefresh"`
 	Enabled     bool   `json:"enabled"`
 }
@@ -60,12 +60,12 @@ func ParseProduct(reader io.Reader) (Product, error) {
 // request product information to the registration server
 // url is the registration server url
 // installedProduct is the product you are requesting
-func RequestProduct(regUrl url.URL, credentials Credentials, installed InstalledProduct, insecure bool) (Product, error) {
+func RequestProduct(regURL url.URL, credentials Credentials, installed InstalledProduct, insecure bool) (Product, error) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
 	}
 	client := &http.Client{Transport: tr}
-	req, err := http.NewRequest("GET", regUrl.String(), nil)
+	req, err := http.NewRequest("GET", regURL.String(), nil)
 
 	values := req.URL.Query()
 

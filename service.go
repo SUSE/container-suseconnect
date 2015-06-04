@@ -19,7 +19,7 @@ func DumpRepositories(w io.Writer, product Product) {
 	for _, repo := range product.Repositories {
 		fmt.Fprintf(w, "[%s]\n", repo.Name)
 		fmt.Fprintf(w, "name=%s\n", repo.Description)
-		fmt.Fprintf(w, "baseurl=%s\n", repo.Url)
+		fmt.Fprintf(w, "baseurl=%s\n", repo.URL)
 		fmt.Fprintf(w, "autorefresh=%d\n", boolToInt(repo.Autorefresh))
 		fmt.Fprintf(w, "enabled=%d\n", boolToInt(repo.Enabled))
 		fmt.Fprintf(w, "\n")

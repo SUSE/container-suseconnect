@@ -28,11 +28,13 @@ var credentialLocations = []string{
 	"/run/secrets/credentials.d/SCCcredentials",
 }
 
+// Credentials holds the host credentials
 type Credentials struct {
 	Username string
 	Password string
 }
 
+// ParseCredentials parse the contents of the credentials file and returns a Credentials instance
 func ParseCredentials(reader io.Reader) (Credentials, error) {
 	credentials := Credentials{}
 
@@ -77,9 +79,10 @@ func ParseCredentials(reader io.Reader) (Credentials, error) {
 	return credentials, nil
 }
 
+// ReadCredentials looks for a credential file (first inside of /etc/zypp/credentials.d/, then inside of /run/secrets/credentials.d)
+// and returns a Credentials instance
 func ReadCredentials() (Credentials, error) {
-
-	var credentialsPath string = ""
+	var credentialsPath string
 	for _, path := range credentialLocations {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			continue
