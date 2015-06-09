@@ -8,7 +8,7 @@ matrix:
     - go: tip
 
 before_script:
-  - go get code.google.com/p/go.tools/cmd/cover
+  - go get golang.org/x/tools/cmd/cover
   - git clone https://github.com/mssola/scripts
   - export PATH=$PATH:$PWD/scripts
 script:
