@@ -6,3 +6,11 @@ go:
 matrix:
   allow_failures:
     - go: tip
+
+before_script:
+  - go get code.google.com/p/go.tools/cmd/cover
+  - git clone https://github.com/mssola/scripts
+  - export PATH=$PATH:$PWD/scripts
+script:
+  - go test -v ./...
+  - climate -o -t 100 .
