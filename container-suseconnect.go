@@ -35,7 +35,7 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	installedProduct, err := ReadInstalledProduct()
+	installedProduct, err := getInstalledProduct()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
