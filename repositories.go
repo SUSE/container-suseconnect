@@ -37,7 +37,7 @@ type Product struct {
 	Identifier   string       `json:"identifier"`
 	Version      string       `json:"version"`
 	Arch         string       `json:"arch"`
-	Repositories []Repository `json:"repositories'`
+	Repositories []Repository `json:"repositories"`
 }
 
 func ParseProduct(reader io.Reader) (Product, error) {
