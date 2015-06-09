@@ -9,8 +9,6 @@ matrix:
 
 before_script:
   - go get golang.org/x/tools/cmd/cover
-  - git clone https://github.com/mssola/scripts
-  - export PATH=$PATH:$PWD/scripts
 script:
   - go test -v ./...
-  - climate -o -t 100 .
+  - scripts/climate -o -t 100 .
