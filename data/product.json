@@ -1,0 +1,57 @@
+{
+  "arch": "x86_64",
+  "product_class": "7261",
+  "extensions": [
+  ],
+  "product_type": "base",
+  "identifier": "SLES",
+  "free": true,
+  "id": 100874,
+  "friendly_name": "SUSE Linux Enterprise Server 12 x86_64",
+  "available": true,
+  "version": "12",
+  "name": "SUSE Linux Enterprise Server 12 x86_64",
+  "description": "SUSE Linux Enterprise offers a comprehensive suite of products built on a single code base. The platform addresses business needs from the smallest thin-client devices to the world's most powerful high-performance computing and mainframe servers. SUSE Linux Enterprise offers common management tools and technology certifications across the platform, and each product is enterprise-class.",
+  "repositories": [
+    {
+      "distro_target": "sle-12-x86_64",
+      "name": "SLES12-Updates",
+      "description": "SLES12-Updates for sle-12-x86_64",
+      "autorefresh": true,
+      "url": "https://smt.test.lan/repo/SUSE/Updates/SLE-SERVER/12/x86_64/update",
+      "id": "941",
+      "enabled": true
+    },
+    {
+      "distro_target": "sle-12-x86_64",
+      "name": "SLES12-Debuginfo-Updates",
+      "description": "SLES12-Debuginfo-Updates for sle-12-x86_64",
+      "autorefresh": true,
+      "url": "https://smt.test.lan/repo/SUSE/Updates/SLE-SERVER/12/x86_64/update_debug",
+      "id": "942",
+      "enabled": false
+    },
+    {
+      "distro_target": "sle-12-x86_64",
+      "name": "SLES12-Pool",
+      "description": "SLES12-Pool for sle-12-x86_64",
+      "autorefresh": false,
+      "url": "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product",
+      "id": "943",
+      "enabled": true
+    },
+    {
+    "distro_target": "sle-12-x86_64",
+    "name": "SLES12-Debuginfo-Pool",
+    "description": "SLES12-Debuginfo-Pool for sle-12-x86_64",
+    "autorefresh": false,
+    "url": "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug",
+    "id": "944",
+    "enabled": false
+    }
+  ],
+  "release_type": null,
+  "former_identifier": "SUSE_SLES",
+  "eula_url": "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product.license/",
+  "cpe": "cpe:/o:suse:sles:12.0"
+}

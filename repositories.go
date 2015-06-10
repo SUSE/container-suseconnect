@@ -24,6 +24,8 @@ import (
 	"net/url"
 )
 
+// All the information we need from repositories as given by the registration
+// server.
 type Repository struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -32,6 +34,8 @@ type Repository struct {
 	Enabled     bool   `json:"enabled"`
 }
 
+// All the information we need from product as given by the registration
+// server. It contains a slice of repositories in it.
 type Product struct {
 	ProductType  string       `json:"product_type"`
 	Identifier   string       `json:"identifier"`
@@ -40,34 +44,43 @@ type Product struct {
 	Repositories []Repository `json:"repositories"`
 }
 
-func ParseProduct(reader io.Reader) (Product, error) {
-	product := Product{}
+// Parse the product as expected from the given reader. This function already
+// checks whether the given reader is valid or not.
+func parseProduct(reader io.Reader) (Product, error) {
+	var product Product
 
 	data, err := ioutil.ReadAll(reader)
-
 	if err != nil {
-		return product, err
+		return product,
+			fmt.Errorf("Can't read product information: %v", err.Error())
 	}
 
 	err = json.Unmarshal(data, &product)
 	if err != nil {
-		return product, fmt.Errorf("Can't read product information: %v", err.Error())
+		return product,
+			fmt.Errorf("Can't read product information: %v", err.Error())
 	}
 	return product, nil
 }
 
-// request product information to the registration server
-// url is the registration server url
-// installedProduct is the product you are requesting
-func RequestProduct(regURL url.URL, credentials Credentials, installed InstalledProduct, insecure bool) (Product, error) {
+// Request product information to the registration server. The `data` and the
+// `credentials` parameters are used in order to establish the connection with
+// the registration server. The `installed` parameter contains the product to
+// be requested.
+func requestProduct(data SUSEConnectData, credentials Credentials,
+	installed InstalledProduct) (Product, error) {
+
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
 	}
 	client := &http.Client{Transport: tr}
-	req, err := http.NewRequest("GET", regURL.String(), nil)
+	req, err := http.NewRequest("GET", data.SccURL, nil)
+	if err != nil {
+		return Product{},
+			fmt.Errorf("Could not connect with registration server: %v\n", err)
+	}
 
 	values := req.URL.Query()
-
 	values.Add("identifier", installed.Identifier)
 	values.Add("version", installed.Version)
 	values.Add("arch", installed.Arch)
@@ -82,5 +95,5 @@ func RequestProduct(regURL url.URL, credentials Credentials, installed Installed
 		return Product{}, err
 	}
 
-	return ParseProduct(resp.Body)
+	return parseProduct(resp.Body)
 }

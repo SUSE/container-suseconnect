@@ -18,7 +18,6 @@ package main
 
 import (
 	"log"
-	"net/url"
 	"os"
 )
 
@@ -48,14 +47,9 @@ func main() {
 	if suseConnectData.SccURL == "" {
 		suseConnectData.SccURL = sccURLStr
 	}
-	regURL, err := url.Parse(suseConnectData.SccURL)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
-	log.Printf("Registration server set to %v\n", regURL.String())
-
-	product, err := RequestProduct(*regURL, credentials, installedProduct, suseConnectData.Insecure)
+	product, err := requestProduct(suseConnectData, credentials, installedProduct)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
