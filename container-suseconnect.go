@@ -21,16 +21,12 @@ import (
 	"os"
 )
 
-const (
-	sccURLStr = "https://scc.suse.com"
-)
-
 func main() {
 
 	log.SetOutput(os.Stderr)
 
-	credentials, err := ReadCredentials()
-	if err != nil {
+	var credentials Credentials
+	if err := readConfiguration(&credentials); err != nil {
 		log.Fatalf(err.Error())
 	}
 
@@ -40,12 +36,9 @@ func main() {
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
 
-	suseConnectData, err := ReadSUSEConnect()
-	if err != nil {
+	var suseConnectData SUSEConnectData
+	if err := readConfiguration(&suseConnectData); err != nil {
 		log.Fatalf(err.Error())
-	}
-	if suseConnectData.SccURL == "" {
-		suseConnectData.SccURL = sccURLStr
 	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
@@ -54,5 +47,5 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	DumpRepositories(os.Stdout, product)
+	dumpRepositories(os.Stdout, product)
 }

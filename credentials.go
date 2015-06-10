@@ -14,18 +14,7 @@
 
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"io"
-	"os"
-	"strings"
-)
-
-var credentialLocations = []string{
-	"/etc/zypp/credentials.d/SCCcredentials",
-	"/run/secrets/credentials.d/SCCcredentials",
-}
+import "fmt"
 
 // Credentials holds the host credentials
 type Credentials struct {
@@ -33,73 +22,33 @@ type Credentials struct {
 	Password string
 }
 
-// ParseCredentials parse the contents of the credentials file and returns a Credentials instance
-func ParseCredentials(reader io.Reader) (Credentials, error) {
-	credentials := Credentials{}
-
-	scanner := bufio.NewScanner(reader)
-	for scanner.Scan() {
-		// comments #
-		if strings.Index(scanner.Text(), "#") == 0 {
-			continue
-		}
-
-		// empty lines
-		if scanner.Text() == "" {
-			continue
-		}
-
-		parts := strings.SplitN(scanner.Text(), "=", 2)
-		if len(parts) != 2 {
-			return Credentials{}, fmt.Errorf("Can't parse line: %v", scanner.Text())
-		}
-
-		if parts[0] == "username" {
-			credentials.Username = parts[1]
-		}
-
-		if parts[0] == "password" {
-			credentials.Password = parts[1]
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return credentials, err
-	}
-
-	if credentials.Username == "" {
-		return Credentials{}, fmt.Errorf("Can't find username")
-	}
-
-	if credentials.Password == "" {
-		return Credentials{}, fmt.Errorf("Can't find password")
-	}
-
-	return credentials, nil
+func (cr *Credentials) separator() byte {
+	return '='
 }
 
-// ReadCredentials looks for a credential file (first inside of /etc/zypp/credentials.d/, then inside of /run/secrets/credentials.d)
-// and returns a Credentials instance
-func ReadCredentials() (Credentials, error) {
-	var credentialsPath string
-	for _, path := range credentialLocations {
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			continue
-		} else {
-			credentialsPath = path
-			break
-		}
+func (cr *Credentials) locations() []string {
+	return []string{
+		"/etc/zypp/credentials.d/SCCcredentials",
+		"/run/secrets/credentials.d/SCCcredentials",
 	}
+}
 
-	if credentialsPath == "" {
-		return Credentials{}, fmt.Errorf("No credentials found")
+func (cr *Credentials) setValues(key, value string) {
+	// TODO: mssola: log an "Unknown key" warning.
+	if key == "username" {
+		cr.Username = value
 	}
-
-	credFile, err := os.Open(credentialsPath)
-	if err != nil {
-		return Credentials{}, fmt.Errorf("Can't open credentials file: %v", err.Error())
+	if key == "password" {
+		cr.Password = value
 	}
-	defer credFile.Close()
+}
 
-	return ParseCredentials(credFile)
+func (cr *Credentials) afterParseCheck() error {
+	if cr.Username == "" {
+		return fmt.Errorf("Can't find username")
+	}
+	if cr.Password == "" {
+		return fmt.Errorf("Can't find password")
+	}
+	return nil
 }
