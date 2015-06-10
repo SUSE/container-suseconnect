@@ -22,10 +22,23 @@ import (
 	"os"
 )
 
-const (
-	baseProductLoc string = "/etc/products.d/baseproduct"
-)
+// ProductProvider is used to retrieve the location of the file containing the
+// information about the installed product.
+type ProductProvider interface {
+	// Returns the path to the XML file containing the info about the installed
+	// product.
+	Location() string
+}
 
+// Implements the ProductProvider interface so we can fetch the location of the
+// SUSE baseproduct file.
+type SUSEProductProvider struct{}
+
+func (b SUSEProductProvider) Location() string {
+	return "/etc/products.d/baseproduct"
+}
+
+// Contains all the info that we need from the installed product.
 type InstalledProduct struct {
 	Identifier string `xml:"name"`
 	Version    string `xml:"version"`
@@ -36,33 +49,40 @@ func (p InstalledProduct) String() string {
 	return fmt.Sprintf("%s-%s-%s", p.Identifier, p.Version, p.Arch)
 }
 
-// parses installed product data
-func ParseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
-	xmlData, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return InstalledProduct{}, fmt.Errorf("Can't read base product file: %v", err.Error())
-	}
+// Parses installed product data. The passed reader is guaranteed to be
+// readable.
+func parseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
+	// We can ignore this error because of the pre-condition of the `reader`
+	// being actually readable.
+	xmlData, _ := ioutil.ReadAll(reader)
 
 	var p InstalledProduct
-	xml.Unmarshal(xmlData, &p)
+	err := xml.Unmarshal(xmlData, &p)
 	if err != nil {
-		return InstalledProduct{}, fmt.Errorf("Can't parse base product file: %v", err.Error())
+		return InstalledProduct{},
+			fmt.Errorf("Can't parse base product file: %v", err.Error())
 	}
-
 	return p, nil
 }
 
-// read the product file from the standard location
-func ReadInstalledProduct() (InstalledProduct, error) {
-	if _, err := os.Stat(baseProductLoc); os.IsNotExist(err) {
+// Read the product file from the standard location
+func readInstalledProduct(provider ProductProvider) (InstalledProduct, error) {
+	if _, err := os.Stat(provider.Location()); os.IsNotExist(err) {
 		return InstalledProduct{}, fmt.Errorf("No base product detected")
 	}
 
-	xmlFile, err := os.Open(baseProductLoc)
+	xmlFile, err := os.Open(provider.Location())
 	if err != nil {
-		return InstalledProduct{}, fmt.Errorf("Can't open base product file: %v", err.Error())
+		return InstalledProduct{},
+			fmt.Errorf("Can't open base product file: %v", err.Error())
 	}
 	defer xmlFile.Close()
 
-	return ParseInstalledProduct(xmlFile)
+	return parseInstalledProduct(xmlFile)
+}
+
+// Get the installed product on a SUSE machine.
+func getInstalledProduct() (InstalledProduct, error) {
+	var b SUSEProductProvider
+	return readInstalledProduct(b)
 }

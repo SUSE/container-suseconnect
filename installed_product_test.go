@@ -15,96 +15,105 @@
 package main
 
 import (
-	"strings"
+	"os"
 	"testing"
 )
 
-var installedProduct = `
-<?xml version="1.0" encoding="UTF-8"?>
-<product schemeversion="0">
-  <vendor>SUSE</vendor>
-  <name>SLES</name>
-  <version>12</version>
-  <baseversion>12</baseversion>
-  <patchlevel>0</patchlevel>
-  <predecessor>SUSE_SLES</predecessor>
-  <release>0</release>
-  <endoflife>2024-10-31</endoflife>
-  <arch>x86_64</arch>
-  <cpeid>cpe:/o:suse:sles:12</cpeid>
-  <productline>sles</productline>
-  <register>
-      <target>sle-12-x86_64</target>
-    <updates>
-      <repository repoid="obsrepository://build.suse.de/SUSE:Updates:SLE-SERVER:12:x86_64/update" />
-      <repository repoid="obsrepository://build.suse.de/SUSE:Updates:SLE-SERVER:12:x86_64/update_debug" />
-    </updates>
-  </register>
-  <upgrades />
-  <updaterepokey>A43242DKD</updaterepokey>
-  <summary>SUSE Linux Enterprise Server 12</summary>
-  <shortsummary>SLES12</shortsummary>
-  <description>SUSE Linux Enterprise offers a comprehensive
-        suite of products built on a single code base.
-        The platform addresses business needs from
-        the smallest thin-client devices to the world's
-        most powerful high-performance computing
-        and mainframe servers. SUSE Linux Enterprise
-        offers common management tools and technology
-        certifications across the platform, and
-        each product is enterprise-class.</description>
-  <linguas>
-    <language>cs</language>
-    <language>da</language>
-    <language>de</language>
-    <language>en</language>
-    <language>en_GB</language>
-    <language>en_US</language>
-    <language>es</language>
-    <language>fi</language>
-    <language>fr</language>
-    <language>hu</language>
-    <language>it</language>
-    <language>ja</language>
-    <language>nb</language>
-    <language>nl</language>
-    <language>pl</language>
-    <language>pt</language>
-    <language>pt_BR</language>
-    <language>ru</language>
-    <language>sv</language>
-    <language>zh</language>
-    <language>zh_CN</language>
-    <language>zh_TW</language>
-  </linguas>
-  <urls>
-    <url name="releasenotes">https://www.suse.com/releasenotes/x86_64/SUSE-SLES/12/release-notes-sles.rpm</url>
-  </urls>
-  <buildconfig>
-    <producttheme>SLES</producttheme>
-  </buildconfig>
-  <installconfig>
-    <defaultlang>en_US</defaultlang>
-    <datadir>suse</datadir>
-    <descriptiondir>suse/setup/descr</descriptiondir>
-    <releasepackage name="sles-release" flag="EQ" version="12" release="1.377" />
-    <distribution>SUSE_SLE</distribution>
-  </installconfig>
-  <runtimeconfig />
-  <productdependency relationship="provides" name="SUSE_SLE" baseversion="12" patchlevel="0" flag="EQ" />
-  <productdependency relationship="provides" name="SUSE_SLE-SP0" baseversion="12" patchlevel="0" flag="EQ" />
-</product>
-`
+type NotFoundProvider struct{}
 
-func TestInstalledProductParsing(t *testing.T) {
-	reader := strings.NewReader(installedProduct)
+func (m NotFoundProvider) Location() string {
+	return "data/not-found.xml"
+}
 
-	product, err := ParseInstalledProduct(reader)
+func TestFailNonExistantProduct(t *testing.T) {
+	var b NotFoundProvider
+
+	_, err := readInstalledProduct(b)
+	if err == nil {
+		t.Fatal("This file should not exist...")
+	}
+	if err.Error() != "No base product detected" {
+		t.Fatal("Wrong error message")
+	}
+}
+
+type NotAllowedProvider struct{}
+
+func (m NotAllowedProvider) Location() string {
+	return "/etc/shadow"
+}
+
+func TestFailNotAllowedProduct(t *testing.T) {
+	var b NotAllowedProvider
+
+	_, err := readInstalledProduct(b)
+	if err == nil {
+		t.Fatal("This file should not be available...")
+	}
+	if err.Error() != "Can't open base product file: open /etc/shadow: permission denied" {
+		t.Fatal("Wrong error message")
+	}
+}
+
+type BadFormattedProvider struct{}
+
+func (m BadFormattedProvider) Location() string {
+	return "data/bad.xml"
+}
+
+func TestFailBadFormattedProduct(t *testing.T) {
+	var b BadFormattedProvider
+
+	_, err := readInstalledProduct(b)
+	if err == nil {
+		t.Fatal("This file should have a bad format")
+	}
+	if err.Error() != "Can't parse base product file: EOF" {
+		t.Fatal("Wrong error message")
+	}
+}
+
+type MockProvider struct{}
+
+func (m MockProvider) Location() string {
+	return "data/installed.xml"
+}
+
+func TestMockProvider(t *testing.T) {
+	var b MockProvider
+
+	p, err := readInstalledProduct(b)
 	if err != nil {
-		t.FailNow()
+		t.Fatal("It should've read it just fine")
+	}
+	if p.Identifier != "SLES" {
+		t.Fatal("Wrong product name")
+	}
+	if p.Version != "12" {
+		t.Fatal("Wrong product version")
+	}
+	if p.Arch != "x86_64" {
+		t.Fatal("Wrong product arch")
+	}
+	if p.String() != "SLES-12-x86_64" {
+		t.Fatal("Wrong product string")
+	}
+}
+
+// This test is useless outside SUSE. Added so the go cover tool is happy.
+func TestSUSE(t *testing.T) {
+	var b SUSEProductProvider
+
+	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
+		_, err = getInstalledProduct()
+		if err == nil {
+			t.Fatal("It should fail")
+		}
+		return
 	}
 
-	if product.Identifier != "SLES" {
-		t.Errorf(product.Identifier)
+	_, err := getInstalledProduct()
+	if err != nil {
+		t.Fatal("We assume that is SUSE, so this should be fine")
 	}
 }
