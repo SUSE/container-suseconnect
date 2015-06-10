@@ -16,7 +16,7 @@ package main
 
 import (
 	"bytes"
-	"strings"
+	"os"
 	"testing"
 )
 
@@ -49,9 +49,13 @@ enabled=0
 `
 
 func TestServiceOutput(t *testing.T) {
-	reader := strings.NewReader(sccReply)
+	reader, err := os.Open("data/product.json")
+	if err != nil {
+		t.Fatal("Could not read JSON file...")
+	}
+	defer reader.Close()
 
-	product, err := ParseProduct(reader)
+	product, err := parseProduct(reader)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
