@@ -14,76 +14,77 @@
 
 package main
 
-import (
-	"strings"
-	"testing"
-)
+import "testing"
 
-var credentials = `
-username=SCC_a6994b1d3ae14b35agc7cef46b4fff9a
-password=10yb1x6bd159g741ad420fd5aa5083e4
-`
-var credentialsWithComments = `
-username=SCC_a6994b1d3ae14b35agc7cef46b4fff9a
-# Some comment
-password=10yb1x6bd159g741ad420fd5aa5083e4
+func TestCredentials(t *testing.T) {
+	cr := &Credentials{}
 
-`
-var credentialsWithoutUsername = `
-password=10yb1x6bd159g741ad420fd5aa5083e4
-`
-var credentialsWithoutPassword = `
-username=SCC_a6994b1d3ae14b35agc7cef46b4fff9a
-`
+	if cr.separator() != '=' {
+		t.Fatal("Wrong separator")
+	}
+	err := cr.afterParseCheck()
+	if err == nil || err.Error() != "Can't find username" {
+		t.Fatal("Wrong error")
+	}
 
-func TestParseCredentials(t *testing.T) {
-	reader := strings.NewReader(credentials)
+	cr.setValues("username", "suse")
+	err = cr.afterParseCheck()
+	if err == nil || err.Error() != "Can't find password" {
+		t.Fatal("Wrong error")
+	}
 
-	credentials, err := ParseCredentials(reader)
+	cr.setValues("password", "1234")
+	err = cr.afterParseCheck()
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Fatal("There should not be an error")
 	}
 
-	if credentials.Username != "SCC_a6994b1d3ae14b35agc7cef46b4fff9a" {
-		t.Fail()
+	locs := cr.locations()
+	if locs[0] != "/etc/zypp/credentials.d/SCCcredentials" {
+		t.Fatal("Wrong location")
 	}
-
-	if credentials.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
-		t.Fail()
+	if locs[1] != "/run/secrets/credentials.d/SCCcredentials" {
+		t.Fatal("Wrong location")
 	}
 }
 
-func TestParseCredentialsWithComments(t *testing.T) {
-	reader := strings.NewReader(credentialsWithComments)
+// In the following test we will create a mock that just wraps up the
+// `Credentials` struct and replaces its `location` function for something that
+// can be tested. We test for a successful run, since all the possible errors
+// have already been tested in the `configuration_test.go` file.
 
-	credentials, err := ParseCredentials(reader)
+type CredentialsMock struct {
+	cr *Credentials
+}
+
+func (mock *CredentialsMock) locations() []string {
+	return []string{"data/credentials.txt"}
+}
+
+func (mock *CredentialsMock) separator() byte {
+	return mock.cr.separator()
+}
+
+func (mock *CredentialsMock) setValues(key, value string) {
+	mock.cr.setValues(key, value)
+}
+
+func (mock *CredentialsMock) afterParseCheck() error {
+	return mock.cr.afterParseCheck()
+}
+
+func TestIntegrationCredentials(t *testing.T) {
+	var credentials Credentials
+	mock := CredentialsMock{cr: &credentials}
+
+	err := read(&mock)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Fatal("This should've been a successful run")
 	}
-
-	if credentials.Username != "SCC_a6994b1d3ae14b35agc7cef46b4fff9a" {
-		t.Errorf(credentials.Username)
+	if mock.cr.Username != "SCC_a6994b1d3ae14b35agc7cef46b4fff9a" {
+		t.Fatal("Unexpected name value")
 	}
-
-	if credentials.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
-		t.Errorf(credentials.Password)
-	}
-}
-
-func TestParseCredentialsWithoutUsername(t *testing.T) {
-	reader := strings.NewReader(credentialsWithoutUsername)
-
-	_, err := ParseCredentials(reader)
-	if err == nil {
-		t.Fail()
-	}
-}
-
-func TestParseCredentialsWithoutPassword(t *testing.T) {
-	reader := strings.NewReader(credentialsWithoutPassword)
-
-	_, err := ParseCredentials(reader)
-	if err == nil {
-		t.Fail()
+	if mock.cr.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
+		t.Fatal("Unexpected password value")
 	}
 }

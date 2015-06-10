@@ -61,7 +61,7 @@ func TestServiceOutput(t *testing.T) {
 	}
 
 	buf := bytes.Buffer{}
-	DumpRepositories(&buf, product)
+	dumpRepositories(&buf, product)
 
 	result := buf.String()
 	if expectedRepoFile != result {

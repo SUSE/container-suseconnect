@@ -15,76 +15,68 @@
 //
 package main
 
-import (
-	"strings"
-	"testing"
-)
+import "testing"
 
-var suseConnect = `
----
-## SUSEConnect configuration file example
+func TestSUSEConnectData(t *testing.T) {
+	data := &SUSEConnectData{}
 
-## URL of the registration server. (default: https://scc.suse.com)
-# url: https://scc.suse.com
- url: 	https://smt.test.lan
-
-## Registration code to use for the base product on the system
-# regcode:
-
-## Language code to use for error messages (default: $LANG)
-# language:
-
-## Do not verify SSL certificates when using https (default: false)
-insecure: true
-`
-
-var suseConnectWithoutURL = `
----
-## SUSEConnect configuration file example
-
-## URL of the registration server. (default: https://scc.suse.com)
-# url: https://scc.suse.com
-
-## Registration code to use for the base product on the system
-# regcode:
-
-## Language code to use for error messages (default: $LANG)
-# language:
-
-## Do not verify SSL certificates when using https (default: false)
-# insecure: false
-`
-
-func TestParseSUSEConnect(t *testing.T) {
-	reader := strings.NewReader(suseConnect)
-
-	data, err := ParseSUSEConnect(reader)
+	if data.separator() != ':' {
+		t.Fatal("Wrong separator")
+	}
+	err := data.afterParseCheck()
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Fatal("There should not be an error")
+	}
+	if data.SccURL != sccURLStr {
+		t.Fatal("The URL should be the one from sccURLstr")
 	}
 
-	if data.SccURL != "https://smt.test.lan" {
-		t.Fail()
+	locs := data.locations()
+	if locs[0] != "/etc/SUSEConnect" {
+		t.Fatal("Wrong location")
 	}
-
-	if !data.Insecure {
-		t.Fail()
+	if locs[1] != "/run/secrets/SUSEConnect" {
+		t.Fatal("Wrong location")
 	}
 }
 
-func TestParseSUSEConnectWithoutUrl(t *testing.T) {
-	reader := strings.NewReader(suseConnectWithoutURL)
+// In the following test we will create a mock that just wraps up the
+// `SUSEConnectData` struct and replaces its `location` function for something
+// that can be tested. We test for a successful run, since all the possible
+// errors have already been tested in the `configuration_test.go` file.
 
-	data, err := ParseSUSEConnect(reader)
+type SUSEConnectDataMock struct {
+	data *SUSEConnectData
+}
+
+func (mock *SUSEConnectDataMock) locations() []string {
+	return []string{"data/suseconnect.txt"}
+}
+
+func (mock *SUSEConnectDataMock) separator() byte {
+	return mock.data.separator()
+}
+
+func (mock *SUSEConnectDataMock) setValues(key, value string) {
+	mock.data.setValues(key, value)
+}
+
+func (mock *SUSEConnectDataMock) afterParseCheck() error {
+	return mock.data.afterParseCheck()
+}
+
+func TestIntegrationSUSEConnectData(t *testing.T) {
+	var data SUSEConnectData
+	mock := SUSEConnectDataMock{data: &data}
+
+	err := read(&mock)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Fatal("This should've been a successful run")
 	}
-
-	if data.SccURL != "" {
-		t.Fail()
+	if mock.data.SccURL != "https://smt.test.lan" {
+		t.Fatal("Unexpected URL value")
 	}
-
-	if data.Insecure {
-		t.Fail()
+	if !mock.data.Insecure {
+		t.Fatal("Unexpected Insecure value")
 	}
 }

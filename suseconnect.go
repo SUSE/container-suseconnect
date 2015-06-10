@@ -14,78 +14,36 @@
 
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"io"
-	"os"
-	"strings"
+const (
+	sccURLStr = "https://scc.suse.com"
 )
-
-var suseConnectLocations = []string{
-	"/etc/SUSEConnect",
-	"/run/secrets/SUSEConnect",
-}
 
 type SUSEConnectData struct {
 	SccURL   string
 	Insecure bool
 }
 
-func ParseSUSEConnect(reader io.Reader) (SUSEConnectData, error) {
-	data := SUSEConnectData{}
-
-	scanner := bufio.NewScanner(reader)
-	for scanner.Scan() {
-		// comments #
-		if strings.IndexAny(scanner.Text(), "#-") == 0 {
-			continue
-		}
-
-		// empty lines
-		if scanner.Text() == "" {
-			continue
-		}
-
-		parts := strings.SplitN(scanner.Text(), ":", 2)
-		if len(parts) != 2 {
-			return data, fmt.Errorf("Can't parse line: %v", scanner.Text())
-		}
-		if strings.Trim(parts[0], "\t ") == "url" {
-			data.SccURL = strings.Trim(parts[1], "\t ")
-		}
-		if strings.Trim(parts[0], "\t ") == "insecure" {
-			data.Insecure = strings.Trim(parts[1], "\t ") == "true"
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return data, err
-	}
-
-	return data, nil
+func (data *SUSEConnectData) separator() byte {
+	return ':'
 }
 
-func ReadSUSEConnect() (SUSEConnectData, error) {
-	var suseConnectPath string
-	for _, path := range suseConnectLocations {
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			continue
-		} else {
-			suseConnectPath = path
-			break
-		}
-	}
+func (data *SUSEConnectData) locations() []string {
+	return []string{"/etc/SUSEConnect", "/run/secrets/SUSEConnect"}
+}
 
-	if suseConnectPath == "" {
-		return SUSEConnectData{}, nil
+func (data *SUSEConnectData) setValues(key, value string) {
+	// TODO: mssola: log an "Unknown key" warning.
+	if key == "url" {
+		data.SccURL = value
 	}
-
-	file, err := os.Open(suseConnectPath)
-	if err != nil {
-		return SUSEConnectData{}, fmt.Errorf("Can't open %s file: %v", suseConnectPath, err.Error())
+	if key == "insecure" {
+		data.Insecure = value == "true"
 	}
-	defer file.Close()
+}
 
-	return ParseSUSEConnect(file)
+func (data *SUSEConnectData) afterParseCheck() error {
+	if data.SccURL == "" {
+		data.SccURL = sccURLStr
+	}
+	return nil
 }
