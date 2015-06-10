@@ -66,12 +66,12 @@ func parseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
 }
 
 // Read the product file from the standard location
-func readInstalledProduct(b ProductProvider) (InstalledProduct, error) {
-	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
+func readInstalledProduct(provider ProductProvider) (InstalledProduct, error) {
+	if _, err := os.Stat(provider.Location()); os.IsNotExist(err) {
 		return InstalledProduct{}, fmt.Errorf("No base product detected")
 	}
 
-	xmlFile, err := os.Open(b.Location())
+	xmlFile, err := os.Open(provider.Location())
 	if err != nil {
 		return InstalledProduct{},
 			fmt.Errorf("Can't open base product file: %v", err.Error())
