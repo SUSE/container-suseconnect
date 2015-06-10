@@ -77,7 +77,7 @@ func TestIntegrationCredentials(t *testing.T) {
 	var credentials Credentials
 	mock := CredentialsMock{cr: &credentials}
 
-	err := read(&mock)
+	err := readConfiguration(&mock)
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}

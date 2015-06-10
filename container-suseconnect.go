@@ -26,7 +26,7 @@ func main() {
 	log.SetOutput(os.Stderr)
 
 	var credentials Credentials
-	if err := read(&credentials); err != nil {
+	if err := readConfiguration(&credentials); err != nil {
 		log.Fatalf(err.Error())
 	}
 
@@ -37,7 +37,7 @@ func main() {
 	log.Printf("Installed product: %v\n", installedProduct)
 
 	var suseConnectData SUSEConnectData
-	if err := read(&suseConnectData); err != nil {
+	if err := readConfiguration(&suseConnectData); err != nil {
 		log.Fatalf(err.Error())
 	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)

@@ -57,7 +57,7 @@ func (cfg NotFoundConfiguration) afterParseCheck() error {
 func TestNotFound(t *testing.T) {
 	var cfg NotFoundConfiguration
 
-	err := read(&cfg)
+	err := readConfiguration(&cfg)
 	if err == nil || err.Error() != "No locations found!" {
 		t.Fatal("Wrong error")
 	}
@@ -83,7 +83,7 @@ func (cfg NotAllowedConfiguration) afterParseCheck() error {
 func TestNotAllowed(t *testing.T) {
 	var cfg NotAllowedConfiguration
 
-	err := read(&cfg)
+	err := readConfiguration(&cfg)
 	if err == nil || err.Error() != "Can't open /etc/shadow file: open /etc/shadow: permission denied" {
 		t.Fatal("Wrong error")
 	}

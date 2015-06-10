@@ -55,7 +55,7 @@ func getLocationPath(locations []string) string {
 }
 
 // Reads the configuration and updates the given object.
-func read(config Configuration) error {
+func readConfiguration(config Configuration) error {
 	path := getLocationPath(config.locations())
 	if path == "" {
 		return fmt.Errorf("No locations found!")

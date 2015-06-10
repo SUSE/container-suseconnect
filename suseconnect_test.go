@@ -69,7 +69,7 @@ func TestIntegrationSUSEConnectData(t *testing.T) {
 	var data SUSEConnectData
 	mock := SUSEConnectDataMock{data: &data}
 
-	err := read(&mock)
+	err := readConfiguration(&mock)
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}
