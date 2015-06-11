@@ -72,6 +72,7 @@ func requestProduct(data SUSEConnectData, credentials Credentials,
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
+		Proxy:           http.ProxyFromEnvironment,
 	}
 	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", data.SccURL, nil)
