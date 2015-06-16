@@ -63,7 +63,7 @@ func TestUnreadableProduct(t *testing.T) {
 	}
 }
 
-func TestInvalidJson(t *testing.T) {
+func TestInvalidJsonForProduct(t *testing.T) {
 	reader := strings.NewReader("invalid json is invalid")
 	_, err := parseProducts(reader)
 
@@ -75,7 +75,7 @@ func TestInvalidJson(t *testing.T) {
 }
 
 func TestValidProduct(t *testing.T) {
-	file, err := os.Open("data/product.json")
+	file, err := os.Open("data/products.json")
 	if err != nil {
 		t.Fatal("Something went wrong when reading the JSON file")
 	}
@@ -93,7 +93,7 @@ func TestValidProduct(t *testing.T) {
 
 // Tests for the requestProduct function.
 
-func TestInvalidRequest(t *testing.T) {
+func TestInvalidRequestForProduct(t *testing.T) {
 	var cr Credentials
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
@@ -104,7 +104,7 @@ func TestInvalidRequest(t *testing.T) {
 	}
 }
 
-func TestFaultyRequest(t *testing.T) {
+func TestFaultyRequestForProduct(t *testing.T) {
 	var cr Credentials
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
@@ -116,10 +116,27 @@ func TestFaultyRequest(t *testing.T) {
 	}
 }
 
-func TestValidRequest(t *testing.T) {
+func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.Open("data/product.json")
+		http.Error(w, "something bad happened", 500)
+	}))
+	defer ts.Close()
+
+	var cr Credentials
+	var ip InstalledProduct
+	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
+
+	_, err := requestProducts(data, cr, ip)
+	if err == nil || err.Error() != "Unexpected error while retrieving products with regCode : 500 Internal Server Error" {
+		t.Fatalf("It should have a proper error: %v", err)
+	}
+}
+
+func TestValidRequestForProduct(t *testing.T) {
+	// We setup a fake http server that mocks a registration server.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		file, err := os.Open("data/products.json")
 		if err != nil {
 			fmt.Fprintln(w, "FAIL!")
 			return

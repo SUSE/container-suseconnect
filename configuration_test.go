@@ -29,11 +29,11 @@ func TestGetLocationPath(t *testing.T) {
 
 	strs := []string{
 		"does/not/exist",
-		"data/product.json",
+		"data/products.json",
 	}
 	path = getLocationPath(strs)
-	if path != "data/product.json" {
-		t.Fatal("Wrong location path")
+	if path != "data/products.json" {
+		t.Fatalf("Wrong location path: %v", path)
 	}
 }
 

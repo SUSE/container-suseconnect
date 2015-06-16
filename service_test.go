@@ -49,7 +49,7 @@ enabled=0
 `
 
 func TestServiceOutput(t *testing.T) {
-	reader, err := os.Open("data/product.json")
+	reader, err := os.Open("data/products.json")
 	if err != nil {
 		t.Fatal("Could not read JSON file...")
 	}
