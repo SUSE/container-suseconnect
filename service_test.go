@@ -55,13 +55,16 @@ func TestServiceOutput(t *testing.T) {
 	}
 	defer reader.Close()
 
-	product, err := parseProduct(reader)
+	products, err := parseProducts(reader)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
+	if len(products) != 1 {
+		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
+	}
 
 	buf := bytes.Buffer{}
-	dumpRepositories(&buf, product)
+	dumpRepositories(&buf, products[0])
 
 	result := buf.String()
 	if expectedRepoFile != result {

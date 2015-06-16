@@ -44,31 +44,38 @@ type Product struct {
 	Repositories []Repository `json:"repositories"`
 }
 
+type Subscription struct {
+	RegCode string `json:"regcode"`
+}
+
 // Parse the product as expected from the given reader. This function already
 // checks whether the given reader is valid or not.
-func parseProduct(reader io.Reader) (Product, error) {
-	var product Product
+func parseProducts(reader io.Reader) ([]Product, error) {
+	var products []Product
 
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return product,
+		return products,
 			fmt.Errorf("Can't read product information: %v", err.Error())
 	}
 
-	err = json.Unmarshal(data, &product)
+	err = json.Unmarshal(data, &products)
 	if err != nil {
-		return product,
-			fmt.Errorf("Can't read product information: %v", err.Error())
+		return products,
+			fmt.Errorf("Can't read product information: %v - %s", err.Error(), data)
 	}
-	return product, nil
+	return products, nil
 }
 
-// Request product information to the registration server. The `data` and the
-// `credentials` parameters are used in order to establish the connection with
+// Request product information to the registration server. The `regCode`
+// parameters is used to establish the connection with
 // the registration server. The `installed` parameter contains the product to
 // be requested.
-func requestProduct(data SUSEConnectData, credentials Credentials,
-	installed InstalledProduct) (Product, error) {
+// This function relies on [/connect/subscriptions/products](https://github.com/SUSE/connect/wiki/SCC-API-%28Implemented%29#product) API.
+func requestProductsFromRegCode(data SUSEConnectData, regCode string,
+	installed InstalledProduct) ([]Product, error) {
+	var products []Product
+	var err error
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
@@ -77,7 +84,7 @@ func requestProduct(data SUSEConnectData, credentials Credentials,
 	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
-		return Product{},
+		return products,
 			fmt.Errorf("Could not connect with registration server: %v\n", err)
 	}
 
@@ -86,15 +93,117 @@ func requestProduct(data SUSEConnectData, credentials Credentials,
 	values.Add("version", installed.Version)
 	values.Add("arch", installed.Arch)
 	req.URL.RawQuery = values.Encode()
-	req.URL.Path = "/connect/systems/products"
+	req.URL.Path = "/connect/subscriptions/products"
+	if data.SccURL == sccURLStr {
+		req.Header.Add("Authorization", `Token token=`+regCode)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return products, err
+	}
+	if resp.StatusCode != 200 {
+		return products,
+			fmt.Errorf("Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
+	}
+
+	return parseProducts(resp.Body)
+}
+
+// Request product information to the registration server. The `data` and the
+// `credentials` parameters are used in order to establish the connection with
+// the registration server. The `installed` parameter contains the product to
+// be requested.
+func requestProducts(data SUSEConnectData, credentials Credentials,
+	installed InstalledProduct) ([]Product, error) {
+	var products []Product
+	var regCodes []string
+	var err error
+
+	if data.SccURL == sccURLStr {
+		regCodes, err = requestRegcodes(data, credentials)
+		if err != nil {
+			return products, err
+		}
+	} else {
+		// SMT does not have this API and does not need a regcode
+		regCodes = append(regCodes, "")
+	}
+
+	for _, regCode := range regCodes {
+		p, err := requestProductsFromRegCode(data, regCode, installed)
+		if err != nil {
+			var emptyProducts []Product
+			return emptyProducts, err
+		}
+		products = append(products, p...)
+	}
+
+	return products, nil
+}
+
+// Request product information to the registration server. The `data` and the
+// `credentials` parameters are used in order to establish the connection with
+// the registration server. The `installed` parameter contains the product to
+// be requested.
+func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, error) {
+	var codes []string
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
+		Proxy:           http.ProxyFromEnvironment,
+	}
+	client := &http.Client{Transport: tr}
+	req, err := http.NewRequest("GET", data.SccURL, nil)
+	if err != nil {
+		return codes,
+			fmt.Errorf("Could not connect with registration server: %v\n", err)
+	}
+
+	req.URL.Path = "/connect/systems/subscriptions"
 
 	auth := url.UserPassword(credentials.Username, credentials.Password)
 	req.URL.User = auth
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return Product{}, err
+		return codes, err
+	}
+	if resp.StatusCode != 200 {
+		return codes,
+			fmt.Errorf("Unexpected error while retrieving regcode: %s", resp.Status)
 	}
 
-	return parseProduct(resp.Body)
+	subscriptions, err := parseSubscriptions(resp.Body)
+	if err != nil {
+		return codes, err
+	} else {
+		for _, subscription := range subscriptions {
+			codes = append(codes, subscription.RegCode)
+		}
+		return codes, err
+	}
+}
+
+// Parse the product as expected from the given reader. This function already
+// checks whether the given reader is valid or not.
+func parseSubscriptions(reader io.Reader) ([]Subscription, error) {
+	var subscriptions []Subscription
+
+	data, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return subscriptions,
+			fmt.Errorf("Can't read subscriptions information: %v", err.Error())
+	}
+
+	err = json.Unmarshal(data, &subscriptions)
+	if err != nil {
+		return subscriptions,
+			fmt.Errorf("Can't read subscription: %v", err.Error())
+	}
+	if len(subscriptions) == 0 {
+		return subscriptions,
+			fmt.Errorf("Got 0 subscriptions")
+	} else {
+		return subscriptions, nil
+	}
 }

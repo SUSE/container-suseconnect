@@ -57,7 +57,7 @@ func TestUnreadableProduct(t *testing.T) {
 		t.Fatal("This should've been an error...")
 	}
 
-	_, err = parseProduct(file)
+	_, err = parseProducts(file)
 	if err == nil || err.Error() != "Can't read product information: invalid argument" {
 		t.Fatal("This is not the proper error we're expecting")
 	}
@@ -65,12 +65,12 @@ func TestUnreadableProduct(t *testing.T) {
 
 func TestInvalidJson(t *testing.T) {
 	reader := strings.NewReader("invalid json is invalid")
-	_, err := parseProduct(reader)
+	_, err := parseProducts(reader)
 
 	if err == nil ||
-		err.Error() != "Can't read product information: invalid character 'i' looking for beginning of value" {
+		err.Error() != "Can't read product information: invalid character 'i' looking for beginning of value - invalid json is invalid" {
 
-		t.Fatal("This is not the proper error we're expecting")
+		t.Fatalf("This is not the proper error we're expecting: %v", err)
 	}
 }
 
@@ -81,11 +81,14 @@ func TestValidProduct(t *testing.T) {
 	}
 	defer file.Close()
 
-	product, err := parseProduct(file)
+	products, err := parseProducts(file)
 	if err != nil {
 		t.Fatal("Unexpected error when reading a valid JSON file")
 	}
-	productHelper(t, product)
+	if len(products) != 1 {
+		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
+	}
+	productHelper(t, products[0])
 }
 
 // Tests for the requestProduct function.
@@ -95,9 +98,9 @@ func TestInvalidRequest(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
-	_, err := requestProduct(data, cr, ip)
+	_, err := requestProducts(data, cr, ip)
 	if err == nil || err.Error() != "Could not connect with registration server: parse :: missing protocol scheme\n" {
-		t.Fatal("There should be a proper error")
+		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
 
@@ -106,10 +109,10 @@ func TestFaultyRequest(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
-	_, err := requestProduct(data, cr, ip)
-	str := "Get http://:@/connect/systems/products?arch=&identifier=&version=: http: no Host in request URL"
+	_, err := requestProducts(data, cr, ip)
+	str := "Get http:///connect/subscriptions/products?arch=&identifier=&version=: http: no Host in request URL"
 	if err == nil || err.Error() != str {
-		t.Fatal("There should be a proper error")
+		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
 
@@ -130,9 +133,12 @@ func TestValidRequest(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
-	product, err := requestProduct(data, cr, ip)
+	products, err := requestProducts(data, cr, ip)
 	if err != nil {
 		t.Fatal("It should've run just fine...")
 	}
-	productHelper(t, product)
+	if len(products) != 1 {
+		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
+	}
+	productHelper(t, products[0])
 }

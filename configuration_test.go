@@ -58,8 +58,8 @@ func TestNotFound(t *testing.T) {
 	var cfg NotFoundConfiguration
 
 	err := readConfiguration(&cfg)
-	if err == nil || err.Error() != "No locations found!" {
-		t.Fatal("Wrong error")
+	if err == nil || err.Error() != "No locations found: []" {
+		t.Fatalf("Wrong error: %v", err)
 	}
 }
 

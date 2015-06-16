@@ -58,7 +58,7 @@ func getLocationPath(locations []string) string {
 func readConfiguration(config Configuration) error {
 	path := getLocationPath(config.locations())
 	if path == "" {
-		return fmt.Errorf("No locations found!")
+		return fmt.Errorf("No locations found: %v", config.locations())
 	}
 
 	file, err := os.Open(path)
