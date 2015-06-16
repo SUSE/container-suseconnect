@@ -1,0 +1,18 @@
+[
+  {
+    "id": 112,
+    "regcode": "35098ff7",
+    "name": "Subscription 2",
+    "type": null,
+    "status": "NOTACTIVATED",
+    "starts_at": "2014-05-14T09:13:26.589Z",
+    "expires_at": null,
+    "system_limit": 15,
+    "systems_count": 1,
+    "virtual_count": null,
+    "product_classes": ["7260"],
+    "families": ["sles", "sled"],
+    "systems": [{ "id": 117, "login": "login2", "password": "password2" }],
+    "product_ids": [239, 238, 240]
+  }
+]

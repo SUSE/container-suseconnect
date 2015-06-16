@@ -57,66 +57,86 @@ func TestUnreadableProduct(t *testing.T) {
 		t.Fatal("This should've been an error...")
 	}
 
-	_, err = parseProduct(file)
+	_, err = parseProducts(file)
 	if err == nil || err.Error() != "Can't read product information: invalid argument" {
 		t.Fatal("This is not the proper error we're expecting")
 	}
 }
 
-func TestInvalidJson(t *testing.T) {
+func TestInvalidJsonForProduct(t *testing.T) {
 	reader := strings.NewReader("invalid json is invalid")
-	_, err := parseProduct(reader)
+	_, err := parseProducts(reader)
 
 	if err == nil ||
-		err.Error() != "Can't read product information: invalid character 'i' looking for beginning of value" {
+		err.Error() != "Can't read product information: invalid character 'i' looking for beginning of value - invalid json is invalid" {
 
-		t.Fatal("This is not the proper error we're expecting")
+		t.Fatalf("This is not the proper error we're expecting: %v", err)
 	}
 }
 
 func TestValidProduct(t *testing.T) {
-	file, err := os.Open("data/product.json")
+	file, err := os.Open("data/products.json")
 	if err != nil {
 		t.Fatal("Something went wrong when reading the JSON file")
 	}
 	defer file.Close()
 
-	product, err := parseProduct(file)
+	products, err := parseProducts(file)
 	if err != nil {
 		t.Fatal("Unexpected error when reading a valid JSON file")
 	}
-	productHelper(t, product)
+	if len(products) != 1 {
+		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
+	}
+	productHelper(t, products[0])
 }
 
 // Tests for the requestProduct function.
 
-func TestInvalidRequest(t *testing.T) {
+func TestInvalidRequestForProduct(t *testing.T) {
 	var cr Credentials
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
-	_, err := requestProduct(data, cr, ip)
+	_, err := requestProducts(data, cr, ip)
 	if err == nil || err.Error() != "Could not connect with registration server: parse :: missing protocol scheme\n" {
-		t.Fatal("There should be a proper error")
+		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
 
-func TestFaultyRequest(t *testing.T) {
+func TestFaultyRequestForProduct(t *testing.T) {
 	var cr Credentials
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
-	_, err := requestProduct(data, cr, ip)
-	str := "Get http://:@/connect/systems/products?arch=&identifier=&version=: http: no Host in request URL"
+	_, err := requestProducts(data, cr, ip)
+	str := "Get http:///connect/subscriptions/products?arch=&identifier=&version=: http: no Host in request URL"
 	if err == nil || err.Error() != str {
-		t.Fatal("There should be a proper error")
+		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
 
-func TestValidRequest(t *testing.T) {
+func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.Open("data/product.json")
+		http.Error(w, "something bad happened", 500)
+	}))
+	defer ts.Close()
+
+	var cr Credentials
+	var ip InstalledProduct
+	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
+
+	_, err := requestProducts(data, cr, ip)
+	if err == nil || err.Error() != "Unexpected error while retrieving products with regCode : 500 Internal Server Error" {
+		t.Fatalf("It should have a proper error: %v", err)
+	}
+}
+
+func TestValidRequestForProduct(t *testing.T) {
+	// We setup a fake http server that mocks a registration server.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		file, err := os.Open("data/products.json")
 		if err != nil {
 			fmt.Fprintln(w, "FAIL!")
 			return
@@ -130,9 +150,12 @@ func TestValidRequest(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
-	product, err := requestProduct(data, cr, ip)
+	products, err := requestProducts(data, cr, ip)
 	if err != nil {
 		t.Fatal("It should've run just fine...")
 	}
-	productHelper(t, product)
+	if len(products) != 1 {
+		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
+	}
+	productHelper(t, products[0])
 }

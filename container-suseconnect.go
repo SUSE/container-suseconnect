@@ -42,10 +42,12 @@ func main() {
 	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
-	product, err := requestProduct(suseConnectData, credentials, installedProduct)
+	products, err := requestProducts(suseConnectData, credentials, installedProduct)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	dumpRepositories(os.Stdout, product)
+	for _, product := range products {
+		dumpRepositories(os.Stdout, product)
+	}
 }

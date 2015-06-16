@@ -29,11 +29,11 @@ func TestGetLocationPath(t *testing.T) {
 
 	strs := []string{
 		"does/not/exist",
-		"data/product.json",
+		"data/products.json",
 	}
 	path = getLocationPath(strs)
-	if path != "data/product.json" {
-		t.Fatal("Wrong location path")
+	if path != "data/products.json" {
+		t.Fatalf("Wrong location path: %v", path)
 	}
 }
 
@@ -58,8 +58,8 @@ func TestNotFound(t *testing.T) {
 	var cfg NotFoundConfiguration
 
 	err := readConfiguration(&cfg)
-	if err == nil || err.Error() != "No locations found!" {
-		t.Fatal("Wrong error")
+	if err == nil || err.Error() != "No locations found: []" {
+		t.Fatalf("Wrong error: %v", err)
 	}
 }
 
