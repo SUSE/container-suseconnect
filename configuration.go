@@ -34,6 +34,11 @@ type Configuration interface {
 	// during parse time.
 	locations() []string
 
+	// This function will be called if this app could not found any file on the
+	// specified locations. Returns a bool: true if it has been handled by the
+	// implementer of this interface, false if it should fail.
+	onLocationsNotFound() bool
+
 	// Called after a line with relevant information has been successfully
 	// parsed. The key and the value are guaranteed to be already trimmed
 	// by the caller.
@@ -58,6 +63,11 @@ func getLocationPath(locations []string) string {
 func readConfiguration(config Configuration) error {
 	path := getLocationPath(config.locations())
 	if path == "" {
+		// Leave early if locations could not be found but it can be handled by
+		// the implementer.
+		if config.onLocationsNotFound() {
+			return nil
+		}
 		return fmt.Errorf("No locations found: %v", config.locations())
 	}
 

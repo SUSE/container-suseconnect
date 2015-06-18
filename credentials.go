@@ -33,6 +33,10 @@ func (cr *Credentials) locations() []string {
 	}
 }
 
+func (cr *Credentials) onLocationsNotFound() bool {
+	return false
+}
+
 func (cr *Credentials) setValues(key, value string) {
 	// TODO: mssola: log an "Unknown key" warning.
 	if key == "username" {

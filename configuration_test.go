@@ -47,6 +47,10 @@ func (cfg NotFoundConfiguration) locations() []string {
 	return []string{}
 }
 
+func (cfg NotFoundConfiguration) onLocationsNotFound() bool {
+	return false
+}
+
 func (cfg NotFoundConfiguration) setValues(key, value string) {
 }
 
@@ -71,6 +75,10 @@ func (cfg NotAllowedConfiguration) separator() byte {
 
 func (cfg NotAllowedConfiguration) locations() []string {
 	return []string{"/etc/shadow"}
+}
+
+func (cfg NotAllowedConfiguration) onLocationsNotFound() bool {
+	return false
 }
 
 func (cfg NotAllowedConfiguration) setValues(key, value string) {
@@ -111,6 +119,10 @@ func (cfg ErrorAfterParseConfiguration) separator() byte {
 
 func (cfg ErrorAfterParseConfiguration) locations() []string {
 	return []string{}
+}
+
+func (cfg ErrorAfterParseConfiguration) onLocationsNotFound() bool {
+	return false
 }
 
 func (cfg ErrorAfterParseConfiguration) setValues(key, value string) {

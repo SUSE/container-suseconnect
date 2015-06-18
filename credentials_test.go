@@ -61,6 +61,10 @@ func (mock *CredentialsMock) locations() []string {
 	return []string{"data/credentials.txt"}
 }
 
+func (mock *CredentialsMock) onLocationsNotFound() bool {
+	return mock.cr.onLocationsNotFound()
+}
+
 func (mock *CredentialsMock) separator() byte {
 	return mock.cr.separator()
 }
@@ -86,5 +90,8 @@ func TestIntegrationCredentials(t *testing.T) {
 	}
 	if mock.cr.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
 		t.Fatal("Unexpected password value")
+	}
+	if mock.cr.onLocationsNotFound() {
+		t.Fatalf("It should've been false")
 	}
 }
