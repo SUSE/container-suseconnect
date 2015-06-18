@@ -31,6 +31,11 @@ func (data *SUSEConnectData) locations() []string {
 	return []string{"/etc/SUSEConnect", "/run/secrets/SUSEConnect"}
 }
 
+func (data *SUSEConnectData) onLocationsNotFound() bool {
+	data.SccURL = sccURLStr
+	return true
+}
+
 func (data *SUSEConnectData) setValues(key, value string) {
 	// TODO: mssola: log an "Unknown key" warning.
 	if key == "url" {

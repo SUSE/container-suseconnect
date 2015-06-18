@@ -49,8 +49,18 @@ type SUSEConnectDataMock struct {
 	data *SUSEConnectData
 }
 
+var locationShouldBeFound = true
+
 func (mock *SUSEConnectDataMock) locations() []string {
-	return []string{"data/suseconnect.txt"}
+	if locationShouldBeFound {
+		return []string{"data/suseconnect.txt"}
+	} else {
+		return []string{"data/notfound.txt"}
+	}
+}
+
+func (mock *SUSEConnectDataMock) onLocationsNotFound() bool {
+	return mock.data.onLocationsNotFound()
 }
 
 func (mock *SUSEConnectDataMock) separator() byte {
@@ -67,6 +77,7 @@ func (mock *SUSEConnectDataMock) afterParseCheck() error {
 
 func TestIntegrationSUSEConnectData(t *testing.T) {
 	var data SUSEConnectData
+	locationShouldBeFound = true
 	mock := SUSEConnectDataMock{data: &data}
 
 	err := readConfiguration(&mock)
@@ -78,5 +89,19 @@ func TestIntegrationSUSEConnectData(t *testing.T) {
 	}
 	if !mock.data.Insecure {
 		t.Fatal("Unexpected Insecure value")
+	}
+}
+
+func TestLocationsNotFound(t *testing.T) {
+	var data SUSEConnectData
+	locationShouldBeFound = false
+	mock := SUSEConnectDataMock{data: &data}
+
+	err := readConfiguration(&mock)
+	if err != nil {
+		t.Fatal("This should've been a successful run")
+	}
+	if mock.data.SccURL != "https://scc.suse.com" {
+		t.Fatal("It should've been scc.suse.com")
 	}
 }
