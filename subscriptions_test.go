@@ -56,6 +56,22 @@ func TestInvalidJsonForSubscriptions(t *testing.T) {
 	}
 }
 
+func TestEmptySubscriptions(t *testing.T) {
+	file, err := os.Open("data/empty-subscriptions.json")
+	if err != nil {
+		t.Fatal("Something went wrong when reading the JSON file")
+	}
+	defer file.Close()
+
+	subscriptions, err := parseSubscriptions(file)
+	if err == nil || err.Error() != "Got 0 subscriptions" {
+		t.Fatal("Unexpected error when reading a valid JSON file")
+	}
+	if len(subscriptions) != 0 {
+		t.Fatalf("It should be empty")
+	}
+}
+
 func TestValidSubscriptions(t *testing.T) {
 	file, err := os.Open("data/subscriptions.json")
 	if err != nil {
@@ -137,5 +153,30 @@ func TestValidRequestForRegcodes(t *testing.T) {
 	}
 	if codes[0] != "35098ff7" {
 		t.Fatalf("Got the wrong registration code: %v", codes[0])
+	}
+}
+
+func TestRequestEmptyRegcodes(t *testing.T) {
+	// We setup a fake http server that mocks a registration server.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		file, err := os.Open("data/empty-subscriptions.json")
+		if err != nil {
+			fmt.Fprintln(w, "FAIL!")
+			return
+		}
+		io.Copy(w, file)
+		file.Close()
+	}))
+	defer ts.Close()
+
+	var cr Credentials
+	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
+
+	codes, err := requestRegcodes(data, cr)
+	if err == nil || err.Error() != "Got 0 subscriptions" {
+		t.Fatal("Unexpected error when reading a valid JSON file")
+	}
+	if len(codes) != 0 {
+		t.Fatalf("It should be 0")
 	}
 }
