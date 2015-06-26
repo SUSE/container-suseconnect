@@ -14,7 +14,12 @@
 
 package main
 
-import "testing"
+import (
+	"bytes"
+	"log"
+	"strings"
+	"testing"
+)
 
 func TestCredentials(t *testing.T) {
 	cr := &Credentials{}
@@ -45,6 +50,14 @@ func TestCredentials(t *testing.T) {
 	}
 	if locs[1] != "/run/secrets/credentials.d/SCCcredentials" {
 		t.Fatal("Wrong location")
+	}
+
+	// It should log a proper warning.
+	buffer := bytes.NewBuffer([]byte{})
+	log.SetOutput(buffer)
+	cr.setValues("unknown", "value")
+	if !strings.Contains(buffer.String(), "Warning: Unknown key 'unknown'") {
+		t.Fatal("Wrong warning!")
 	}
 }
 

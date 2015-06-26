@@ -12,10 +12,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
+
 package main
 
-import "testing"
+import (
+	"bytes"
+	"log"
+	"strings"
+	"testing"
+)
 
 func TestSUSEConnectData(t *testing.T) {
 	data := &SUSEConnectData{}
@@ -37,6 +42,14 @@ func TestSUSEConnectData(t *testing.T) {
 	}
 	if locs[1] != "/run/secrets/SUSEConnect" {
 		t.Fatal("Wrong location")
+	}
+
+	// It should log a proper warning.
+	buffer := bytes.NewBuffer([]byte{})
+	log.SetOutput(buffer)
+	data.setValues("unknown", "value")
+	if !strings.Contains(buffer.String(), "Warning: Unknown key 'unknown'") {
+		t.Fatal("Wrong warning!")
 	}
 }
 
