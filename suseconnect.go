@@ -14,6 +14,10 @@
 
 package main
 
+import (
+	"log"
+)
+
 const (
 	sccURLStr = "https://scc.suse.com"
 )
@@ -37,12 +41,12 @@ func (data *SUSEConnectData) onLocationsNotFound() bool {
 }
 
 func (data *SUSEConnectData) setValues(key, value string) {
-	// TODO: mssola: log an "Unknown key" warning.
 	if key == "url" {
 		data.SccURL = value
-	}
-	if key == "insecure" {
+	} else if key == "insecure" {
 		data.Insecure = value == "true"
+	} else {
+		log.Printf("Warning: Unknown key '%v'", key)
 	}
 }
 

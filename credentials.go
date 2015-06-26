@@ -14,7 +14,10 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 // Credentials holds the host credentials
 type Credentials struct {
@@ -38,12 +41,12 @@ func (cr *Credentials) onLocationsNotFound() bool {
 }
 
 func (cr *Credentials) setValues(key, value string) {
-	// TODO: mssola: log an "Unknown key" warning.
 	if key == "username" {
 		cr.Username = value
-	}
-	if key == "password" {
+	} else if key == "password" {
 		cr.Password = value
+	} else {
+		log.Printf("Warning: Unknown key '%v'", key)
 	}
 }
 

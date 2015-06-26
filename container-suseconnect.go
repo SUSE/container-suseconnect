@@ -22,7 +22,6 @@ import (
 )
 
 func main() {
-
 	log.SetOutput(os.Stderr)
 
 	var credentials Credentials
