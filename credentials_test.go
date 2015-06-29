@@ -27,16 +27,22 @@ func TestCredentials(t *testing.T) {
 	if cr.separator() != '=' {
 		t.Fatal("Wrong separator")
 	}
+	prepareLogger()
 	err := cr.afterParseCheck()
-	if err == nil || err.Error() != "Can't find username" {
+	msg := "Can't find username"
+	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+	shouldHaveLogged(t, msg)
 
 	cr.setValues("username", "suse")
+	prepareLogger()
+	msg = "Can't find password"
 	err = cr.afterParseCheck()
-	if err == nil || err.Error() != "Can't find password" {
+	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+	shouldHaveLogged(t, msg)
 
 	cr.setValues("password", "1234")
 	err = cr.afterParseCheck()
