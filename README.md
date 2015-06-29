@@ -16,7 +16,7 @@ instruction in your Dockerfile, or with the `-v` parameter when running
 [here](https://docs.docker.com/userguide/dockervolumes/).
 
 Finally, if neither the default `suseconnect.log` file nor the file specified
-through the `SUSECONNECT_LOG_FILE` environment variable is writable, then this
+through the `SUSECONNECT_LOG_FILE` environment variable are writable, then this
 program will default to the standard error.
 
 # License
