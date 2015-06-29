@@ -18,7 +18,38 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 )
+
+const (
+	// The default path for the logger if nothing has been specified.
+	defaultLogPath = "suseconnect.log"
+
+	// The environment variable used to specify a custom path for the logger
+	// path.
+	logEnv = "SUSECONNECT_LOG_FILE"
+)
+
+// Returns the output file for the logger. If the `logEnv` environment
+// variable has been set, it will try to output there. Otherwise, it
+// will try to output to the file as given in `defaultLogPath`. If
+// everything fails, it will just output to the standard error channel.
+func getLoggerFile() *os.File {
+	// Determine the path to be used.
+	var path string
+	if env := os.Getenv(logEnv); env != "" {
+		path = env
+	} else {
+		path = defaultLogPath
+	}
+
+	// If it's writable, use the given file, otherwise use os.Stderr.
+	f, err := os.Create(path)
+	if err == nil {
+		return f
+	}
+	return os.Stderr
+}
 
 // Log the given formatted string with its parameters, and return it
 // as a new error.

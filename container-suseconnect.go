@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	log.SetOutput(os.Stderr)
+	log.SetOutput(getLoggerFile())
 
 	var credentials Credentials
 	if err := readConfiguration(&credentials); err != nil {
