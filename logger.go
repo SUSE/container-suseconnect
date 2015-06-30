@@ -21,14 +21,12 @@ import (
 	"os"
 )
 
-const (
-	// The default path for the logger if nothing has been specified.
-	defaultLogPath = "suseconnect.log"
+// The default path for the logger if nothing has been specified.
+var defaultLogPath = "/var/log/suseconnect.log"
 
-	// The environment variable used to specify a custom path for the logger
-	// path.
-	logEnv = "SUSECONNECT_LOG_FILE"
-)
+// The environment variable used to specify a custom path for the logger
+// path.
+const logEnv = "SUSECONNECT_LOG_FILE"
 
 // Returns the output file for the logger. If the `logEnv` environment
 // variable has been set, it will try to output there. Otherwise, it

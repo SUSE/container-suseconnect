@@ -41,6 +41,7 @@ func testLogger(t *testing.T, env, expected string, cleanup bool) {
 }
 
 func TestSetupLoggerDefault(t *testing.T) {
+	defaultLogPath = "suseconnect.log"
 	testLogger(t, "", defaultLogPath, true)
 }
 
