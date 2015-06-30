@@ -17,7 +17,6 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -51,13 +50,13 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return products,
-			fmt.Errorf("Can't read product information: %v", err.Error())
+			loggedError("Can't read product information: %v", err.Error())
 	}
 
 	err = json.Unmarshal(data, &products)
 	if err != nil {
 		return products,
-			fmt.Errorf("Can't read product information: %v - %s", err.Error(), data)
+			loggedError("Can't read product information: %v - %s", err.Error(), data)
 	}
 	return products, nil
 }
@@ -80,7 +79,7 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
 		return products,
-			fmt.Errorf("Could not connect with registration server: %v\n", err)
+			loggedError("Could not connect with registration server: %v\n", err)
 	}
 
 	values := req.URL.Query()
@@ -99,7 +98,7 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 	}
 	if resp.StatusCode != 200 {
 		return products,
-			fmt.Errorf("Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
+			loggedError("Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
 	}
 
 	return parseProducts(resp.Body)

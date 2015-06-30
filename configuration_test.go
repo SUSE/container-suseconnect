@@ -61,10 +61,12 @@ func (cfg NotFoundConfiguration) afterParseCheck() error {
 func TestNotFound(t *testing.T) {
 	var cfg NotFoundConfiguration
 
+	prepareLogger()
 	err := readConfiguration(&cfg)
 	if err == nil || err.Error() != "No locations found: []" {
 		t.Fatalf("Wrong error: %v", err)
 	}
+	shouldHaveLogged(t, "No locations found: []")
 }
 
 type NotAllowedConfiguration struct{}
@@ -91,10 +93,13 @@ func (cfg NotAllowedConfiguration) afterParseCheck() error {
 func TestNotAllowed(t *testing.T) {
 	var cfg NotAllowedConfiguration
 
+	prepareLogger()
 	err := readConfiguration(&cfg)
-	if err == nil || err.Error() != "Can't open /etc/shadow file: open /etc/shadow: permission denied" {
+	msg := "Can't open /etc/shadow file: open /etc/shadow: permission denied"
+	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+	shouldHaveLogged(t, msg)
 }
 
 func TestParseInvalid(t *testing.T) {
@@ -105,10 +110,13 @@ func TestParseInvalid(t *testing.T) {
 		file.Close()
 		t.Fatal("There should be an error here")
 	}
+	prepareLogger()
 	err = parse(cfg, file)
-	if err == nil || err.Error() != "Error when scanning configuration: invalid argument" {
+	msg := "Error when scanning configuration: invalid argument"
+	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+	shouldHaveLogged(t, msg)
 }
 
 type ErrorAfterParseConfiguration struct{}
@@ -146,8 +154,11 @@ func TestParseFailNoSeparator(t *testing.T) {
 	var cfg ErrorAfterParseConfiguration
 
 	str := strings.NewReader("keywithoutvalue")
+	prepareLogger()
 	err := parse(cfg, str)
-	if err == nil || err.Error() != "Can't parse line: keywithoutvalue" {
+	msg := "Can't parse line: keywithoutvalue"
+	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+	shouldHaveLogged(t, msg)
 }

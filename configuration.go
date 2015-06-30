@@ -16,7 +16,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -44,7 +43,8 @@ type Configuration interface {
 	// by the caller.
 	setValues(key, value string)
 
-	// Checks that should be done after the parsing has been performed.
+	// Checks that should be done after the parsing has been performed. It's
+	// assumed that the error returned has already been logged.
 	afterParseCheck() error
 }
 
@@ -68,12 +68,12 @@ func readConfiguration(config Configuration) error {
 		if config.onLocationsNotFound() {
 			return nil
 		}
-		return fmt.Errorf("No locations found: %v", config.locations())
+		return loggedError("No locations found: %v", config.locations())
 	}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return fmt.Errorf("Can't open %s file: %v", path, err.Error())
+		return loggedError("Can't open %s file: %v", path, err.Error())
 	}
 	defer file.Close()
 
@@ -96,7 +96,7 @@ func parse(config Configuration, reader io.Reader) error {
 		line := scanner.Text()
 		parts := strings.SplitN(line, string(config.separator()), 2)
 		if len(parts) != 2 {
-			return fmt.Errorf("Can't parse line: %v", line)
+			return loggedError("Can't parse line: %v", line)
 		}
 
 		// And finally trim the key and the value and pass it to the config.
@@ -106,7 +106,7 @@ func parse(config Configuration, reader io.Reader) error {
 
 	// Final checks.
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("Error when scanning configuration: %v", err)
+		return loggedError("Error when scanning configuration: %v", err)
 	}
 	if err := config.afterParseCheck(); err != nil {
 		return err

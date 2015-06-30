@@ -14,10 +14,7 @@
 
 package main
 
-import (
-	"fmt"
-	"log"
-)
+import "log"
 
 // Credentials holds the host credentials
 type Credentials struct {
@@ -52,10 +49,10 @@ func (cr *Credentials) setValues(key, value string) {
 
 func (cr *Credentials) afterParseCheck() error {
 	if cr.Username == "" {
-		return fmt.Errorf("Can't find username")
+		return loggedError("Can't find username")
 	}
 	if cr.Password == "" {
-		return fmt.Errorf("Can't find password")
+		return loggedError("Can't find password")
 	}
 	return nil
 }
