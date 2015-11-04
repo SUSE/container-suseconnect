@@ -15,7 +15,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -35,7 +34,7 @@ type Subscription struct {
 func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, error) {
 	var codes []string
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
+		TLSClientConfig: tlsConfig(data.Insecure),
 		Proxy:           http.ProxyFromEnvironment,
 	}
 	client := &http.Client{Transport: tr}
