@@ -15,6 +15,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -71,10 +72,9 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 	var err error
 
 	tr := &http.Transport{
-		TLSClientConfig: tlsConfig(data.Insecure),
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
 		Proxy:           http.ProxyFromEnvironment,
 	}
-
 	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
