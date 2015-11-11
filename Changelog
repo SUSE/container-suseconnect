@@ -1,0 +1,13 @@
+Wed Nov 11 15:21:05 CET 2015  Flavio Castelli <fcastelli@suse.com>
+
+	* Update to version 1.1.0:
+		- Improve logging
+
+Thu Jun 18 18:45:28 CET 2015  Flavio Castelli <fcastelli@suse.com>
+
+	* Update to version 1.0.1:
+		- Use default values if SUSEConnectData is not found
+
+Tue Jun 16 17:22:47 CET 2015  Flavio Castelli <fcastelli@suse.com>
+
+	* Initial release: 1.0.0
