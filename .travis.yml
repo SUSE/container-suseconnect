@@ -1,6 +1,7 @@
 language: go
 go:
-  - 1.4
+  - 1.9.x
+  - 1.11.x
   - tip
 
 matrix:
@@ -10,5 +11,4 @@ matrix:
 before_script:
   - go get golang.org/x/tools/cmd/cover
 script:
-  - go test -v ./...
-  - scripts/climate -o -t 80 .
+  - make test

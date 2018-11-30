@@ -17,6 +17,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"strings"
 )
 
 // Convert from bool to int.
@@ -45,13 +47,19 @@ func dumpRepositories(w io.Writer, product Product) {
 //
 // `dumpAlways` specifies if the products repositories should be
 // printed ignoring if it is recommended or not.
+//
+// The user has the option to enable certain modules via its `identifier` by
+// setting them within the `ADDITIONAL_MODULES` environment variable. Multiple
+// modules can be set comma separated.
 func dumpRepositoriesRecursive(
 	w io.Writer,
 	product Product,
 	dumpAlways bool,
 ) {
 	for _, repo := range product.Repositories {
-		if product.Recommended || dumpAlways {
+		if product.Recommended || dumpAlways ||
+			moduleEnabledInEnv(product.Identifier) {
+
 			fmt.Fprintf(w, "[%s]\n", repo.Name)
 			fmt.Fprintf(w, "name=%s\n", repo.Description)
 			fmt.Fprintf(w, "baseurl=%s\n", repo.URL)
@@ -67,4 +75,15 @@ func dumpRepositoriesRecursive(
 			dumpRepositoriesRecursive(w, extension, false)
 		}
 	}
+}
+
+// moduleEnabledInEnv returns true if the provided `identifier` is included in
+// the `ADDITIONAL_MODULES` environment variable, otherwise false.
+func moduleEnabledInEnv(identifier string) bool {
+	for _, i := range strings.Split(os.Getenv("ADDITIONAL_MODULES"), ",") {
+		if identifier == i {
+			return true
+		}
+	}
+	return false
 }

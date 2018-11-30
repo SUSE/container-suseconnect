@@ -61,6 +61,18 @@ RUN c_rehash /etc/ssl/certs
 RUN zypper --gpg-auto-import-keys ref -s
 RUN zypper -n in vim
 ```
+
+All recommended package modules are enabled by default. It is possible to enable
+additionally non-recommended modules via the `identifier` by setting the
+environment variable `ADDITIONAL_MODULES`:
+```
+FROM registry.suse.com/suse/sle15:latest
+
+ENV ADDITIONAL_MODULES sle-module-desktop-applications,sle-module-development-tools
+
+RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper -n in gvim
+```
 Examples taken from https://www.suse.com/documentation/sles-12/book_sles_docker/data/customizing_pre-build_images.html
 
 
