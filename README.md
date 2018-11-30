@@ -64,11 +64,11 @@ RUN zypper -n in vim
 
 All recommended package modules are enabled by default. It is possible to enable
 additionally non-recommended modules via the environment variable
-`ENABLED_MODULES`:
+`ADDITIONAL_MODULES`:
 ```
 FROM registry.suse.com/suse/sle15:latest
 
-ENV ENABLED_MODULES sle-module-desktop-applications,sle-module-development-tools
+ENV ADDITIONAL_MODULES sle-module-desktop-applications,sle-module-development-tools
 
 RUN zypper --gpg-auto-import-keys ref -s
 RUN zypper -n in gvim

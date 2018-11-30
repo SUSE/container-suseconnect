@@ -49,7 +49,7 @@ func dumpRepositories(w io.Writer, product Product) {
 // printed ignoring if it is recommended or not.
 //
 // The user has the option to enable certain modules via its `identifier` by
-// setting them within the `ENABLED_MODULES` environment variable. Multiple
+// setting them within the `ADDITIONAL_MODULES` environment variable. Multiple
 // modules can be set comma separated.
 func dumpRepositoriesRecursive(
 	w io.Writer,
@@ -78,9 +78,9 @@ func dumpRepositoriesRecursive(
 }
 
 // moduleEnabledInEnv returns true if the provided `identifier` is included in
-// the `ENABLED_MODULES` environment variable, otherwise false.
+// the `ADDITIONAL_MODULES` environment variable, otherwise false.
 func moduleEnabledInEnv(identifier string) bool {
-	for _, i := range strings.Split(os.Getenv("ENABLED_MODULES"), ",") {
+	for _, i := range strings.Split(os.Getenv("ADDITIONAL_MODULES"), ",") {
 		if identifier == i {
 			return true
 		}
