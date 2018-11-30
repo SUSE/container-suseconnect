@@ -63,8 +63,8 @@ RUN zypper -n in vim
 ```
 
 All recommended package modules are enabled by default. It is possible to enable
-additionally non-recommended modules via the environment variable
-`ADDITIONAL_MODULES`:
+additionally non-recommended modules via the `identifier` by setting the
+environment variable `ADDITIONAL_MODULES`:
 ```
 FROM registry.suse.com/suse/sle15:latest
 
