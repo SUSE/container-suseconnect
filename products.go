@@ -40,6 +40,8 @@ type Product struct {
 	Version      string       `json:"version"`
 	Arch         string       `json:"arch"`
 	Repositories []Repository `json:"repositories"`
+	Extensions   []Product    `json:"extensions"`
+	Recommended  bool         `json:"recommended"`
 }
 
 // Parse the product as expected from the given reader. This function already

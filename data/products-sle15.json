@@ -1,0 +1,1078 @@
+[
+  {
+    "release_stage": "released",
+    "eula_url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product.license/",
+    "friendly_name": "SUSE Linux Enterprise Server 15 x86_64",
+    "cpe": "cpe:/o:suse:sles:15",
+    "shortname": "SLES15",
+    "arch": "x86_64",
+    "release_type": null,
+    "product_type": "base",
+    "version": "15",
+    "recommended": false,
+    "id": 2750,
+    "name": "SUSE Linux Enterprise Server 15 x86_64",
+    "extensions": [
+      {
+        "name": "Basesystem Module 15 x86_64",
+        "arch": "x86_64",
+        "friendly_name": "Basesystem Module 15 x86_64",
+        "cpe": "cpe:/o:suse:sle-module-basesystem:15",
+        "eula_url": "",
+        "shortname": "Basesystem-Module",
+        "release_stage": "released",
+        "release_type": null,
+        "product_type": "module",
+        "id": 2749,
+        "version": "15",
+        "recommended": true,
+        "former_identifier": "sle-module-basesystem",
+        "free": true,
+        "available": true,
+        "extensions": [
+          {
+            "eula_url": "",
+            "arch": "x86_64",
+            "cpe": "cpe:/o:suse:sle-module-live-patching:15",
+            "friendly_name": "SUSE Linux Enterprise Live Patching 15 x86_64",
+            "shortname": "Live-Patching",
+            "release_stage": "released",
+            "id": 2740,
+            "version": "15",
+            "recommended": false,
+            "product_type": "module",
+            "release_type": null,
+            "name": "SUSE Linux Enterprise Live Patching 15 x86_64",
+            "available": false,
+            "extensions": [],
+            "product_class": "SLE-LP",
+            "description": "<p> SUSE Linux Enterprise Live Patching provides packages to update critical components in SUSE Linux Enterprise. With SUSE Linux Enterprise Live Patching, you can perform critical patching without shutting down your system, reducing the need for planned downtime and increasing service availability. <p>",
+            "identifier": "sle-module-live-patching",
+            "repositories": [
+              {
+                "id": "1969",
+                "autorefresh": false,
+                "description": "SLE-Module-Live-Patching15-Debuginfo-Pool for sle-15-x86_64",
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Live-Patching/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "enabled": false,
+                "name": "SLE-Module-Live-Patching15-Debuginfo-Pool",
+                "installer_updates": false
+              },
+              {
+                "description": "SLE-Module-Live-Patching15-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "1970",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Live-Patching/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "name": "SLE-Module-Live-Patching15-Pool",
+                "enabled": true,
+                "installer_updates": false
+              },
+              {
+                "id": "1971",
+                "autorefresh": true,
+                "description": "SLE-Module-Live-Patching15-Debuginfo-Updates for sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Live-Patching/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-Live-Patching15-Debuginfo-Updates"
+              },
+              {
+                "installer_updates": false,
+                "name": "SLE-Module-Live-Patching15-Updates",
+                "enabled": true,
+                "description": "SLE-Module-Live-Patching15-Updates for sle-15-x86_64",
+                "autorefresh": true,
+                "id": "1972",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Live-Patching/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64"
+              },
+              {
+                "installer_updates": false,
+                "name": "SLE-Module-Live-Patching15-Source-Pool",
+                "enabled": false,
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Live-Patching/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "description": "SLE-Module-Live-Patching15-Source-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "2024"
+              }
+            ],
+            "free": true,
+            "former_identifier": "sle-module-live-patching"
+          },
+          {
+            "name": "SUSE Package Hub 15 x86_64",
+            "arch": "x86_64",
+            "friendly_name": "SUSE Package Hub 15 x86_64",
+            "cpe": "cpe:/o:suse:packagehub:15",
+            "eula_url": "",
+            "shortname": "SUSE-PackageHub-15",
+            "release_stage": "released",
+            "id": 2742,
+            "recommended": false,
+            "version": "15",
+            "release_type": null,
+            "product_type": "extension",
+            "free": true,
+            "former_identifier": "PackageHub",
+            "available": false,
+            "extensions": [],
+            "product_class": "MODULE",
+            "description": "SUSE Package Hub is a free of charge extension providing access to community maintained packages built to run on SUSE Linux Enterprise Server. Built from the same sources used in the openSUSE distributions, these quality packages provide additional software to what is found in the SUSE Linux Enterprise Server product. Packages from the Package Hub are delivered without L3 support from SUSE. General updates and fixes to the packages in SUSE Package Hub are provided by the openSUSE community based on their discretion though SUSE will monitor and ensure that any known critical security issues will be addressed. Packages in the Package Hub are approved by SUSE for use with SUSE Linux Enterprise Server 15 and to not interfere with the supportability of SUSE Linux Enterprise Server it's modules and extensions. For more information about SUSE Package Hub please visit https://packagehub.suse.com.",
+            "identifier": "PackageHub",
+            "repositories": [
+              {
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Backports/SLE-15_x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "1990",
+                "description": "SUSE-PackageHub-15-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "installer_updates": false,
+                "enabled": true,
+                "name": "SUSE-PackageHub-15-Pool"
+              },
+              {
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Backports/SLE-15_x86_64/standard_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "1991",
+                "description": "SUSE-PackageHub-15-Debuginfo for sle-15-x86_64",
+                "autorefresh": true,
+                "enabled": false,
+                "name": "SUSE-PackageHub-15-Debuginfo",
+                "installer_updates": false
+              },
+              {
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Backports/SLE-15_x86_64/standard/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "description": "SUSE-PackageHub-15-Standard-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "1992",
+                "installer_updates": false,
+                "name": "SUSE-PackageHub-15-Standard-Pool",
+                "enabled": true
+              },
+              {
+                "enabled": false,
+                "name": "SLE-Module-Packagehub-Subpackages15-Source-Pool",
+                "installer_updates": false,
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Packagehub-Subpackages/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "2107",
+                "autorefresh": false,
+                "description": "SLE-Module-Packagehub-Subpackages15-Source-Pool for sle-15-x86_64"
+              },
+              {
+                "autorefresh": false,
+                "description": "SLE-Module-Packagehub-Subpackages15-Debuginfo-Pool for sle-15-x86_64",
+                "id": "2108",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Packagehub-Subpackages/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "installer_updates": false,
+                "name": "SLE-Module-Packagehub-Subpackages15-Debuginfo-Pool",
+                "enabled": false
+              },
+              {
+                "id": "2109",
+                "description": "SLE-Module-Packagehub-Subpackages15-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Packagehub-Subpackages/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "installer_updates": false,
+                "enabled": true,
+                "name": "SLE-Module-Packagehub-Subpackages15-Pool"
+              },
+              {
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-Packagehub-Subpackages15-Debuginfo-Updates",
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Packagehub-Subpackages/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "2110",
+                "description": "SLE-Module-Packagehub-Subpackages15-Debuginfo-Updates for sle-15-x86_64",
+                "autorefresh": true
+              },
+              {
+                "enabled": true,
+                "name": "SLE-Module-Packagehub-Subpackages15-Updates",
+                "installer_updates": false,
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Packagehub-Subpackages/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "id": "2111",
+                "description": "SLE-Module-Packagehub-Subpackages15-Updates for sle-15-x86_64",
+                "autorefresh": true
+              }
+            ]
+          },
+          {
+            "free": true,
+            "former_identifier": "sle-module-containers",
+            "description": "<p>This Module contains several packages revolving around containers and related tools. </p>",
+            "identifier": "sle-module-containers",
+            "repositories": [
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Containers/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "id": "1824",
+                "autorefresh": false,
+                "description": "SLE-Module-Containers15-Source-Pool for sle-15-x86_64",
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-Containers15-Source-Pool"
+              },
+              {
+                "name": "SLE-Module-Containers15-Debuginfo-Pool",
+                "enabled": false,
+                "installer_updates": false,
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Containers/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "autorefresh": false,
+                "description": "SLE-Module-Containers15-Debuginfo-Pool for sle-15-x86_64",
+                "id": "1825"
+              },
+              {
+                "name": "SLE-Module-Containers15-Pool",
+                "enabled": true,
+                "installer_updates": false,
+                "description": "SLE-Module-Containers15-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "1826",
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Containers/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net"
+              },
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Containers/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "autorefresh": true,
+                "description": "SLE-Module-Containers15-Debuginfo-Updates for sle-15-x86_64",
+                "id": "1827",
+                "installer_updates": false,
+                "name": "SLE-Module-Containers15-Debuginfo-Updates",
+                "enabled": false
+              },
+              {
+                "id": "1828",
+                "autorefresh": true,
+                "description": "SLE-Module-Containers15-Updates for sle-15-x86_64",
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Containers/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "installer_updates": false,
+                "enabled": true,
+                "name": "SLE-Module-Containers15-Updates"
+              }
+            ],
+            "available": true,
+            "product_class": "MODULE",
+            "extensions": [],
+            "name": "Containers Module 15 x86_64",
+            "id": 2739,
+            "version": "15",
+            "recommended": false,
+            "product_type": "module",
+            "release_type": null,
+            "arch": "x86_64",
+            "friendly_name": "Containers Module 15 x86_64",
+            "cpe": "cpe:/o:suse:sle-module-containers:15",
+            "eula_url": "",
+            "shortname": "Containers-Module",
+            "release_stage": "released"
+          },
+          {
+            "product_type": "module",
+            "release_type": null,
+            "recommended": true,
+            "version": "15",
+            "id": 2748,
+            "release_stage": "released",
+            "arch": "x86_64",
+            "cpe": "cpe:/o:suse:sle-module-server-applications:15",
+            "shortname": "Server-Applications-Module",
+            "eula_url": "",
+            "friendly_name": "Server Applications Module 15 x86_64",
+            "name": "Server Applications Module 15 x86_64",
+            "repositories": [
+              {
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Server-Applications/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "1514",
+                "description": "SLE-Module-Server-Applications15-Updates for sle-15-x86_64",
+                "autorefresh": true,
+                "installer_updates": false,
+                "enabled": true,
+                "name": "SLE-Module-Server-Applications15-Updates"
+              },
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Server-Applications/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "description": "SLE-Module-Server-Applications15-Debuginfo-Updates for sle-15-x86_64",
+                "autorefresh": true,
+                "id": "1515",
+                "installer_updates": false,
+                "name": "SLE-Module-Server-Applications15-Debuginfo-Updates",
+                "enabled": false
+              },
+              {
+                "enabled": true,
+                "name": "SLE-Module-Server-Applications15-Pool",
+                "installer_updates": false,
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Server-Applications/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "id": "1516",
+                "autorefresh": false,
+                "description": "SLE-Module-Server-Applications15-Pool for sle-15-x86_64"
+              },
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Server-Applications/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "id": "1517",
+                "description": "SLE-Module-Server-Applications15-Debuginfo-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "enabled": false,
+                "name": "SLE-Module-Server-Applications15-Debuginfo-Pool",
+                "installer_updates": false
+              },
+              {
+                "installer_updates": false,
+                "name": "SLE-Module-Server-Applications15-Source-Pool",
+                "enabled": false,
+                "description": "SLE-Module-Server-Applications15-Source-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "1518",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Server-Applications/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64"
+              }
+            ],
+            "description": "<p> The SUSE Linux Enterprise Server Applications Module delivers a basic set of Server functionality. </p> <p> Access to the Server Applications Module is included in your SUSE Linux Enterprise Server subscription. </p>",
+            "identifier": "sle-module-server-applications",
+            "extensions": [
+              {
+                "free": true,
+                "former_identifier": "sle-module-web-scripting",
+                "description": "<p> The SUSE Linux Enterprise Web and Scripting Module should contains additional packages that are helpful when running a webserver. </p> <p> Access to the Web and Scripting Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself: Package versions in this module are usually supported for at most three years. We are planning to release more recent versions on a schedule of approximately 18 month; the exact dates may differ per package. </p>",
+                "identifier": "sle-module-web-scripting",
+                "repositories": [
+                  {
+                    "id": "1917",
+                    "autorefresh": false,
+                    "description": "SLE-Module-Web-Scripting15-Source-Pool for sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Web-Scripting/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "enabled": false,
+                    "name": "SLE-Module-Web-Scripting15-Source-Pool",
+                    "installer_updates": false
+                  },
+                  {
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Web-Scripting/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "autorefresh": false,
+                    "description": "SLE-Module-Web-Scripting15-Debuginfo-Pool for sle-15-x86_64",
+                    "id": "1918",
+                    "installer_updates": false,
+                    "name": "SLE-Module-Web-Scripting15-Debuginfo-Pool",
+                    "enabled": false
+                  },
+                  {
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Web-Scripting/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "autorefresh": false,
+                    "description": "SLE-Module-Web-Scripting15-Pool for sle-15-x86_64",
+                    "id": "1919",
+                    "installer_updates": false,
+                    "name": "SLE-Module-Web-Scripting15-Pool",
+                    "enabled": true
+                  },
+                  {
+                    "id": "1920",
+                    "description": "SLE-Module-Web-Scripting15-Debuginfo-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Web-Scripting/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "installer_updates": false,
+                    "enabled": false,
+                    "name": "SLE-Module-Web-Scripting15-Debuginfo-Updates"
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Web-Scripting/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1921",
+                    "description": "SLE-Module-Web-Scripting15-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "installer_updates": false,
+                    "enabled": true,
+                    "name": "SLE-Module-Web-Scripting15-Updates"
+                  }
+                ],
+                "available": true,
+                "product_class": "MODULE",
+                "extensions": [],
+                "name": "Web and Scripting Module 15 x86_64",
+                "id": 2747,
+                "version": "15",
+                "recommended": false,
+                "product_type": "module",
+                "release_type": null,
+                "arch": "x86_64",
+                "shortname": "Web-Scripting-Module",
+                "friendly_name": "Web and Scripting Module 15 x86_64",
+                "eula_url": "",
+                "cpe": "cpe:/o:suse:sle-module-web-scripting:15",
+                "release_stage": "released"
+              },
+              {
+                "name": "Legacy Module 15 x86_64",
+                "product_type": "module",
+                "release_type": null,
+                "version": "15",
+                "recommended": false,
+                "id": 2745,
+                "release_stage": "released",
+                "friendly_name": "Legacy Module 15 x86_64",
+                "arch": "x86_64",
+                "cpe": "cpe:/o:suse:sle-module-legacy:15",
+                "shortname": "Legacy-Module",
+                "eula_url": "",
+                "former_identifier": "sle-module-legacy",
+                "free": true,
+                "repositories": [
+                  {
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Legacy/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "id": "1494",
+                    "description": "SLE-Module-Legacy15-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "enabled": true,
+                    "name": "SLE-Module-Legacy15-Updates",
+                    "installer_updates": false
+                  },
+                  {
+                    "id": "1495",
+                    "autorefresh": true,
+                    "description": "SLE-Module-Legacy15-Debuginfo-Updates for sle-15-x86_64",
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Legacy/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "installer_updates": false,
+                    "enabled": false,
+                    "name": "SLE-Module-Legacy15-Debuginfo-Updates"
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Legacy/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "description": "SLE-Module-Legacy15-Debuginfo-Pool for sle-15-x86_64",
+                    "autorefresh": false,
+                    "id": "1496",
+                    "name": "SLE-Module-Legacy15-Debuginfo-Pool",
+                    "enabled": false,
+                    "installer_updates": false
+                  },
+                  {
+                    "id": "1497",
+                    "autorefresh": false,
+                    "description": "SLE-Module-Legacy15-Pool for sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Legacy/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "installer_updates": false,
+                    "enabled": true,
+                    "name": "SLE-Module-Legacy15-Pool"
+                  },
+                  {
+                    "enabled": false,
+                    "name": "SLE-Module-Legacy15-Source-Pool",
+                    "installer_updates": false,
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Legacy/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "id": "1498",
+                    "description": "SLE-Module-Legacy15-Source-Pool for sle-15-x86_64",
+                    "autorefresh": false
+                  }
+                ],
+                "description": "<p> The Legacy Module helps you migrating applications from SUSE Linux Enterprise 12 and other systems to SUSE Linux Enterprise 15, by providing packages which are discontinued on SUSE Linux Enterprise Server, such as: ntp, IBM Java 8, and a number of libraries. </p> <p> Access to the Legacy Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself. Packages in the this module are usually supported for at most three years. </p>",
+                "identifier": "sle-module-legacy",
+                "product_class": "MODULE",
+                "extensions": [],
+                "available": true
+              },
+              {
+                "free": true,
+                "former_identifier": "sle-module-public-cloud",
+                "product_class": "MODULE",
+                "extensions": [],
+                "available": true,
+                "description": "<p> The Public Cloud Module is a collection of tools that enables you to create and manage cloud images from the commandline on SUSE Linux Enterprise Server. When building your own images with KIWI or SUSE Studio, initialization code specific to the target cloud is included in that image. </p> <p> Access to the Public Cloud Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself; please check the Release Notes for further details. </p>",
+                "identifier": "sle-module-public-cloud",
+                "repositories": [
+                  {
+                    "name": "SLE-Module-Public-Cloud15-Debuginfo-Pool",
+                    "enabled": false,
+                    "installer_updates": false,
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Public-Cloud/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "autorefresh": false,
+                    "description": "SLE-Module-Public-Cloud15-Debuginfo-Pool for sle-15-x86_64",
+                    "id": "1633"
+                  },
+                  {
+                    "installer_updates": false,
+                    "name": "SLE-Module-Public-Cloud15-Pool",
+                    "enabled": true,
+                    "description": "SLE-Module-Public-Cloud15-Pool for sle-15-x86_64",
+                    "autorefresh": false,
+                    "id": "1634",
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Public-Cloud/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net"
+                  },
+                  {
+                    "enabled": false,
+                    "name": "SLE-Module-Public-Cloud15-Debuginfo-Updates",
+                    "installer_updates": false,
+                    "id": "1635",
+                    "description": "SLE-Module-Public-Cloud15-Debuginfo-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Public-Cloud/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64"
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Public-Cloud/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1636",
+                    "description": "SLE-Module-Public-Cloud15-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "installer_updates": false,
+                    "enabled": true,
+                    "name": "SLE-Module-Public-Cloud15-Updates"
+                  },
+                  {
+                    "id": "2026",
+                    "autorefresh": false,
+                    "description": "SLE-Module-Public-Cloud15-Source-Pool for sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Public-Cloud/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "installer_updates": false,
+                    "enabled": false,
+                    "name": "SLE-Module-Public-Cloud15-Source-Pool"
+                  }
+                ],
+                "name": "Public Cloud Module 15 x86_64",
+                "release_stage": "released",
+                "arch": "x86_64",
+                "friendly_name": "Public Cloud Module 15 x86_64",
+                "shortname": "Public-Cloud-Module",
+                "eula_url": "",
+                "cpe": "cpe:/o:suse:sle-module-public-cloud:15",
+                "version": "15",
+                "recommended": false,
+                "id": 2743,
+                "product_type": "module",
+                "release_type": null
+              },
+              {
+                "version": "15",
+                "recommended": false,
+                "id": 2746,
+                "release_type": null,
+                "product_type": "extension",
+                "release_stage": "released",
+                "arch": "x86_64",
+                "friendly_name": "SUSE Linux Enterprise High Availability Extension 15 x86_64",
+                "cpe": "cpe:/o:suse:sle-ha:15",
+                "eula_url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product.license/",
+                "shortname": "SLEHA15",
+                "name": "SUSE Linux Enterprise High Availability Extension 15 x86_64",
+                "identifier": "sle-ha",
+                "description": "SUSE Linux High Availability Extension provides mature, industry-leading open-source high-availability clustering technologies that are easy to set up and use. It can be deployed in physical and/or virtual environments, and can cluster physical servers, virtual servers, or any combination of the two to suit your businessâ needs.",
+                "repositories": [
+                  {
+                    "enabled": false,
+                    "name": "SLE-Product-HA15-Source-Pool",
+                    "installer_updates": false,
+                    "id": "1713",
+                    "autorefresh": false,
+                    "description": "SLE-Product-HA15-Source-Pool for sle-15-x86_64",
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net"
+                  },
+                  {
+                    "enabled": false,
+                    "name": "SLE-Product-HA15-Debuginfo-Pool",
+                    "installer_updates": false,
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "id": "1714",
+                    "description": "SLE-Product-HA15-Debuginfo-Pool for sle-15-x86_64",
+                    "autorefresh": false
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "description": "SLE-Product-HA15-Pool for sle-15-x86_64",
+                    "autorefresh": false,
+                    "id": "1715",
+                    "installer_updates": false,
+                    "name": "SLE-Product-HA15-Pool",
+                    "enabled": true
+                  },
+                  {
+                    "enabled": false,
+                    "name": "SLE-Product-HA15-Debuginfo-Updates",
+                    "installer_updates": false,
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-HA/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1716",
+                    "autorefresh": true,
+                    "description": "SLE-Product-HA15-Debuginfo-Updates for sle-15-x86_64"
+                  },
+                  {
+                    "enabled": true,
+                    "name": "SLE-Product-HA15-Updates",
+                    "installer_updates": false,
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-HA/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1717",
+                    "description": "SLE-Product-HA15-Updates for sle-15-x86_64",
+                    "autorefresh": true
+                  }
+                ],
+                "product_class": "SLE-HAE-X86",
+                "extensions": [],
+                "available": false,
+                "free": true,
+                "former_identifier": "sle-ha"
+              }
+            ],
+            "product_class": "MODULE",
+            "available": true,
+            "former_identifier": "sle-module-server-applications",
+            "free": true
+          },
+          {
+            "friendly_name": "Desktop Applications Module 15 x86_64",
+            "cpe": "cpe:/o:suse:sle-module-desktop-applications:15",
+            "arch": "x86_64",
+            "eula_url": "",
+            "shortname": "Desktop-Applications-Module",
+            "release_stage": "released",
+            "id": 2738,
+            "recommended": false,
+            "version": "15",
+            "product_type": "module",
+            "release_type": null,
+            "name": "Desktop Applications Module 15 x86_64",
+            "available": true,
+            "extensions": [
+              {
+                "name": "Development Tools Module 15 x86_64",
+                "release_stage": "released",
+                "friendly_name": "Development Tools Module 15 x86_64",
+                "cpe": "cpe:/o:suse:sle-module-development-tools:15",
+                "arch": "x86_64",
+                "eula_url": "",
+                "shortname": "Development-Tools-Module",
+                "version": "15",
+                "recommended": false,
+                "id": 2736,
+                "product_type": "module",
+                "release_type": null,
+                "free": true,
+                "former_identifier": "sle-sdk",
+                "extensions": [],
+                "product_class": "MODULE",
+                "available": true,
+                "identifier": "sle-module-development-tools",
+                "description": "<p> The Development Tools Module helps you developing applications for SUSE Linux Enterprise 15. </p> <p> Access to the Development Tools Module is included in your SUSE Linux Enterprise product subscription. The module has a different lifecycle than SUSE Linux Enterprise itself. </p>",
+                "repositories": [
+                  {
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Development-Tools/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "description": "SLE-Module-DevTools15-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "id": "1509",
+                    "installer_updates": false,
+                    "name": "SLE-Module-DevTools15-Updates",
+                    "enabled": true
+                  },
+                  {
+                    "description": "SLE-Module-DevTools15-Debuginfo-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "id": "1510",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Development-Tools/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "name": "SLE-Module-DevTools15-Debuginfo-Updates",
+                    "enabled": false,
+                    "installer_updates": false
+                  },
+                  {
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Development-Tools/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "id": "1511",
+                    "description": "SLE-Module-DevTools15-Pool for sle-15-x86_64",
+                    "autorefresh": false,
+                    "installer_updates": false,
+                    "enabled": true,
+                    "name": "SLE-Module-DevTools15-Pool"
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Development-Tools/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "description": "SLE-Module-DevTools15-Debuginfo-Pool for sle-15-x86_64",
+                    "autorefresh": false,
+                    "id": "1512",
+                    "installer_updates": false,
+                    "name": "SLE-Module-DevTools15-Debuginfo-Pool",
+                    "enabled": false
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Development-Tools/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1513",
+                    "autorefresh": false,
+                    "description": "SLE-Module-DevTools15-Source-Pool for sle-15-x86_64",
+                    "enabled": false,
+                    "name": "SLE-Module-DevTools15-Source-Pool",
+                    "installer_updates": false
+                  }
+                ]
+              },
+              {
+                "identifier": "sle-we",
+                "description": "SUSE Linux Enterprise Workstation Extension adds additional functionality to a base SUSE Linux Enterprise installation. The Workstation Extension offers additional desktop applications (office suite, email client, graphical editor, multimedia tools) and libraries. Workstation Extension is enabled and installed by default on SUSE Linux Enterprise Desktop installation. Adding the Workstation Extension to a SUSE Linux Enterprise Server installation allows to seamlessly combine both products to create a full featured server workstation.",
+                "repositories": [
+                  {
+                    "installer_updates": false,
+                    "enabled": true,
+                    "name": "SLE-15-GA-Desktop-NVIDIA-Driver",
+                    "id": "1707",
+                    "description": "SLE-15-GA-Desktop-NVIDIA-Driver for ",
+                    "autorefresh": true,
+                    "url": "http://smt-ec2.susecloud.net/repo/RPMMD/SLE-15-GA-Desktop-NVIDIA-Driver?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": null
+                  },
+                  {
+                    "id": "1708",
+                    "autorefresh": false,
+                    "description": "SLE-Product-WE15-Source-Pool for sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "enabled": false,
+                    "name": "SLE-Product-WE15-Source-Pool",
+                    "installer_updates": false
+                  },
+                  {
+                    "id": "1709",
+                    "autorefresh": false,
+                    "description": "SLE-Product-WE15-Debuginfo-Pool for sle-15-x86_64",
+                    "distro_target": "sle-15-x86_64",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "enabled": false,
+                    "name": "SLE-Product-WE15-Debuginfo-Pool",
+                    "installer_updates": false
+                  },
+                  {
+                    "installer_updates": false,
+                    "enabled": true,
+                    "name": "SLE-Product-WE15-Pool",
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1710",
+                    "description": "SLE-Product-WE15-Pool for sle-15-x86_64",
+                    "autorefresh": false
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-WE/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "autorefresh": true,
+                    "description": "SLE-Product-WE15-Debuginfo-Updates for sle-15-x86_64",
+                    "id": "1711",
+                    "name": "SLE-Product-WE15-Debuginfo-Updates",
+                    "enabled": false,
+                    "installer_updates": false
+                  },
+                  {
+                    "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-WE/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                    "distro_target": "sle-15-x86_64",
+                    "id": "1712",
+                    "description": "SLE-Product-WE15-Updates for sle-15-x86_64",
+                    "autorefresh": true,
+                    "enabled": true,
+                    "name": "SLE-Product-WE15-Updates",
+                    "installer_updates": false
+                  }
+                ],
+                "available": false,
+                "extensions": [],
+                "product_class": "SLE-WE",
+                "former_identifier": "sle-we",
+                "free": true,
+                "id": 2737,
+                "recommended": false,
+                "version": "15",
+                "release_type": null,
+                "product_type": "extension",
+                "friendly_name": "SUSE Linux Enterprise Workstation Extension 15 x86_64",
+                "arch": "x86_64",
+                "cpe": "cpe:/o:suse:sle-we:15",
+                "shortname": "SLEWE15",
+                "eula_url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product.license/",
+                "release_stage": "released",
+                "name": "SUSE Linux Enterprise Workstation Extension 15 x86_64"
+              }
+            ],
+            "product_class": "MODULE",
+            "description": "<p> The SUSE Linux Enterprise Desktop Applications Module delivers a basic set of Desktop functionality. </p> <p> Access to the Desktop Applications Module is included in your SUSE Linux Enterprise product subscription. </p>",
+            "identifier": "sle-module-desktop-applications",
+            "repositories": [
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Desktop-Applications/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "description": "SLE-Module-Desktop-Applications15-Updates for sle-15-x86_64",
+                "autorefresh": true,
+                "id": "1504",
+                "name": "SLE-Module-Desktop-Applications15-Updates",
+                "enabled": true,
+                "installer_updates": false
+              },
+              {
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Desktop-Applications/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "autorefresh": true,
+                "description": "SLE-Module-Desktop-Applications15-Debuginfo-Updates for sle-15-x86_64",
+                "id": "1505",
+                "installer_updates": false,
+                "name": "SLE-Module-Desktop-Applications15-Debuginfo-Updates",
+                "enabled": false
+              },
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Desktop-Applications/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "id": "1506",
+                "autorefresh": false,
+                "description": "SLE-Module-Desktop-Applications15-Pool for sle-15-x86_64",
+                "enabled": true,
+                "name": "SLE-Module-Desktop-Applications15-Pool",
+                "installer_updates": false
+              },
+              {
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-Desktop-Applications15-Debuginfo-Pool",
+                "id": "1507",
+                "autorefresh": false,
+                "description": "SLE-Module-Desktop-Applications15-Debuginfo-Pool for sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Desktop-Applications/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64"
+              },
+              {
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-Desktop-Applications15-Source-Pool",
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Desktop-Applications/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "1508",
+                "autorefresh": false,
+                "description": "SLE-Module-Desktop-Applications15-Source-Pool for sle-15-x86_64"
+              }
+            ],
+            "former_identifier": "sle-module-desktop-applications",
+            "free": true
+          },
+          {
+            "id": 2741,
+            "version": "15",
+            "recommended": false,
+            "release_type": null,
+            "product_type": "module",
+            "arch": "x86_64",
+            "eula_url": "",
+            "cpe": "cpe:/o:suse:sle-module-cap-tools:15",
+            "friendly_name": "SUSE Cloud Application Platform Tools Module 15 x86_64",
+            "shortname": "SUSE-CAP-Tools-Module",
+            "release_stage": "released",
+            "name": "SUSE Cloud Application Platform Tools Module 15 x86_64",
+            "description": "<p> The SUSE Cloud Application Platform Tools Module is a collection of tools that enables you to interact with the SUSE Cloud Application Platform product itself, providing the commandline client for instance. </p> <p> Access to the SUSE Cloud Application Platform Tools Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself; please check the Release Notes for further details. </p>",
+            "identifier": "sle-module-cap-tools",
+            "repositories": [
+              {
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-CAP-Tools/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "id": "1940",
+                "autorefresh": false,
+                "description": "SLE-Module-CAP-Tools15-Debuginfo-Pool for sle-15-x86_64",
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-CAP-Tools15-Debuginfo-Pool"
+              },
+              {
+                "installer_updates": false,
+                "name": "SLE-Module-CAP-Tools15-Pool",
+                "enabled": true,
+                "description": "SLE-Module-CAP-Tools15-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "1941",
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-CAP-Tools/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net"
+              },
+              {
+                "distro_target": "sle-15-x86_64",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-CAP-Tools/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "id": "1942",
+                "description": "SLE-Module-CAP-Tools15-Debuginfo-Updates for sle-15-x86_64",
+                "autorefresh": true,
+                "installer_updates": false,
+                "enabled": false,
+                "name": "SLE-Module-CAP-Tools15-Debuginfo-Updates"
+              },
+              {
+                "name": "SLE-Module-CAP-Tools15-Updates",
+                "enabled": true,
+                "installer_updates": false,
+                "autorefresh": true,
+                "description": "SLE-Module-CAP-Tools15-Updates for sle-15-x86_64",
+                "id": "1943",
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-CAP-Tools/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64"
+              },
+              {
+                "name": "SLE-Module-CAP-Tools15-Source-Pool",
+                "enabled": false,
+                "installer_updates": false,
+                "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-CAP-Tools/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+                "distro_target": "sle-15-x86_64",
+                "description": "SLE-Module-CAP-Tools15-Source-Pool for sle-15-x86_64",
+                "autorefresh": false,
+                "id": "2025"
+              }
+            ],
+            "available": true,
+            "extensions": [],
+            "product_class": "MODULE",
+            "free": true,
+            "former_identifier": "sle-module-cap-tools"
+          }
+        ],
+        "product_class": "MODULE",
+        "repositories": [
+          {
+            "name": "SLE-Module-Basesystem15-Updates",
+            "enabled": true,
+            "installer_updates": false,
+            "description": "SLE-Module-Basesystem15-Updates for sle-15-x86_64",
+            "autorefresh": true,
+            "id": "1489",
+            "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Basesystem/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+            "distro_target": "sle-15-x86_64"
+          },
+          {
+            "enabled": false,
+            "name": "SLE-Module-Basesystem15-Source-Pool",
+            "installer_updates": false,
+            "id": "1490",
+            "autorefresh": false,
+            "description": "SLE-Module-Basesystem15-Source-Pool for sle-15-x86_64",
+            "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+            "distro_target": "sle-15-x86_64"
+          },
+          {
+            "name": "SLE-Module-Basesystem15-Debuginfo-Updates",
+            "enabled": false,
+            "installer_updates": false,
+            "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Basesystem/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+            "distro_target": "sle-15-x86_64",
+            "autorefresh": true,
+            "description": "SLE-Module-Basesystem15-Debuginfo-Updates for sle-15-x86_64",
+            "id": "1491"
+          },
+          {
+            "enabled": true,
+            "name": "SLE-Module-Basesystem15-Pool",
+            "installer_updates": false,
+            "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net",
+            "distro_target": "sle-15-x86_64",
+            "id": "1492",
+            "autorefresh": false,
+            "description": "SLE-Module-Basesystem15-Pool for sle-15-x86_64"
+          },
+          {
+            "enabled": false,
+            "name": "SLE-Module-Basesystem15-Debuginfo-Pool",
+            "installer_updates": false,
+            "id": "1493",
+            "autorefresh": false,
+            "description": "SLE-Module-Basesystem15-Debuginfo-Pool for sle-15-x86_64",
+            "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+            "distro_target": "sle-15-x86_64"
+          }
+        ],
+        "description": "<p> The SUSE Linux Enterprise Basesystem Module delivers the base system of the product. </p>",
+        "identifier": "sle-module-basesystem"
+      }
+    ],
+    "product_class": "7261",
+    "available": true,
+    "repositories": [
+      {
+        "installer_updates": true,
+        "enabled": false,
+        "name": "SLE15-Installer-Updates",
+        "id": "1670",
+        "autorefresh": true,
+        "description": "SLE15-Installer-Updates for sle-15-x86_64",
+        "distro_target": "sle-15-x86_64",
+        "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-INSTALLER/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net"
+      },
+      {
+        "installer_updates": false,
+        "name": "SLE-Product-SLES15-Pool",
+        "enabled": true,
+        "description": "SLE-Product-SLES15-Pool for sle-15-x86_64",
+        "autorefresh": false,
+        "id": "1671",
+        "distro_target": "sle-15-x86_64",
+        "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net"
+      },
+      {
+        "enabled": true,
+        "name": "SLE-Product-SLES15-Updates",
+        "installer_updates": false,
+        "distro_target": "sle-15-x86_64",
+        "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-SLES/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net",
+        "id": "1672",
+        "description": "SLE-Product-SLES15-Updates for sle-15-x86_64",
+        "autorefresh": true
+      },
+      {
+        "id": "2027",
+        "autorefresh": true,
+        "description": "SLE-Product-SLES15-Debuginfo-Updates for sle-15-x86_64",
+        "url": "http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-SLES/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+        "distro_target": "sle-15-x86_64",
+        "enabled": false,
+        "name": "SLE-Product-SLES15-Debuginfo-Updates",
+        "installer_updates": false
+      },
+      {
+        "enabled": false,
+        "name": "SLE-Product-SLES15-Source-Pool",
+        "installer_updates": false,
+        "id": "2028",
+        "autorefresh": false,
+        "description": "SLE-Product-SLES15-Source-Pool for sle-15-x86_64",
+        "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net",
+        "distro_target": "sle-15-x86_64"
+      },
+      {
+        "installer_updates": false,
+        "name": "SLE-Product-SLES15-Debuginfo-Pool",
+        "enabled": false,
+        "autorefresh": false,
+        "description": "SLE-Product-SLES15-Debuginfo-Pool for sle-15-x86_64",
+        "id": "2029",
+        "url": "http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net",
+        "distro_target": "sle-15-x86_64"
+      }
+    ],
+    "description": "SUSE Linux Enterprise offers a comprehensive suite of products built on a single code base. The platform addresses business needs from the smallest thin-client devices to the world's most powerful high-performance computing and mainframe servers. SUSE Linux Enterprise offers common management tools and technology certifications across the platform, and each product is enterprise-class.",
+    "identifier": "SLES",
+    "free": true,
+    "former_identifier": "SLES"
+  }
+]
