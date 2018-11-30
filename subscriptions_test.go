@@ -106,8 +106,7 @@ func TestFaultyRequestForRegcodes(t *testing.T) {
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
 	_, err := requestRegcodes(data, cr)
-	str := "Get http://:@/connect/systems/subscriptions: http: no Host in request URL"
-	if err == nil || err.Error() != str {
+	if err == nil || !strings.Contains(err.Error(), "no Host in request URL") {
 		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
