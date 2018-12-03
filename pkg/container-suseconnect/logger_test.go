@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"os"
@@ -26,7 +26,7 @@ import (
 //   - cleanup: whether the file has to be closed and removed.
 func testLogger(t *testing.T, env, expected string, cleanup bool) {
 	os.Setenv(logEnv, env)
-	f := getLoggerFile()
+	f := GetLoggerFile()
 	if f.Name() != expected {
 		t.Fatalf("Wrong file")
 	}

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"fmt"
@@ -75,7 +75,7 @@ func TestInvalidJsonForProduct(t *testing.T) {
 }
 
 func TestValidProduct(t *testing.T) {
-	file, err := os.Open("data/products-sle12.json")
+	file, err := os.Open("../../test/products-sle12.json")
 	if err != nil {
 		t.Fatal("Something went wrong when reading the JSON file")
 	}
@@ -98,7 +98,7 @@ func TestInvalidRequestForProduct(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
-	_, err := requestProducts(data, cr, ip)
+	_, err := RequestProducts(data, cr, ip)
 	if err == nil || err.Error() != "Could not connect with registration server: parse :: missing protocol scheme\n" {
 		t.Fatalf("There should be a proper error: %v", err)
 	}
@@ -109,7 +109,7 @@ func TestFaultyRequestForProduct(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
-	_, err := requestProducts(data, cr, ip)
+	_, err := RequestProducts(data, cr, ip)
 	str := "Get http:///connect/subscriptions/products?arch=&identifier=&version=: http: no Host in request URL"
 	if err == nil || err.Error() != str {
 		t.Fatalf("There should be a proper error: %v", err)
@@ -127,7 +127,7 @@ func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
-	_, err := requestProducts(data, cr, ip)
+	_, err := RequestProducts(data, cr, ip)
 	if err == nil || err.Error() != "Unexpected error while retrieving products with regCode : 500 Internal Server Error" {
 		t.Fatalf("It should have a proper error: %v", err)
 	}
@@ -136,7 +136,7 @@ func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 func TestValidRequestForProduct(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.Open("data/products-sle12.json")
+		file, err := os.Open("../../test/products-sle12.json")
 		if err != nil {
 			fmt.Fprintln(w, "FAIL!")
 			return
@@ -150,7 +150,7 @@ func TestValidRequestForProduct(t *testing.T) {
 	var ip InstalledProduct
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
-	products, err := requestProducts(data, cr, ip)
+	products, err := RequestProducts(data, cr, ip)
 	if err != nil {
 		t.Fatal("It should've run just fine...")
 	}

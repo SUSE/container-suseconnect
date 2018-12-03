@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"bytes"
@@ -36,7 +36,7 @@ func testServiceOutput(t *testing.T, filePath string, expectedOutput string) {
 	}
 
 	buf := bytes.Buffer{}
-	dumpRepositories(&buf, products[0])
+	DumpRepositories(&buf, products[0])
 
 	result := buf.String()
 	if result != expectedOutput {
@@ -72,7 +72,7 @@ autorefresh=0
 enabled=0
 
 `
-	testServiceOutput(t, "data/products-sle12.json", expectedOutput)
+	testServiceOutput(t, "../../test/products-sle12.json", expectedOutput)
 }
 
 func TestServiceOutputSLE15(t *testing.T) {
@@ -176,7 +176,7 @@ enabled=0
 
 `
 
-	testServiceOutput(t, "data/products-sle15.json", expectedOutput)
+	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput)
 }
 
 func TestServiceOutputSLE15WithCustomModules(t *testing.T) {
@@ -344,5 +344,5 @@ enabled=0
 
 `
 
-	testServiceOutput(t, "data/products-sle15.json", expectedOutput)
+	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput)
 }

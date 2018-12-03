@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"encoding/xml"
@@ -82,7 +82,7 @@ func readInstalledProduct(provider ProductProvider) (InstalledProduct, error) {
 }
 
 // Get the installed product on a SUSE machine.
-func getInstalledProduct() (InstalledProduct, error) {
+func GetInstalledProduct() (InstalledProduct, error) {
 	var b SUSEProductProvider
 	return readInstalledProduct(b)
 }

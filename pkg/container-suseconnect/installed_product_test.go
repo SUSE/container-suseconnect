@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"os"
@@ -22,7 +22,7 @@ import (
 type NotFoundProvider struct{}
 
 func (m NotFoundProvider) Location() string {
-	return "data/not-found.xml"
+	return "../../test/not-found.xml"
 }
 
 func TestFailNonExistantProduct(t *testing.T) {
@@ -58,7 +58,7 @@ func TestFailNotAllowedProduct(t *testing.T) {
 type BadFormattedProvider struct{}
 
 func (m BadFormattedProvider) Location() string {
-	return "data/bad.xml"
+	return "../../test/bad.xml"
 }
 
 func TestFailBadFormattedProduct(t *testing.T) {
@@ -76,7 +76,7 @@ func TestFailBadFormattedProduct(t *testing.T) {
 type MockProvider struct{}
 
 func (m MockProvider) Location() string {
-	return "data/installed.xml"
+	return "../../test/installed.xml"
 }
 
 func TestMockProvider(t *testing.T) {
@@ -105,14 +105,14 @@ func TestSUSE(t *testing.T) {
 	var b SUSEProductProvider
 
 	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
-		_, err = getInstalledProduct()
+		_, err = GetInstalledProduct()
 		if err == nil {
 			t.Fatal("It should fail")
 		}
 		return
 	}
 
-	_, err := getInstalledProduct()
+	_, err := GetInstalledProduct()
 	if err != nil {
 		t.Fatal("We assume that is SUSE, so this should be fine")
 	}

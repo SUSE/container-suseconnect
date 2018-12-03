@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"bytes"
@@ -66,9 +66,9 @@ var locationShouldBeFound = true
 
 func (mock *SUSEConnectDataMock) locations() []string {
 	if locationShouldBeFound {
-		return []string{"data/suseconnect.txt"}
+		return []string{"../../test/suseconnect.txt"}
 	} else {
-		return []string{"data/notfound.txt"}
+		return []string{"../../test/notfound.txt"}
 	}
 }
 
@@ -93,7 +93,7 @@ func TestIntegrationSUSEConnectData(t *testing.T) {
 	locationShouldBeFound = true
 	mock := SUSEConnectDataMock{data: &data}
 
-	err := readConfiguration(&mock)
+	err := ReadConfiguration(&mock)
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}
@@ -110,7 +110,7 @@ func TestLocationsNotFound(t *testing.T) {
 	locationShouldBeFound = false
 	mock := SUSEConnectDataMock{data: &data}
 
-	err := readConfiguration(&mock)
+	err := ReadConfiguration(&mock)
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}

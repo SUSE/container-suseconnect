@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"bufio"
@@ -60,7 +60,7 @@ func getLocationPath(locations []string) string {
 }
 
 // Reads the configuration and updates the given object.
-func readConfiguration(config Configuration) error {
+func ReadConfiguration(config Configuration) error {
 	path := getLocationPath(config.locations())
 	if path == "" {
 		// Leave early if locations could not be found but it can be handled by

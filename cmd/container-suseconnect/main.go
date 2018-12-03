@@ -19,34 +19,36 @@ package main
 import (
 	"log"
 	"os"
+
+	cs "github.com/SUSE/container-suseconnect/pkg/container-suseconnect"
 )
 
 func main() {
-	log.SetOutput(getLoggerFile())
+	log.SetOutput(cs.GetLoggerFile())
 
-	var credentials Credentials
-	if err := readConfiguration(&credentials); err != nil {
+	var credentials cs.Credentials
+	if err := cs.ReadConfiguration(&credentials); err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	installedProduct, err := getInstalledProduct()
+	installedProduct, err := cs.GetInstalledProduct()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
 
-	var suseConnectData SUSEConnectData
-	if err := readConfiguration(&suseConnectData); err != nil {
+	var suseConnectData cs.SUSEConnectData
+	if err := cs.ReadConfiguration(&suseConnectData); err != nil {
 		log.Fatalf(err.Error())
 	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
-	products, err := requestProducts(suseConnectData, credentials, installedProduct)
+	products, err := cs.RequestProducts(suseConnectData, credentials, installedProduct)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	for _, product := range products {
-		dumpRepositories(os.Stdout, product)
+		cs.DumpRepositories(os.Stdout, product)
 	}
 }

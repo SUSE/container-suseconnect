@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package container_suseconnect
 
 import (
 	"errors"
@@ -29,10 +29,10 @@ func TestGetLocationPath(t *testing.T) {
 
 	strs := []string{
 		"does/not/exist",
-		"data/products-sle12.json",
+		"../../test/products-sle12.json",
 	}
 	path = getLocationPath(strs)
-	if path != "data/products-sle12.json" {
+	if path != "../../test/products-sle12.json" {
 		t.Fatalf("Wrong location path: %v", path)
 	}
 }
@@ -62,7 +62,7 @@ func TestNotFound(t *testing.T) {
 	var cfg NotFoundConfiguration
 
 	prepareLogger()
-	err := readConfiguration(&cfg)
+	err := ReadConfiguration(&cfg)
 	if err == nil || err.Error() != "No locations found: []" {
 		t.Fatalf("Wrong error: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestNotAllowed(t *testing.T) {
 	var cfg NotAllowedConfiguration
 
 	prepareLogger()
-	err := readConfiguration(&cfg)
+	err := ReadConfiguration(&cfg)
 	msg := "Can't open /etc/shadow file: open /etc/shadow: permission denied"
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
