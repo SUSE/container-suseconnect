@@ -48,13 +48,13 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:    "list-products",
-			Aliases: []string{"l", "lm"},
+			Aliases: []string{"lp"},
 			Usage:   "List available products",
 			Action:  listProducts,
 		},
 		{
 			Name:    "list-modules",
-			Aliases: []string{"l", "lm"},
+			Aliases: []string{"lm"},
 			Usage:   "List available modules",
 			Action:  listModules,
 		},
@@ -72,6 +72,10 @@ func main() {
 	}
 }
 
+// runZypperPlugin runs the application in zypper plugin mode, which dumps
+// all available repositories for the installed product. Additional modules
+// can be specified via the `ADDITIONAL_MODULES` environment variable, which
+// reflect the module `identifier`.
 func runZypperPlugin(_ *cli.Context) error {
 	log.SetOutput(cs.GetLoggerFile())
 
