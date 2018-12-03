@@ -84,6 +84,8 @@ func main() {
 	}
 }
 
+// requestProducts collects a slice of products for the currently available
+// environment
 func requestProducts() ([]cs.Product, error) {
 	credentials := cs.Credentials{}
 	if err := cs.ReadConfiguration(&credentials); err != nil {
