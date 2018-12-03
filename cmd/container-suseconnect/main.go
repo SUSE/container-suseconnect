@@ -35,10 +35,10 @@ func main() {
 	app.Version = "2.0.0"
 	app.Usage = ""
 	app.UsageText =
-		`This application can be used to retrieve basic metadata about SLE
+		`This application can be used to retrieve basic metadata about SLES
    related products and module extensions.
 
-   Please use the 'list-product' subcommand for listing all currently
+   Please use the 'list-products' subcommand for listing all currently
    available products including their repositories and a short description.
 
    Use the 'list-modules' subcommand for listing available modules, where
