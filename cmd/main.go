@@ -41,7 +41,7 @@ func main() {
 	case "container-suseconnect-zypp":
 		app.Action = runZypperPlugin
 	default:
-		app.Action = listProducts
+		app.Action = runListProducts
 	}
 
 	// Set additional actions, which are always available
@@ -49,14 +49,14 @@ func main() {
 		{
 			Name:    "list-products",
 			Aliases: []string{"lp"},
-			Usage:   "List available products",
-			Action:  listProducts,
+			Usage:   "List all available products",
+			Action:  runListProducts,
 		},
 		{
 			Name:    "list-modules",
 			Aliases: []string{"lm"},
 			Usage:   "List available modules",
-			Action:  listModules,
+			Action:  runListModules,
 		},
 		{
 			Name:    "zypper",
@@ -72,6 +72,32 @@ func main() {
 	}
 }
 
+func requestProducts() ([]cs.Product, error) {
+	credentials := cs.Credentials{}
+	if err := cs.ReadConfiguration(&credentials); err != nil {
+		return nil, err
+	}
+
+	installedProduct, err := cs.GetInstalledProduct()
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("Installed product: %v\n", installedProduct)
+
+	var suseConnectData cs.SUSEConnectData
+	if err := cs.ReadConfiguration(&suseConnectData); err != nil {
+		return nil, err
+	}
+	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
+
+	products, err := cs.RequestProducts(suseConnectData, credentials, installedProduct)
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
+}
+
 // runZypperPlugin runs the application in zypper plugin mode, which dumps
 // all available repositories for the installed product. Additional modules
 // can be specified via the `ADDITIONAL_MODULES` environment variable, which
@@ -79,24 +105,7 @@ func main() {
 func runZypperPlugin(_ *cli.Context) error {
 	log.SetOutput(cs.GetLoggerFile())
 
-	credentials := cs.Credentials{}
-	if err := cs.ReadConfiguration(&credentials); err != nil {
-		return err
-	}
-
-	installedProduct, err := cs.GetInstalledProduct()
-	if err != nil {
-		return err
-	}
-	log.Printf("Installed product: %v\n", installedProduct)
-
-	var suseConnectData cs.SUSEConnectData
-	if err := cs.ReadConfiguration(&suseConnectData); err != nil {
-		return err
-	}
-	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
-
-	products, err := cs.RequestProducts(suseConnectData, credentials, installedProduct)
+	products, err := requestProducts()
 	if err != nil {
 		return err
 	}
@@ -108,10 +117,27 @@ func runZypperPlugin(_ *cli.Context) error {
 	return nil
 }
 
-func listProducts(_ *cli.Context) error {
+// runListModules lists all available modules and their metadata, which
+// includes the `Name`, `Identifier` and the `Recommended` flag.
+func runListModules(_ *cli.Context) error {
+	products, err := requestProducts()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("All available modules:\n\n")
+	cs.ListModules(os.Stdout, products)
 	return nil
 }
 
-func listModules(_ *cli.Context) error {
+// runListProducts lists all available products and their metadata
+func runListProducts(_ *cli.Context) error {
+	products, err := requestProducts()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("All available products:\n\n")
+	cs.ListProducts(os.Stdout, products, "none")
 	return nil
 }
