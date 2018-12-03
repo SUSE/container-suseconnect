@@ -117,9 +117,10 @@ func ListProducts(w io.Writer, products []Product, baseProduct string) {
 
 		// Strip HTML tags from the description
 		r := regexp.MustCompile(`<[^>]*>\s*`)
-		fmt.Fprintf(w, "Description: %v\n", r.ReplaceAllString(product.Description, ""))
+		fmt.Fprintf(w, "Description: %v\n",
+			strings.TrimSpace(r.ReplaceAllString(product.Description, "")))
 
-		fmt.Fprintf(w, "Repositories: \n")
+		fmt.Fprintf(w, "Repositories:\n")
 		for idx, repo := range product.Repositories {
 			repoState := "disabled"
 			if repo.Enabled {

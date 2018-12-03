@@ -16,11 +16,18 @@ package container_suseconnect
 
 import (
 	"bytes"
+	"fmt"
+	"log"
 	"os"
 	"testing"
 )
 
-func testServiceOutput(t *testing.T, filePath string, expectedOutput string) {
+func testServiceOutput(
+	t *testing.T,
+	filePath string,
+	expectedOutput string,
+	dumpFunction func(*bytes.Buffer, []Product),
+) {
 	reader, err := os.Open(filePath)
 	if err != nil {
 		t.Fatal("Could not read JSON file...")
@@ -36,12 +43,20 @@ func testServiceOutput(t *testing.T, filePath string, expectedOutput string) {
 	}
 
 	buf := bytes.Buffer{}
-	DumpRepositories(&buf, products[0])
+	dumpFunction(&buf, products)
 
 	result := buf.String()
 	if result != expectedOutput {
 		t.Errorf(result)
 	}
+
+	file, err := os.Create("result.txt")
+	if err != nil {
+		log.Fatal("Cannot create file", err)
+	}
+	defer file.Close()
+
+	fmt.Fprintf(file, result)
 }
 
 func TestServiceOutputSLE12(t *testing.T) {
@@ -72,7 +87,10 @@ autorefresh=0
 enabled=0
 
 `
-	testServiceOutput(t, "../../test/products-sle12.json", expectedOutput)
+	testServiceOutput(t, "../../test/products-sle12.json", expectedOutput,
+		func(buffer *bytes.Buffer, products []Product) {
+			DumpRepositories(buffer, products[0])
+		})
 }
 
 func TestServiceOutputSLE15(t *testing.T) {
@@ -176,7 +194,10 @@ enabled=0
 
 `
 
-	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput)
+	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput,
+		func(buffer *bytes.Buffer, products []Product) {
+			DumpRepositories(buffer, products[0])
+		})
 }
 
 func TestServiceOutputSLE15WithCustomModules(t *testing.T) {
@@ -344,5 +365,253 @@ enabled=0
 
 `
 
-	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput)
+	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput,
+		func(buffer *bytes.Buffer, products []Product) {
+			DumpRepositories(buffer, products[0])
+		})
+}
+
+func TestServiceListModulesWithSLE15(t *testing.T) {
+	const expectedOutput = `Name: Basesystem Module 15 x86_64
+Identifier: sle-module-basesystem
+Recommended: true
+
+Name: SUSE Linux Enterprise Live Patching 15 x86_64
+Identifier: sle-module-live-patching
+Recommended: false
+
+Name: Containers Module 15 x86_64
+Identifier: sle-module-containers
+Recommended: false
+
+Name: Server Applications Module 15 x86_64
+Identifier: sle-module-server-applications
+Recommended: true
+
+Name: Web and Scripting Module 15 x86_64
+Identifier: sle-module-web-scripting
+Recommended: false
+
+Name: Legacy Module 15 x86_64
+Identifier: sle-module-legacy
+Recommended: false
+
+Name: Public Cloud Module 15 x86_64
+Identifier: sle-module-public-cloud
+Recommended: false
+
+Name: Desktop Applications Module 15 x86_64
+Identifier: sle-module-desktop-applications
+Recommended: false
+
+Name: Development Tools Module 15 x86_64
+Identifier: sle-module-development-tools
+Recommended: false
+
+Name: SUSE Cloud Application Platform Tools Module 15 x86_64
+Identifier: sle-module-cap-tools
+Recommended: false
+
+`
+
+	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput,
+		func(buffer *bytes.Buffer, products []Product) {
+			ListModules(buffer, products)
+		})
+}
+
+func TestServiceListProductsWithSLE15(t *testing.T) {
+	const expectedOutput = `Name: SUSE Linux Enterprise Server 15 x86_64
+Type: base
+Identifier: SLES
+Based on: none
+Recommended: false
+Description: SUSE Linux Enterprise offers a comprehensive suite of products built on a single code base. The platform addresses business needs from the smallest thin-client devices to the world's most powerful high-performance computing and mainframe servers. SUSE Linux Enterprise offers common management tools and technology certifications across the platform, and each product is enterprise-class.
+Repositories:
+1. SLE15-Installer-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-INSTALLER/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Product-SLES15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+3. SLE-Product-SLES15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-SLES/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Product-SLES15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-SLES/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Product-SLES15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+6. SLE-Product-SLES15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-SLES/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: Basesystem Module 15 x86_64
+Type: module
+Identifier: sle-module-basesystem
+Based on: SLES
+Recommended: true
+Description: The SUSE Linux Enterprise Basesystem Module delivers the base system of the product.
+Repositories:
+1. SLE-Module-Basesystem15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Basesystem/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SLE-Module-Basesystem15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-Basesystem15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Basesystem/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+4. SLE-Module-Basesystem15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+5. SLE-Module-Basesystem15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: SUSE Linux Enterprise Live Patching 15 x86_64
+Type: module
+Identifier: sle-module-live-patching
+Based on: sle-module-basesystem
+Recommended: false
+Description: SUSE Linux Enterprise Live Patching provides packages to update critical components in SUSE Linux Enterprise. With SUSE Linux Enterprise Live Patching, you can perform critical patching without shutting down your system, reducing the need for planned downtime and increasing service availability.
+Repositories:
+1. SLE-Module-Live-Patching15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Live-Patching/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Module-Live-Patching15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Live-Patching/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+3. SLE-Module-Live-Patching15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Live-Patching/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+4. SLE-Module-Live-Patching15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Live-Patching/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+5. SLE-Module-Live-Patching15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Live-Patching/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: SUSE Package Hub 15 x86_64
+Type: extension
+Identifier: PackageHub
+Based on: sle-module-basesystem
+Recommended: false
+Description: SUSE Package Hub is a free of charge extension providing access to community maintained packages built to run on SUSE Linux Enterprise Server. Built from the same sources used in the openSUSE distributions, these quality packages provide additional software to what is found in the SUSE Linux Enterprise Server product. Packages from the Package Hub are delivered without L3 support from SUSE. General updates and fixes to the packages in SUSE Package Hub are provided by the openSUSE community based on their discretion though SUSE will monitor and ensure that any known critical security issues will be addressed. Packages in the Package Hub are approved by SUSE for use with SUSE Linux Enterprise Server 15 and to not interfere with the supportability of SUSE Linux Enterprise Server it's modules and extensions. For more information about SUSE Package Hub please visit https://packagehub.suse.com.
+Repositories:
+1. SUSE-PackageHub-15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Backports/SLE-15_x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SUSE-PackageHub-15-Debuginfo: http://smt-ec2.susecloud.net/repo/SUSE/Backports/SLE-15_x86_64/standard_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SUSE-PackageHub-15-Standard-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Backports/SLE-15_x86_64/standard/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Module-Packagehub-Subpackages15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Packagehub-Subpackages/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Module-Packagehub-Subpackages15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Packagehub-Subpackages/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+6. SLE-Module-Packagehub-Subpackages15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Packagehub-Subpackages/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+7. SLE-Module-Packagehub-Subpackages15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Packagehub-Subpackages/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+8. SLE-Module-Packagehub-Subpackages15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Packagehub-Subpackages/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+
+Name: Containers Module 15 x86_64
+Type: module
+Identifier: sle-module-containers
+Based on: sle-module-basesystem
+Recommended: false
+Description: This Module contains several packages revolving around containers and related tools.
+Repositories:
+1. SLE-Module-Containers15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Containers/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Module-Containers15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Containers/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-Containers15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Containers/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Module-Containers15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Containers/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Module-Containers15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Containers/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+
+Name: Server Applications Module 15 x86_64
+Type: module
+Identifier: sle-module-server-applications
+Based on: sle-module-basesystem
+Recommended: true
+Description: The SUSE Linux Enterprise Server Applications Module delivers a basic set of Server functionality. Access to the Server Applications Module is included in your SUSE Linux Enterprise Server subscription.
+Repositories:
+1. SLE-Module-Server-Applications15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Server-Applications/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SLE-Module-Server-Applications15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Server-Applications/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-Server-Applications15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Server-Applications/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Module-Server-Applications15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Server-Applications/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Module-Server-Applications15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Server-Applications/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: Web and Scripting Module 15 x86_64
+Type: module
+Identifier: sle-module-web-scripting
+Based on: sle-module-server-applications
+Recommended: false
+Description: The SUSE Linux Enterprise Web and Scripting Module should contains additional packages that are helpful when running a webserver. Access to the Web and Scripting Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself: Package versions in this module are usually supported for at most three years. We are planning to release more recent versions on a schedule of approximately 18 month; the exact dates may differ per package.
+Repositories:
+1. SLE-Module-Web-Scripting15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Web-Scripting/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Module-Web-Scripting15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Web-Scripting/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-Web-Scripting15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Web-Scripting/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Module-Web-Scripting15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Web-Scripting/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Module-Web-Scripting15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Web-Scripting/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+
+Name: Legacy Module 15 x86_64
+Type: module
+Identifier: sle-module-legacy
+Based on: sle-module-server-applications
+Recommended: false
+Description: The Legacy Module helps you migrating applications from SUSE Linux Enterprise 12 and other systems to SUSE Linux Enterprise 15, by providing packages which are discontinued on SUSE Linux Enterprise Server, such as: ntp, IBM Java 8, and a number of libraries. Access to the Legacy Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself. Packages in the this module are usually supported for at most three years.
+Repositories:
+1. SLE-Module-Legacy15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Legacy/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SLE-Module-Legacy15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Legacy/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-Legacy15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Legacy/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+4. SLE-Module-Legacy15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Legacy/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+5. SLE-Module-Legacy15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Legacy/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: Public Cloud Module 15 x86_64
+Type: module
+Identifier: sle-module-public-cloud
+Based on: sle-module-server-applications
+Recommended: false
+Description: The Public Cloud Module is a collection of tools that enables you to create and manage cloud images from the commandline on SUSE Linux Enterprise Server. When building your own images with KIWI or SUSE Studio, initialization code specific to the target cloud is included in that image. Access to the Public Cloud Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself; please check the Release Notes for further details.
+Repositories:
+1. SLE-Module-Public-Cloud15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Public-Cloud/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Module-Public-Cloud15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Public-Cloud/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+3. SLE-Module-Public-Cloud15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Public-Cloud/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+4. SLE-Module-Public-Cloud15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Public-Cloud/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+5. SLE-Module-Public-Cloud15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Public-Cloud/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: SUSE Linux Enterprise High Availability Extension 15 x86_64
+Type: extension
+Identifier: sle-ha
+Based on: sle-module-server-applications
+Recommended: false
+Description: SUSE Linux High Availability Extension provides mature, industry-leading open-source high-availability clustering technologies that are easy to set up and use. It can be deployed in physical and/or virtual environments, and can cluster physical servers, virtual servers, or any combination of the two to suit your businessâ needs.
+Repositories:
+1. SLE-Product-HA15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Product-HA15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Product-HA15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-HA/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Product-HA15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-HA/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Product-HA15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-HA/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+
+Name: Desktop Applications Module 15 x86_64
+Type: module
+Identifier: sle-module-desktop-applications
+Based on: sle-module-basesystem
+Recommended: false
+Description: The SUSE Linux Enterprise Desktop Applications Module delivers a basic set of Desktop functionality. Access to the Desktop Applications Module is included in your SUSE Linux Enterprise product subscription.
+Repositories:
+1. SLE-Module-Desktop-Applications15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Desktop-Applications/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SLE-Module-Desktop-Applications15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Desktop-Applications/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-Desktop-Applications15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Desktop-Applications/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Module-Desktop-Applications15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Desktop-Applications/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Module-Desktop-Applications15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Desktop-Applications/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: Development Tools Module 15 x86_64
+Type: module
+Identifier: sle-module-development-tools
+Based on: sle-module-desktop-applications
+Recommended: false
+Description: The Development Tools Module helps you developing applications for SUSE Linux Enterprise 15. Access to the Development Tools Module is included in your SUSE Linux Enterprise product subscription. The module has a different lifecycle than SUSE Linux Enterprise itself.
+Repositories:
+1. SLE-Module-DevTools15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Development-Tools/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SLE-Module-DevTools15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-Development-Tools/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Module-DevTools15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Development-Tools/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+4. SLE-Module-DevTools15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Development-Tools/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+5. SLE-Module-DevTools15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Development-Tools/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+Name: SUSE Linux Enterprise Workstation Extension 15 x86_64
+Type: extension
+Identifier: sle-we
+Based on: sle-module-desktop-applications
+Recommended: false
+Description: SUSE Linux Enterprise Workstation Extension adds additional functionality to a base SUSE Linux Enterprise installation. The Workstation Extension offers additional desktop applications (office suite, email client, graphical editor, multimedia tools) and libraries. Workstation Extension is enabled and installed by default on SUSE Linux Enterprise Desktop installation. Adding the Workstation Extension to a SUSE Linux Enterprise Server installation allows to seamlessly combine both products to create a full featured server workstation.
+Repositories:
+1. SLE-15-GA-Desktop-NVIDIA-Driver: http://smt-ec2.susecloud.net/repo/RPMMD/SLE-15-GA-Desktop-NVIDIA-Driver?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+2. SLE-Product-WE15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+3. SLE-Product-WE15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+4. SLE-Product-WE15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Product-WE/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+5. SLE-Product-WE15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-WE/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+6. SLE-Product-WE15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Product-WE/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+
+Name: SUSE Cloud Application Platform Tools Module 15 x86_64
+Type: module
+Identifier: sle-module-cap-tools
+Based on: sle-module-basesystem
+Recommended: false
+Description: The SUSE Cloud Application Platform Tools Module is a collection of tools that enables you to interact with the SUSE Cloud Application Platform product itself, providing the commandline client for instance. Access to the SUSE Cloud Application Platform Tools Module is included in your SUSE Linux Enterprise Server subscription. The module has a different lifecycle than SUSE Linux Enterprise Server itself; please check the Release Notes for further details.
+Repositories:
+1. SLE-Module-CAP-Tools15-Debuginfo-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-CAP-Tools/15/x86_64/product_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+2. SLE-Module-CAP-Tools15-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-CAP-Tools/15/x86_64/product/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+3. SLE-Module-CAP-Tools15-Debuginfo-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-CAP-Tools/15/x86_64/update_debug/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+4. SLE-Module-CAP-Tools15-Updates: http://smt-ec2.susecloud.net/repo/SUSE/Updates/SLE-Module-CAP-Tools/15/x86_64/update/?credentials=SMT-http_smt-ec2_susecloud_net (enabled)
+5. SLE-Module-CAP-Tools15-Source-Pool: http://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-CAP-Tools/15/x86_64/product_source/?credentials=SMT-http_smt-ec2_susecloud_net (disabled)
+
+`
+
+	testServiceOutput(t, "../../test/products-sle15.json", expectedOutput,
+		func(buffer *bytes.Buffer, products []Product) {
+			ListProducts(buffer, products, "none")
+		})
 }
