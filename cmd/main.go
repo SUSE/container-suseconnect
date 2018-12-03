@@ -17,38 +17,97 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"time"
 
 	cs "github.com/SUSE/container-suseconnect/pkg/container-suseconnect"
+	"github.com/urfave/cli"
 )
 
 func main() {
+	// Set the basic CLI metadata
+	app := cli.NewApp()
+	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
+	app.Name = "container-suseconnect"
+	app.Version = "2.0.0"
+	app.Usage = "Usage"
+	app.UsageText = "Usage text"
+
+	// Switch the application behavior regarding the basename
+	switch filepath.Base(os.Args[0]) {
+	case "container-suseconnect-zypp":
+		app.Action = runZypperPlugin
+	default:
+		app.Action = listProducts
+	}
+
+	// Set additional actions, which are always available
+	app.Commands = []cli.Command{
+		{
+			Name:    "list-products",
+			Aliases: []string{"l", "lm"},
+			Usage:   "List available products",
+			Action:  listProducts,
+		},
+		{
+			Name:    "list-modules",
+			Aliases: []string{"l", "lm"},
+			Usage:   "List available modules",
+			Action:  listModules,
+		},
+		{
+			Name:    "zypper",
+			Aliases: []string{"z", "zypp"},
+			Usage:   "Run the zypper plugin",
+			Action:  runZypperPlugin,
+		},
+	}
+
+	// Run the application
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func runZypperPlugin(_ *cli.Context) error {
 	log.SetOutput(cs.GetLoggerFile())
 
-	var credentials cs.Credentials
+	credentials := cs.Credentials{}
 	if err := cs.ReadConfiguration(&credentials); err != nil {
-		log.Fatalf(err.Error())
+		return err
 	}
 
 	installedProduct, err := cs.GetInstalledProduct()
 	if err != nil {
-		log.Fatalf(err.Error())
+		return err
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
 
 	var suseConnectData cs.SUSEConnectData
 	if err := cs.ReadConfiguration(&suseConnectData); err != nil {
-		log.Fatalf(err.Error())
+		return err
 	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
 	products, err := cs.RequestProducts(suseConnectData, credentials, installedProduct)
 	if err != nil {
-		log.Fatalf(err.Error())
+		return err
 	}
 
 	for _, product := range products {
 		cs.DumpRepositories(os.Stdout, product)
 	}
+
+	return nil
+}
+
+func listProducts(_ *cli.Context) error {
+	return nil
+}
+
+func listModules(_ *cli.Context) error {
+	return nil
 }
