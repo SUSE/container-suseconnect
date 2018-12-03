@@ -33,8 +33,20 @@ func main() {
 	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
 	app.Name = "container-suseconnect"
 	app.Version = "2.0.0"
-	app.Usage = "Usage"
-	app.UsageText = "Usage text"
+	app.Usage = ""
+	app.UsageText =
+		`This application can be used to retrieve basic metadata about SLE
+   related products and module extensions.
+
+   Please use the 'list-product' subcommand for listing all currently
+   available products including their repositories and a short description.
+
+   Use the 'list-modules' subcommand for listing available modules, where
+   their 'Identifier' can be used to enable them via the ADDITIONAL_MODULES
+   environment variable during container creation/run.
+
+   The 'zypper' subcommand runs the application as zypper plugin and is only
+   intended to use for debugging purposes.`
 
 	// Switch the application behavior regarding the basename
 	switch filepath.Base(os.Args[0]) {
@@ -49,7 +61,7 @@ func main() {
 		{
 			Name:    "list-products",
 			Aliases: []string{"lp"},
-			Usage:   "List all available products",
+			Usage:   "List available products",
 			Action:  runListProducts,
 		},
 		{
