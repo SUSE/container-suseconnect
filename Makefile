@@ -18,4 +18,4 @@ test: deps
 	build/ci/climate -t 80 .
 
 deps:
-	dep ensure
+	go mod vendor

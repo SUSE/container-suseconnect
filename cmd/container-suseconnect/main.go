@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"time"
 
-	cs "github.com/SUSE/container-suseconnect/pkg/container-suseconnect"
+	cs "github.com/SUSE/container-suseconnect/internal/pkg/containersuseconnect"
 	"github.com/urfave/cli"
 )
 
