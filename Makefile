@@ -1,6 +1,8 @@
 GO_VERBOSE := -v
 CS_BUILD_DIR := $(PWD)/build/container-suseconnect
 
+export GO111MODULE=off
+
 ifneq "$(VERBOSE)" "1"
 GO_VERBOSE=
 .SILENT:

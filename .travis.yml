@@ -5,7 +5,7 @@ go:
   - tip
 
 env:
-  - GO111MODULE=on VERBOSE=1
+  - VERBOSE=1
 
 matrix:
   allow_failures:
