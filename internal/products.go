@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package containersuseconnect
 
 import (
 	"crypto/tls"
@@ -42,6 +42,8 @@ type Product struct {
 	Repositories []Repository `json:"repositories"`
 	Extensions   []Product    `json:"extensions"`
 	Recommended  bool         `json:"recommended"`
+	Name         string       `json:"name"`
+	Description  string       `json:"description"`
 }
 
 // Parse the product as expected from the given reader. This function already
@@ -110,7 +112,7 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 // `credentials` parameters are used in order to establish the connection with
 // the registration server. The `installed` parameter contains the product to
 // be requested.
-func requestProducts(data SUSEConnectData, credentials Credentials,
+func RequestProducts(data SUSEConnectData, credentials Credentials,
 	installed InstalledProduct) ([]Product, error) {
 	var products []Product
 	var regCodes []string

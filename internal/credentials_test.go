@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package containersuseconnect
 
 import (
 	"bytes"
@@ -77,7 +77,7 @@ type CredentialsMock struct {
 }
 
 func (mock *CredentialsMock) locations() []string {
-	return []string{"data/credentials.txt"}
+	return []string{"testdata/credentials.txt"}
 }
 
 func (mock *CredentialsMock) onLocationsNotFound() bool {
@@ -100,7 +100,7 @@ func TestIntegrationCredentials(t *testing.T) {
 	var credentials Credentials
 	mock := CredentialsMock{cr: &credentials}
 
-	err := readConfiguration(&mock)
+	err := ReadConfiguration(&mock)
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}

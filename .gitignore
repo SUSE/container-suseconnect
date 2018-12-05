@@ -1,4 +1,4 @@
 *.test
-container-suseconnect
+build/container-suseconnect
 Vagrantfile
 .vagrant

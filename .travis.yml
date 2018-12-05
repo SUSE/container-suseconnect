@@ -4,11 +4,15 @@ go:
   - 1.11.x
   - tip
 
+env:
+  - VERBOSE=1
+
 matrix:
   allow_failures:
     - go: tip
 
 before_script:
   - go get golang.org/x/tools/cmd/cover
+
 script:
   - make test

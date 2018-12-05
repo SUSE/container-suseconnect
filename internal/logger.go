@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package containersuseconnect
 
 import (
 	"errors"
@@ -32,7 +32,7 @@ const logEnv = "SUSECONNECT_LOG_FILE"
 // variable has been set, it will try to output there. Otherwise, it
 // will try to output to the file as given in `defaultLogPath`. If
 // everything fails, it will just output to the standard error channel.
-func getLoggerFile() *os.File {
+func GetLoggerFile() *os.File {
 	// Determine the path to be used.
 	var path string
 	if env := os.Getenv(logEnv); env != "" {
