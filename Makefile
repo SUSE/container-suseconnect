@@ -8,14 +8,14 @@ endif
 
 .PHONY: test
 
-all: deps
+all:
 	rm -rf $(CS_BUILD_DIR)
 	mkdir -p $(CS_BUILD_DIR)
 	GOBIN=$(CS_BUILD_DIR) go install -a $(GO_VERBOSE) ./...
 
-test: deps
+test:
 	go test $(GO_VERBOSE) ./...
 	build/ci/climate -t 80 .
 
-deps:
+mod:
 	go mod vendor
