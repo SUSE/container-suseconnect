@@ -64,6 +64,7 @@ specified through the `SUSECONNECT_LOG_FILE` environment variable are writable,
 then this program will default to the standard error.
 
 ## Example Dockerfiles:
+
 Creating a Custom SLE 12 Image
 
 The following Docker file creates a simple Docker image based on SLE 12:
@@ -74,7 +75,9 @@ FROM suse/sles12:latest
 RUN zypper --gpg-auto-import-keys ref -s
 RUN zypper -n in vim
 ```
+
 When the Docker host machine is registered against an internal SMT server, the Docker image requires the SSL certificate used by SMT:
+
 ```
 FROM suse/sles12:latest
 
@@ -85,16 +88,20 @@ RUN update-ca-certificates
 RUN zypper --gpg-auto-import-keys ref -s
 RUN zypper -n in vim
 ```
+
 Creating a Custom SLE 11 SP3 or SP4 Image
 
 The following Docker file creates a simple Docker image based on SLE 11 SP3:
+
 ```
 FROM suse/sles11sp3:latest
 
 RUN zypper --gpg-auto-import-keys ref -s
 RUN zypper -n in vim
 ```
+
 When the Docker host machine is registered against an internal SMT server, the Docker image requires the SSL certificate used by SMT:
+
 ```
 FROM suse/sles11sp3:latest
 
@@ -109,6 +116,7 @@ RUN zypper -n in vim
 All recommended package modules are enabled by default. It is possible to enable
 additionally non-recommended modules via the `identifier` by setting the
 environment variable `ADDITIONAL_MODULES`:
+
 ```
 FROM registry.suse.com/suse/sle15:latest
 
@@ -117,8 +125,8 @@ ENV ADDITIONAL_MODULES sle-module-desktop-applications,sle-module-development-to
 RUN zypper --gpg-auto-import-keys ref -s
 RUN zypper -n in gvim
 ```
-Examples taken from https://www.suse.com/documentation/sles-12/book_sles_docker/data/customizing_pre-build_images.html
 
+Examples taken from https://www.suse.com/documentation/sles-12/book_sles_docker/data/customizing_pre-build_images.html
 
 # License
 
