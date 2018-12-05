@@ -22,7 +22,7 @@ import (
 type NotFoundProvider struct{}
 
 func (m NotFoundProvider) Location() string {
-	return "../../test/not-found.xml"
+	return "testdata/not-found.xml"
 }
 
 func TestFailNonExistantProduct(t *testing.T) {
@@ -58,7 +58,7 @@ func TestFailNotAllowedProduct(t *testing.T) {
 type BadFormattedProvider struct{}
 
 func (m BadFormattedProvider) Location() string {
-	return "../../test/bad.xml"
+	return "testdata/bad.xml"
 }
 
 func TestFailBadFormattedProduct(t *testing.T) {
@@ -76,7 +76,7 @@ func TestFailBadFormattedProduct(t *testing.T) {
 type MockProvider struct{}
 
 func (m MockProvider) Location() string {
-	return "../../test/installed.xml"
+	return "testdata/installed.xml"
 }
 
 func TestMockProvider(t *testing.T) {

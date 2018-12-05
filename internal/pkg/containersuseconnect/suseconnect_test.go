@@ -66,9 +66,9 @@ var locationShouldBeFound = true
 
 func (mock *SUSEConnectDataMock) locations() []string {
 	if locationShouldBeFound {
-		return []string{"../../test/suseconnect.txt"}
+		return []string{"testdata/suseconnect.txt"}
 	} else {
-		return []string{"../../test/notfound.txt"}
+		return []string{"testdata/notfound.txt"}
 	}
 }
 

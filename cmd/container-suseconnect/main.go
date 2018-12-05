@@ -48,12 +48,16 @@ func main() {
    The 'zypper' subcommand runs the application as zypper plugin and is only
    intended to use for debugging purposes.`
 
-	// Switch the application behavior regarding the basename
+	// Switch the default application behavior in relation to the basename
+	defaultUsageAdditionZypp := ""
+	defaultUsageAdditionListProducts := ""
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
 		app.Action = runZypperPlugin
+		defaultUsageAdditionZypp = " (default)"
 	default:
 		app.Action = runListProducts
+		defaultUsageAdditionListProducts = " (default)"
 	}
 
 	// Set additional actions, which are always available
@@ -61,8 +65,9 @@ func main() {
 		{
 			Name:    "list-products",
 			Aliases: []string{"lp"},
-			Usage:   "List available products",
-			Action:  runListProducts,
+			Usage: fmt.Sprintf("List available products%v",
+				defaultUsageAdditionListProducts),
+			Action: runListProducts,
 		},
 		{
 			Name:    "list-modules",
@@ -73,8 +78,9 @@ func main() {
 		{
 			Name:    "zypper",
 			Aliases: []string{"z", "zypp"},
-			Usage:   "Run the zypper plugin",
-			Action:  runZypperPlugin,
+			Usage: fmt.Sprintf("Run the zypper service plugin%v",
+				defaultUsageAdditionZypp),
+			Action: runZypperPlugin,
 		},
 	}
 

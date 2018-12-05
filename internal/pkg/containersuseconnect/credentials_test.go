@@ -77,7 +77,7 @@ type CredentialsMock struct {
 }
 
 func (mock *CredentialsMock) locations() []string {
-	return []string{"../../test/credentials.txt"}
+	return []string{"testdata/credentials.txt"}
 }
 
 func (mock *CredentialsMock) onLocationsNotFound() bool {

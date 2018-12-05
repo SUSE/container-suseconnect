@@ -5,6 +5,49 @@ and command line interface.
 
 It gives access to repositories during docker build and run using the host machine credentials.
 
+## Command line interface
+
+The application runs as ZYpp service per default if the name of the executable
+is `container-suseconnect-zypp`. In every other case it assumes that a real user
+executes the application. The help output of container-suseconnect shows all
+available commands and indicates which one is the current default:
+
+```
+container-suseconnect -h
+NAME:
+   container-suseconnect
+
+USAGE:
+   This application can be used to retrieve basic metadata about SLES
+   related products and module extensions.
+
+   Please use the 'list-products' subcommand for listing all currently
+   available products including their repositories and a short description.
+
+   Use the 'list-modules' subcommand for listing available modules, where
+   their 'Identifier' can be used to enable them via the ADDITIONAL_MODULES
+   environment variable during container creation/run.
+
+   The 'zypper' subcommand runs the application as zypper plugin and is only
+   intended to use for debugging purposes.
+
+VERSION:
+   2.0.0
+
+COMMANDS:
+     list-products, lp  List available products (default)
+     list-modules, lm   List available modules
+     zypper, z, zypp    Run the zypper service plugin
+     help, h            Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
+
+COPYRIGHT:
+   © 2018 SUSE LCC
+```
+
 ## Logging
 
 By default, this program will log everything into the

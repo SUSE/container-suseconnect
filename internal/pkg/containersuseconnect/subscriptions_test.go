@@ -57,7 +57,7 @@ func TestInvalidJsonForSubscriptions(t *testing.T) {
 }
 
 func TestEmptySubscriptions(t *testing.T) {
-	file, err := os.Open("../../test/empty-subscriptions.json")
+	file, err := os.Open("testdata/empty-subscriptions.json")
 	if err != nil {
 		t.Fatal("Something went wrong when reading the JSON file")
 	}
@@ -73,7 +73,7 @@ func TestEmptySubscriptions(t *testing.T) {
 }
 
 func TestValidSubscriptions(t *testing.T) {
-	file, err := os.Open("../../test/subscriptions.json")
+	file, err := os.Open("testdata/subscriptions.json")
 	if err != nil {
 		t.Fatal("Something went wrong when reading the JSON file")
 	}
@@ -130,7 +130,7 @@ func TestRemoteErrorWhileRequestingRegcodes(t *testing.T) {
 func TestValidRequestForRegcodes(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.Open("../../test/subscriptions.json")
+		file, err := os.Open("testdata/subscriptions.json")
 		if err != nil {
 			fmt.Fprintln(w, "FAIL!")
 			return
@@ -158,7 +158,7 @@ func TestValidRequestForRegcodes(t *testing.T) {
 func TestRequestEmptyRegcodes(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.Open("../../test/empty-subscriptions.json")
+		file, err := os.Open("testdata/empty-subscriptions.json")
 		if err != nil {
 			fmt.Fprintln(w, "FAIL!")
 			return
