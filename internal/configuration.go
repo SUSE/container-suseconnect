@@ -68,7 +68,7 @@ func ReadConfiguration(config Configuration) error {
 		if config.onLocationsNotFound() {
 			return nil
 		}
-		return loggedError("No locations found: %v", config.locations())
+		return loggedError("Warning: SUSE credentials not found: %v - automatic handling of repositories not done.", config.locations())
 	}
 
 	file, err := os.Open(path)
