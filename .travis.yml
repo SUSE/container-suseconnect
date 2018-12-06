@@ -15,4 +15,4 @@ before_script:
   - go get golang.org/x/tools/cmd/cover
 
 script:
-  - make test
+  - make test VERBOSE=1
