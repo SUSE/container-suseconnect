@@ -54,7 +54,10 @@ func TestCredentials(t *testing.T) {
 	if locs[0] != "/etc/zypp/credentials.d/SCCcredentials" {
 		t.Fatal("Wrong location")
 	}
-	if locs[1] != "/run/secrets/credentials.d/SCCcredentials" {
+	if locs[1] != "/run/secrets/SCCcredentials" {
+		t.Fatal("Wrong location")
+	}
+	if locs[2] != "/run/secrets/credentials.d/SCCcredentials" {
 		t.Fatal("Wrong location")
 	}
 

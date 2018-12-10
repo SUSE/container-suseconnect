@@ -128,6 +128,69 @@ RUN zypper -n in gvim
 
 Examples taken from https://www.suse.com/documentation/sles-12/book_sles_docker/data/customizing_pre-build_images.html
 
+### Building images on non SLE distributions
+
+It is possible to build SLE based docker images on other distributions as well.
+For that the following two files from a base SLE system are needed:
+
+- `/etc/SUSEConnect` for the API access point
+- `/etc/zypp/credentials.d/SCCcredentials` for providing the user credentials
+
+These files can be copied from a SLE machine that has been successfully
+registered at the SUSE Customer Center, RMT or SMT.
+
+A Docker version of 18.09 or above is needed to provide a secure way to mount
+the credentials into the image build process. This version can be installed for
+example on LEAP15 (x86_64) via:
+
+```
+> sudo zypper addrepo https://download.opensuse.org/repositories/Virtualization:containers/openSUSE_Leap_15.0/Virtualization:containers.repo
+> sudo zypper in docker-18.09.0_ce-lp150.304.1.x86_64
+```
+
+A `Dockerfile` for building a SLE15 image which contains `go` would then look like
+this:
+
+```
+# syntax=docker/dockerfile:1.0.0-experimental
+FROM registry.suse.com/suse/sle15:latest
+
+ARG ADDITIONAL_MODULES
+RUN --mount=type=secret,id=SUSEConnect,required \
+    --mount=type=secret,id=SCCcredentials,required \
+    zypper -n --gpg-auto-import-keys in go
+```
+
+This file mounts all necessary secrets into the image during the build process
+and removes it afterwards. Please note that the first line of the `Dockerfile`
+is mandatory at the time of writing. Both files `SUSEConnect` and
+`SCCcredentials` needs to be available beside the `Dockerfile`.
+
+After the file creation the image can be built by executing:
+
+```bash
+> export DOCKER_BUILDKIT=1
+> docker build -t sle15-go \
+    --build-arg ADDITIONAL_MODULES=PackageHub \
+    --secret id=SUSEConnect,src=SUSEConnect \
+    --secret id=SCCcredentials,src=SCCcredentials \
+    .
+```
+
+At the time of writing (docker 18.09.0) it is necessary to enable the Docker
+BuildKit by setting the environment variable `DOCKER_BUILDKIT`. The
+`ADDITIONAL_MODULES` are used here to enable all needed repositories. After the
+image has been built the package should be usable within the docker image:
+
+```bash
+> docker run sle15-go go version
+go version go1.9.7 linux/amd64
+```
+
+Please keep in mind that it is not possible to use `container-suseconnect` or
+`zypper` within the container after the build, because the secrets are not
+available any more.
+
 # License
 
 Licensed under the Apache License, Version 2.0. See

@@ -29,6 +29,7 @@ func (cr *Credentials) separator() byte {
 func (cr *Credentials) locations() []string {
 	return []string{
 		"/etc/zypp/credentials.d/SCCcredentials",
+		"/run/secrets/SCCcredentials",
 		"/run/secrets/credentials.d/SCCcredentials",
 	}
 }
