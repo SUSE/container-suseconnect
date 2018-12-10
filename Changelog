@@ -1,3 +1,17 @@
+Mon Dec 10 10:44:06 CET 2018  Sascha Grunert <sgrunert@suse.com>
+
+	* Update to version 2.0.0:
+		- Add command line interface
+		- Add `ADDITIONAL_MODULES` capability to enable further extension
+		modules during image build and run
+		- Add documentation about how to build docker images on non SLE
+		distributions
+		- Improve documentation to clarify how container-suseconnect works in
+		a Dockerfile
+		- Improve error handling on non SLE hosts
+		- Fix bug which makes container-suseconnect work on SLE15 based
+		distributions
+
 Wed Nov 11 15:21:05 CET 2015  Flavio Castelli <fcastelli@suse.com>
 
 	* Update to version 1.1.0:
