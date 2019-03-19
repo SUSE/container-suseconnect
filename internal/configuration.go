@@ -59,7 +59,7 @@ func getLocationPath(locations []string) string {
 	return ""
 }
 
-// Reads the configuration and updates the given object.
+// ReadConfiguration reads the configuration and updates the given object.
 func ReadConfiguration(config Configuration) error {
 	path := getLocationPath(config.locations())
 	if path == "" {

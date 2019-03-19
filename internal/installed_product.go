@@ -81,7 +81,7 @@ func readInstalledProduct(provider ProductProvider) (InstalledProduct, error) {
 	return parseInstalledProduct(xmlFile)
 }
 
-// Get the installed product on a SUSE machine.
+// GetInstalledProduct gets the installed product on a SUSE machine.
 func GetInstalledProduct() (InstalledProduct, error) {
 	var b SUSEProductProvider
 	return readInstalledProduct(b)

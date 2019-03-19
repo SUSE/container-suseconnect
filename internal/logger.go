@@ -28,7 +28,7 @@ var defaultLogPath = "/var/log/suseconnect.log"
 // path.
 const logEnv = "SUSECONNECT_LOG_FILE"
 
-// Returns the output file for the logger. If the `logEnv` environment
+// GetLoggerFile returns the output file for the logger. If the `logEnv` environment
 // variable has been set, it will try to output there. Otherwise, it
 // will try to output to the file as given in `defaultLogPath`. If
 // everything fails, it will just output to the standard error channel.
