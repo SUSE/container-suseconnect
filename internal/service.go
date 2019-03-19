@@ -105,7 +105,7 @@ func ListModules(w io.Writer, products []Product) {
 	}
 }
 
-// ListModules prints the provided `products` slice the provided writer `w` in a
+// ListProducts prints the provided `products` slice the provided writer `w` in a
 // human readable way
 func ListProducts(w io.Writer, products []Product, baseProduct string) {
 	for _, product := range products {
