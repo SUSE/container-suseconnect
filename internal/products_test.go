@@ -110,7 +110,7 @@ func TestFaultyRequestForProduct(t *testing.T) {
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
 	_, err := RequestProducts(data, cr, ip)
-	str := "Get http:///connect/subscriptions/products?arch=&identifier=&version=: http: no Host in request URL"
+	str := "Get http://:***@/connect/systems/subscriptions: http: no Host in request URL"
 	if err == nil || err.Error() != str {
 		t.Fatalf("There should be a proper error: %v", err)
 	}
@@ -118,8 +118,16 @@ func TestFaultyRequestForProduct(t *testing.T) {
 
 func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
+	first_request := true
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "something bad happened", 500)
+		// First request should return 401 to make the function request
+		// products and return 500 in the second request
+		if first_request {
+			http.Error(w, "something bad happened", 401)
+		} else {
+			http.Error(w, "something bad happened", 500)
+		}
+		first_request = false
 	}))
 	defer ts.Close()
 
