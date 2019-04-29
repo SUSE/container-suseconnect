@@ -119,10 +119,10 @@ func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
 	first_request := true
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// First request should return 401 to make the function request
+		// First request should return 404 to make the function request
 		// products and return 500 in the second request
 		if first_request {
-			http.Error(w, "something bad happened", 401)
+			http.Error(w, "something bad happened", 404)
 		} else {
 			http.Error(w, "something bad happened", 500)
 		}
