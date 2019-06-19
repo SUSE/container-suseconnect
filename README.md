@@ -32,7 +32,7 @@ USAGE:
    intended to use for debugging purposes.
 
 VERSION:
-   2.0.0
+   2.1.0
 
 COMMANDS:
      list-products, lp  List available products (default)

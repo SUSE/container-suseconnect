@@ -1,3 +1,9 @@
+Wed Jun 19 14:32:06 CET 2019  Sascha Grunert <sgrunert@suse.com>
+
+	* Update to version 2.1.0:
+		- Fix function comments based on best practices from Effective Go
+		- Interacting with SCC behind proxy and SMT
+
 Mon Dec 10 10:44:06 CET 2018  Sascha Grunert <sgrunert@suse.com>
 
 	* Update to version 2.0.0:
