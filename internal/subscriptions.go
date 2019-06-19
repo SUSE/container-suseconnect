@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -54,6 +55,15 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	if err != nil {
 		return codes, err
 	}
+
+	if resp.StatusCode == 404 {
+		// we cannot requesting regcodes from s SMT server. It does not
+		// has this API. Just return a empty string
+		log.Println("Cannot fetch regcodes. Assuming it is SMT server")
+		codes = append(codes, "")
+		return codes, nil
+	}
+
 	if resp.StatusCode != 200 {
 		return codes,
 			loggedError("Unexpected error while retrieving regcode: %s", resp.Status)

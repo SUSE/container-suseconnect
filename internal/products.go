@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -92,7 +93,8 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 	values.Add("arch", installed.Arch)
 	req.URL.RawQuery = values.Encode()
 	req.URL.Path = "/connect/subscriptions/products"
-	if data.SccURL == sccURLStr {
+	if len(regCode) > 0 {
+		// SMT server does not need regcode
 		req.Header.Add("Authorization", `Token token=`+regCode)
 	}
 
@@ -101,6 +103,13 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 		return products, err
 	}
 	if resp.StatusCode != 200 {
+		dec := json.NewDecoder(resp.Body)
+		var payload map[string]interface{}
+		if err := dec.Decode(&payload); err == nil {
+			if err, ok := payload["error"]; ok {
+				log.Println(err)
+			}
+		}
 		return products,
 			loggedError("Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
 	}
@@ -118,14 +127,9 @@ func RequestProducts(data SUSEConnectData, credentials Credentials,
 	var regCodes []string
 	var err error
 
-	if data.SccURL == sccURLStr {
-		regCodes, err = requestRegcodes(data, credentials)
-		if err != nil {
-			return products, err
-		}
-	} else {
-		// SMT does not have this API and does not need a regcode
-		regCodes = append(regCodes, "")
+	regCodes, err = requestRegcodes(data, credentials)
+	if err != nil {
+		return products, err
 	}
 
 	for _, regCode := range regCodes {
