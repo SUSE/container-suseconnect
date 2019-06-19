@@ -17,6 +17,7 @@ package containersuseconnect
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -59,7 +60,8 @@ func dumpRepositoriesRecursive(
 ) {
 	for _, repo := range product.Repositories {
 		if product.Recommended || dumpAlways ||
-			moduleEnabledInEnv(product.Identifier) {
+			moduleEnabledInEnv(product.Identifier) ||
+			moduleEnabledInProductFiles(product.Identifier) {
 
 			fmt.Fprintf(w, "[%s]\n", repo.Name)
 			fmt.Fprintf(w, "name=%s\n", repo.Description)
@@ -83,6 +85,21 @@ func dumpRepositoriesRecursive(
 func moduleEnabledInEnv(identifier string) bool {
 	for _, i := range strings.Split(os.Getenv("ADDITIONAL_MODULES"), ",") {
 		if identifier == i {
+			return true
+		}
+	}
+	return false
+}
+
+// moduleEnabledInProductFiles returns true if the provided `identifier` is
+// a name of a file in the  /etc/product.d/*.prod, otherwise false.
+func moduleEnabledInProductFiles(identifier string) bool {
+	files, err := ioutil.ReadDir("/etc/products.d")
+	if err != nil {
+		return false
+	}
+	for _, file := range files {
+		if identifier == strings.TrimSuffix(file.Name(), ".prod") {
 			return true
 		}
 	}
