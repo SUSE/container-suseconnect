@@ -19,6 +19,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -99,7 +100,9 @@ func moduleEnabledInProductFiles(identifier string) bool {
 		return false
 	}
 	for _, file := range files {
-		if identifier == strings.TrimSuffix(file.Name(), ".prod") {
+		ext := filepath.Ext(file.Name())
+		if identifier == strings.TrimSuffix(file.Name(), ext) &&
+			file.Mode()&os.ModeSymlink == 0 {
 			return true
 		}
 	}
