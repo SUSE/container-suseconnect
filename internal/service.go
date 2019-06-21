@@ -101,7 +101,8 @@ func moduleEnabledInProductFiles(identifier string) bool {
 	}
 	for _, file := range files {
 		ext := filepath.Ext(file.Name())
-		if identifier == strings.TrimSuffix(file.Name(), ext) &&
+		if ext == ".prod" &&
+			identifier == strings.TrimSuffix(file.Name(), ext) &&
 			file.Mode()&os.ModeSymlink == 0 {
 			return true
 		}
