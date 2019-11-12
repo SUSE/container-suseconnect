@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 // All the information we need from repositories as given by the registration
@@ -58,7 +59,20 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 			loggedError("Can't read product information: %v", err.Error())
 	}
 
+	// Depending on which API was used the JSON we get passed contains
+	// either a list of products ("/connect/subscriptions/products") with
+	// a single element in it or a single product
+	// ("/connect/systems/products").  So we need to Unmarshall() slightly
+	// different for both cases.
 	err = json.Unmarshal(data, &products)
+	if err != nil {
+		var product Product
+		products = nil
+		err = json.Unmarshal(data, &product)
+		if err == nil {
+			products = append(products, product)
+		}
+	}
 	if err != nil {
 		return products,
 			loggedError("Can't read product information: %v - %s", err.Error(), data)
@@ -71,8 +85,8 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 // the registration server. The `installed` parameter contains the product to
 // be requested.
 // This function relies on [/connect/subscriptions/products](https://github.com/SUSE/connect/wiki/SCC-API-%28Implemented%29#product) API.
-func requestProductsFromRegCode(data SUSEConnectData, regCode string,
-	installed InstalledProduct) ([]Product, error) {
+func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
+	credentials Credentials, installed InstalledProduct) ([]Product, error) {
 	var products []Product
 	var err error
 
@@ -92,10 +106,13 @@ func requestProductsFromRegCode(data SUSEConnectData, regCode string,
 	values.Add("version", installed.Version)
 	values.Add("arch", installed.Arch)
 	req.URL.RawQuery = values.Encode()
-	req.URL.Path = "/connect/subscriptions/products"
 	if len(regCode) > 0 {
-		// SMT server does not need regcode
 		req.Header.Add("Authorization", `Token token=`+regCode)
+		req.URL.Path = "/connect/subscriptions/products"
+	} else {
+		req.URL.Path = "/connect/systems/products"
+		auth := url.UserPassword(credentials.Username, credentials.Password)
+		req.URL.User = auth
 	}
 
 	resp, err := client.Do(req)
@@ -133,7 +150,7 @@ func RequestProducts(data SUSEConnectData, credentials Credentials,
 	}
 
 	for _, regCode := range regCodes {
-		p, err := requestProductsFromRegCode(data, regCode, installed)
+		p, err := requestProductsFromRegCodeOrSystem(data, regCode, credentials, installed)
 		if err != nil {
 			var emptyProducts []Product
 			return emptyProducts, err
