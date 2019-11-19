@@ -128,6 +128,20 @@ RUN zypper -n in gvim
 
 Examples taken from https://www.suse.com/documentation/sles-12/book_sles_docker/data/customizing_pre-build_images.html
 
+### Notes about building images on SLE systems registered with RMT or SMT
+
+When the host system used for building the docker images is registered against
+RMT or SMT it is only possible to build containers for the same SLE code base
+as the host system is running on. I.e. if you docker host is a SLE15 system you
+can only build SLE15 based images out of the box.
+
+If you want to build for a different SLE version than what is running on the
+host machine you will need to inject matching credentials for that target release
+into the build. For details on how to achieve that please follow the steps
+outlined in the [Building images on non SLE distributions](#building-images-on-non-sle-distributions)
+section.
+
+
 ### Building images on non SLE distributions
 
 It is possible to build SLE based docker images on other distributions as well.
