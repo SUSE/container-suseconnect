@@ -24,7 +24,7 @@ import (
 	"time"
 
 	cs "github.com/SUSE/container-suseconnect/internal"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -61,7 +61,7 @@ func main() {
 	}
 
 	// Set additional actions, which are always available
-	app.Commands = []cli.Command{
+	app.Commands = cli.Commands{
 		{
 			Name:    "list-products",
 			Aliases: []string{"lp"},
