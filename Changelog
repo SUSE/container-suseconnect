@@ -1,3 +1,10 @@
+Wed Nov 27 16:53:32 CET 2019  Ralf Haferkamp <rhafer@suse.com>
+
+	* Update to version 2.2.0:
+		- Update go version and dependencies
+		- Fix usage with RMT and SMT
+		- parse the /etc/products.d/*.prod files
+
 Wed Jun 19 14:32:06 CET 2019  Sascha Grunert <sgrunert@suse.com>
 
 	* Update to version 2.1.0:
