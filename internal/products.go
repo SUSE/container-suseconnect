@@ -48,6 +48,34 @@ type Product struct {
 	Description  string       `json:"description"`
 }
 
+// Take the "Product" as returned from an RMT and adjust the repository URLs
+// to include a "credentials" parameter. This is somewhat specific to the RMT
+// instances available for Public Cloud on-demand instances, as they need to
+// authenticate to be able to access repositories.
+func fixRepoUrlsForRMT(p *Product) error {
+	for i := range p.Repositories {
+		repourl, err := url.Parse(p.Repositories[i].URL)
+		if err != nil {
+			loggedError("Unable to parse repository URL: %s - %v", p.Repositories[i].URL, err)
+			return err
+		}
+		params := repourl.Query()
+		if params.Get("credentials") == "" {
+			params.Add("credentials", "SCCcredentials")
+		}
+		repourl.RawQuery = params.Encode()
+		p.Repositories[i].URL = repourl.String()
+	}
+
+	// Products can have nested Products (Extensions) handle those recursively
+	for i := range p.Extensions {
+		if err := fixRepoUrlsForRMT(&p.Extensions[i]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Parse the product as expected from the given reader. This function already
 // checks whether the given reader is valid or not.
 func parseProducts(reader io.Reader) ([]Product, error) {
@@ -66,10 +94,14 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 	// different for both cases.
 	err = json.Unmarshal(data, &products)
 	if err != nil {
-		var product Product
 		products = nil
+		// When connected to RMT we only got a single "Product", so let's try
+		// to unmarshall that. (And add a "credential" parameter to it if that
+		// is not present)
+		var product Product
 		err = json.Unmarshal(data, &product)
 		if err == nil {
+			fixRepoUrlsForRMT(&product)
 			products = append(products, product)
 		}
 	}
@@ -110,6 +142,8 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 		req.Header.Add("Authorization", `Token token=`+regCode)
 		req.URL.Path = "/connect/subscriptions/products"
 	} else {
+		// we're connected to a RMT, which does not provide the /connect/subscriptions/products
+		// endpoint. Fallback to "/connect/systems/products" here.
 		req.URL.Path = "/connect/systems/products"
 		auth := url.UserPassword(credentials.Username, credentials.Password)
 		req.URL.User = auth

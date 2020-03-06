@@ -24,27 +24,47 @@ import (
 	"testing"
 )
 
-func productHelper(t *testing.T, product Product) {
+func productHelper(t *testing.T, product Product, expectedVersion string) {
 	if product.ProductType != "base" {
 		t.Fatal("Wrong base for product")
 	}
 	if product.Identifier != "SLES" {
 		t.Fatal("Wrong identifier for product")
 	}
-	if product.Version != "12" {
+	if product.Version != expectedVersion {
 		t.Fatal("Wrong version for product")
 	}
 	if product.Arch != "x86_64" {
 		t.Fatal("Wrong arch for product")
 	}
+}
+
+func productHelperSLE12(t *testing.T, product Product) {
+	productHelper(t, product, "12")
 	if len(product.Repositories) != 4 {
-		t.Fatal("Wrong number of repos")
+		t.Fatalf("Wrong number of repos %v", len(product.Repositories))
 	}
 	if product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
 		t.Fatal("Unexpected value")
 	}
-	if product.Repositories[3].URL != "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug" {
-		t.Fatal("Unexpected value")
+	expectedUrl := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
+	if string(product.Repositories[3].URL) != expectedUrl {
+		t.Fatalf("Unexpected repository URL: %s", product.Repositories[3].URL)
+	}
+}
+
+func productHelperSLE15RMT(t *testing.T, product Product) {
+	productHelper(t, product, "15.1")
+	if len(product.Repositories) != 6 {
+		t.Fatal("Wrong number of repos")
+	}
+	if product.Extensions[0].Repositories[2].Name != "SLE-Module-Basesystem15-SP1-Pool" {
+		t.Fatalf("Unexpected Extension Name: %v", product.Extensions[0].Repositories[2].Name)
+	}
+
+	expectedUrl := "https://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15-SP1/x86_64/product/?credentials=SCCcredentials"
+	if string(product.Extensions[0].Repositories[2].URL) != expectedUrl {
+		t.Fatalf("Unexpected repository URL: %s", product.Extensions[0].Repositories[2].URL)
 	}
 }
 
@@ -88,7 +108,7 @@ func TestValidProduct(t *testing.T) {
 	if len(products) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
 	}
-	productHelper(t, products[0])
+	productHelperSLE12(t, products[0])
 }
 
 // Tests for the requestProduct function.
@@ -164,5 +184,38 @@ func TestValidRequestForProduct(t *testing.T) {
 	if len(products) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
 	}
-	productHelper(t, products[0])
+	productHelperSLE12(t, products[0])
+}
+
+func TestValidRequestForProductUsingRMT(t *testing.T) {
+	// We setup a fake http server that mocks a registration server.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// SMT servers return 404 on this URL
+		if r.URL.Path == "/connect/systems/subscriptions" {
+			http.Error(w, "", http.StatusNotFound)
+		}
+		// The result also looks slightly different
+		resFile := "testdata/products-sle15-rmt.json"
+		file, err := os.Open(resFile)
+		if err != nil {
+			fmt.Fprintln(w, "FAIL!")
+			return
+		}
+		io.Copy(w, file)
+		file.Close()
+	}))
+	defer ts.Close()
+
+	var cr Credentials
+	var ip InstalledProduct
+	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
+
+	products, err := RequestProducts(data, cr, ip)
+	if err != nil {
+		t.Fatal("It should've run just fine...")
+	}
+	if len(products) != 1 {
+		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
+	}
+	productHelperSLE15RMT(t, products[0])
 }
