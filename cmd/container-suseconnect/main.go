@@ -32,7 +32,7 @@ func main() {
 	app := cli.NewApp()
 	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
 	app.Name = "container-suseconnect"
-	app.Version = "2.2.0"
+	app.Version = cs.Version
 	app.Usage = ""
 	app.UsageText =
 		`This application can be used to retrieve basic metadata about SLES
