@@ -108,13 +108,17 @@ func printResponse(params map[string]string) error {
 		return err
 	}
 
-	u, err := url.Parse(cfg.Server)
-	if err != nil {
-		return err
+	u := url.URL{
+		Scheme: "https",
+		Host:   cfg.Server,
+		Path:   params["path"],
 	}
 
 	q := u.Query()
 	for k, v := range params {
+		if k == "path" {
+			continue
+		}
 		q.Add(k, v)
 	}
 	u.RawQuery = q.Encode()
