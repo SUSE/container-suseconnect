@@ -17,7 +17,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"os"
@@ -69,7 +71,18 @@ func parseStdin() (map[string]string, error) {
 	params := make(map[string]string)
 	first := true
 
-	scanner := bufio.NewScanner(os.Stdin)
+	// The zypper plugin protocol is based on STOMP. STOMP messages
+	// are NUL-terminated. So read the entire message first
+	reader := bufio.NewReader(os.Stdin)
+	msg, err := reader.ReadBytes(0)
+	if err != nil && err != io.EOF {
+		return nil, err
+	}
+
+	// Now read the message line by line. URL resolver plugin messages
+	// are just <key>:<value> header lines and don't contain a body.
+	sr := bytes.NewReader(msg)
+	scanner := bufio.NewScanner(sr)
 	for scanner.Scan() {
 		if first {
 			first = false
@@ -109,9 +122,11 @@ func printResponse(params map[string]string) error {
 	log.Printf("Resulting X-Instance-Data: %s", cfg.InstanceData)
 	log.Printf("Resulting URL: %s", u.String())
 
-	fmt.Println("RESOLVEDURL:")
-	fmt.Printf("X-Instance-Data:%s\n", cfg.InstanceData)
-	fmt.Println(u.String())
+	fmt.Printf("RESOLVEDURL\n")
+	// Add an extra emptyline to separate Headers from payload
+	fmt.Printf("X-Instance-Data:%s\n\n", cfg.InstanceData)
+	// Message needs to be NUL-terminated
+	fmt.Printf("%s\000", u.String())
 
 	return nil
 }
