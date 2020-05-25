@@ -61,7 +61,7 @@ func fixRepoUrlsForRMT(p *Product) error {
 		}
 		params := repourl.Query()
 		if params.Get("credentials") == "" {
-			params.Add("credentials", "SCCcredentials")
+			params["credentials"] = []string{"SCCcredentials"}
 		}
 		repourl.RawQuery = params.Encode()
 		p.Repositories[i].URL = repourl.String()
