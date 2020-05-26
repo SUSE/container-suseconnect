@@ -57,7 +57,7 @@ def main():
     main entry point of the program.
     """
 
-    ip = os.getenv("SUSE_BUILD_IP", '0.0.0.0')
+    ip = os.getenv("SUSE_BUILD_IP", '127.0.0.1')
     port = int(os.getenv("SUSE_BUILD_PORT", 7956))
 
     with socketserver.TCPServer((ip, port), SuseBuildTCPServer) as server:
