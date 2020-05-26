@@ -21,6 +21,7 @@ import os
 import socketserver
 import json
 
+
 class SuseBuildTCPServer(socketserver.BaseRequestHandler):
     """
     A TCP server that submits configuration details that are relevant to
@@ -35,24 +36,21 @@ class SuseBuildTCPServer(socketserver.BaseRequestHandler):
         instance_data = bytes(get_instance_data(get_config()), 'utf-8')
         return base64.b64encode(instance_data).decode()
 
-    def smt_fqdn(self):
-        """
-        Get the FQDN from the SMT being used.
-        """
-
-        return get_smt().get_FQDN()
-
     def handle(self):
         """
         This is the method being called for each request. It returns a JSON response
         with all the relevant information.
         """
 
+        smt = get_smt()
         resp = {
             'instance-data': self.instance_data_header(),
-            "server": self.smt_fqdn()
+            "server-fqdn": smt.get_FQDN(),
+            'server-ip': smt.get_ipv4(),
+            'ca': smt.get_cert()
         }
         self.request.sendall(bytes(json.dumps(resp), 'utf-8'))
+
 
 def main():
     """
@@ -64,6 +62,7 @@ def main():
 
     with socketserver.TCPServer((ip, port), SuseBuildTCPServer) as server:
         server.serve_forever()
+
 
 if __name__ == "__main__":
     main()

@@ -110,7 +110,7 @@ func printResponse(params map[string]string) error {
 
 	u := url.URL{
 		Scheme: "https",
-		Host:   cfg.Server,
+		Host:   cfg.ServerFqdn,
 		Path:   params["path"],
 	}
 

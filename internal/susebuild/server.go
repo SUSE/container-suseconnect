@@ -27,7 +27,9 @@ import (
 // suse-build server running on the host.
 type SuseBuildConfig struct {
 	InstanceData string `json:"instance-data"`
-	Server       string `json:"server"`
+	ServerFqdn   string `json:"server-fqdn"`
+	ServerIp     string `json:"server-ip"`
+	Ca           string `json:"ca"`
 }
 
 // suseBuildAddress returns a string containing the full address of the TCP
