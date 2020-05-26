@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cloudregister.registerutils import get_instance_data, get_smt, get_config
+from cloudregister.registerutils import get_instance_data, get_smt, get_config, get_credentials
 import base64
 import os
 import socketserver
@@ -36,6 +36,14 @@ class SuseBuildTCPServer(socketserver.BaseRequestHandler):
         instance_data = bytes(get_instance_data(get_config()), 'utf-8')
         return base64.b64encode(instance_data).decode()
 
+    def get_credentials(self):
+        """
+        Returns the SCC credentials as stored in
+        /etc/zypp/credentials.d/SCCcredentials
+        """
+        credentials_file_path = '/etc/zypp/credentials.d/SCCcredentials'
+        return get_credentials(credentials_file_path)
+
     def handle(self):
         """
         This is the method being called for each request. It returns a JSON response
@@ -43,10 +51,13 @@ class SuseBuildTCPServer(socketserver.BaseRequestHandler):
         """
 
         smt = get_smt()
+        username, password = self.get_credentials()
         resp = {
             'instance-data': self.instance_data_header(),
             "server-fqdn": smt.get_FQDN(),
             'server-ip': smt.get_ipv4(),
+            'username': username,
+            'password': password,
             'ca': smt.get_cert()
         }
         self.request.sendall(bytes(json.dumps(resp), 'utf-8'))

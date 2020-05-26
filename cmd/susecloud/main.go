@@ -112,19 +112,14 @@ func printResponse(params map[string]string) error {
 		Scheme: "https",
 		Host:   cfg.ServerFqdn,
 		Path:   params["path"],
+		User:   url.UserPassword(cfg.Username, "XXXX"),
 	}
-
-	q := u.Query()
-	for k, v := range params {
-		if k == "path" {
-			continue
-		}
-		q.Add(k, v)
-	}
-	u.RawQuery = q.Encode()
 
 	log.Printf("Resulting X-Instance-Data: %s", cfg.InstanceData)
 	log.Printf("Resulting URL: %s", u.String())
+
+	// Add user info to URL to avoid password appearing in logs
+	u.User = url.UserPassword(cfg.Username, cfg.Password)
 
 	fmt.Printf("RESOLVEDURL\n")
 	// Add an extra emptyline to separate Headers from payload

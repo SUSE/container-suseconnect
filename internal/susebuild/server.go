@@ -29,6 +29,8 @@ type SuseBuildConfig struct {
 	InstanceData string `json:"instance-data"`
 	ServerFqdn   string `json:"server-fqdn"`
 	ServerIp     string `json:"server-ip"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
 	Ca           string `json:"ca"`
 }
 
@@ -87,7 +89,7 @@ func ReadConfigFromServer() (*SuseBuildConfig, error) {
 
 	// After testing it turns out that we need something a bit over 2048, but
 	// let's leave some extra room just in case...
-	reply := make([]byte, 4096)
+	reply := make([]byte, 8192)
 
 	n, err := conn.Read(reply)
 	if err != nil {
