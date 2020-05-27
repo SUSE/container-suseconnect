@@ -108,6 +108,11 @@ func printResponse(params map[string]string) error {
 		return err
 	}
 
+	// Safe the contents of the CA file if it doesn't exist already.
+	if err = susebuild.SafeCAFile(cfg.Ca); err != nil {
+		return err
+	}
+
 	u := url.URL{
 		Scheme: "https",
 		Host:   cfg.ServerFqdn,
