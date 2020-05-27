@@ -24,6 +24,7 @@ import (
 	"time"
 
 	cs "github.com/SUSE/container-suseconnect/internal"
+	"github.com/SUSE/container-suseconnect/internal/susebuild"
 	"github.com/urfave/cli/v2"
 )
 
@@ -94,8 +95,33 @@ func main() {
 // environment
 func requestProducts() ([]cs.Product, error) {
 	credentials := cs.Credentials{}
-	if err := cs.ReadConfiguration(&credentials); err != nil {
-		return nil, err
+	suseConnectData := cs.SUSEConnectData{}
+
+	// read config from "susebuild" service, if that service is running,
+	// we're running inside a public cloud instance in that case
+	// read config from "mounted" files if the service is not available
+	if err := susebuild.ServerReachable(); err == nil {
+		log.Printf("susebuild reachable, reading config\n")
+		cloudCfg, err := susebuild.ReadConfigFromServer()
+		if err != nil {
+			return nil, err
+		}
+		credentials.Username = cloudCfg.Username
+		credentials.Password = cloudCfg.Password
+		credentials.InstanceData = cloudCfg.InstanceData
+		suseConnectData.SccURL = "https://" + cloudCfg.ServerFqdn
+		suseConnectData.Insecure = false
+
+		if cloudCfg.Ca != "" {
+			susebuild.SafeCAFile(cloudCfg.Ca)
+		}
+	} else {
+		if err := cs.ReadConfiguration(&credentials); err != nil {
+			return nil, err
+		}
+		if err := cs.ReadConfiguration(&suseConnectData); err != nil {
+			return nil, err
+		}
 	}
 
 	installedProduct, err := cs.GetInstalledProduct()
@@ -103,11 +129,6 @@ func requestProducts() ([]cs.Product, error) {
 		return nil, err
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
-
-	var suseConnectData cs.SUSEConnectData
-	if err := cs.ReadConfiguration(&suseConnectData); err != nil {
-		return nil, err
-	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
 	products, err := cs.RequestProducts(suseConnectData, credentials, installedProduct)
