@@ -42,7 +42,7 @@ func GetLoggerFile() *os.File {
 	}
 
 	// If it's writable, use the given file, otherwise use os.Stderr.
-	f, err := os.Create(path)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
 	if err == nil {
 		return f
 	}
