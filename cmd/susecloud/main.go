@@ -32,8 +32,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const regionServerConfig = "/etc/regionserverclnt.cfg"
-
 func main() {
 	app := cli.NewApp()
 	app.Copyright = fmt.Sprintf("(c) %d SUSE LCC", time.Now().Year())
