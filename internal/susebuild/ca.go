@@ -19,6 +19,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -44,7 +45,8 @@ func updateNeeded(contents string) bool {
 }
 
 // SafeCAFile creates a certificate file into the right location if it isn't
-// already there.
+// already there. This function will call `update-ca-certificates` whenever the
+// CA file has been updated.
 func SafeCAFile(contents string) error {
 	if !updateNeeded(contents) {
 		return nil
@@ -57,6 +59,12 @@ func SafeCAFile(contents string) error {
 	// Safe the file
 	err := ioutil.WriteFile(caFilePath, []byte(contents), 0644)
 	if err != nil {
+		return err
+	}
+
+	// Execute `update-ca-certificates` now.
+	cmd := exec.Command("update-ca-certificates")
+	if err = cmd.Run(); err != nil {
 		return err
 	}
 
