@@ -50,16 +50,29 @@ class SuseBuildTCPServer(socketserver.BaseRequestHandler):
         with all the relevant information.
         """
 
-        smt = get_smt()
+        try:
+            smt = get_smt()
+        except AttributeError as err:
+            # This is the exception being raised whenever there is something
+            # really off about the SMT (because of the internal implementation).
+            print(
+                "Catched exception while obtaining SMT server: {0}".format(err))
+            smt = None
+
         username, password = self.get_credentials()
-        resp = {
-            'instance-data': self.instance_data_header(),
-            "server-fqdn": smt.get_FQDN(),
-            'server-ip': smt.get_ipv4(),
-            'username': username,
-            'password': password,
-            'ca': smt.get_cert()
-        }
+
+        if smt is None:
+            resp = {}
+        else:
+            resp = {
+                'instance-data': self.instance_data_header(),
+                "server-fqdn": smt.get_FQDN(),
+                'server-ip': smt.get_ipv4(),
+                'username': username,
+                'password': password,
+                'ca': smt.get_cert()
+            }
+
         self.request.sendall(bytes(json.dumps(resp), 'utf-8'))
 
 

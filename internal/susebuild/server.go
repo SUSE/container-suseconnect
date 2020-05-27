@@ -17,6 +17,7 @@ package susebuild
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -99,6 +100,13 @@ func ReadConfigFromServer() (*SuseBuildConfig, error) {
 	data := &SuseBuildConfig{}
 	if err := json.Unmarshal(reply[:n], &data); err != nil {
 		return nil, err
+	}
+
+	// If something is really bad on the server side, it may return an empty
+	// response. Catch this error here.
+	if data.InstanceData == "" && data.ServerFqdn == "" &&
+		data.ServerIp == "" && data.Ca == "" {
+		return nil, errors.New("Empty response from the server")
 	}
 	return data, nil
 }
