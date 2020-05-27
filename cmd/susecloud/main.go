@@ -18,6 +18,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -106,6 +107,11 @@ func printResponse(params map[string]string) error {
 	cfg, err := susebuild.ReadConfigFromServer()
 	if err != nil {
 		return err
+	}
+
+	// Error out if we have no information on the credentials.
+	if cfg.Username == "" && cfg.Password == "" {
+		return errors.New("No credentials given")
 	}
 
 	// Safe the contents of the CA file if it doesn't exist already.
