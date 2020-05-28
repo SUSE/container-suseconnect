@@ -115,6 +115,7 @@ func requestProducts() ([]cs.Product, error) {
 		if cloudCfg.Ca != "" {
 			susebuild.SafeCAFile(cloudCfg.Ca)
 		}
+		susebuild.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIp)
 	} else {
 		if err := cs.ReadConfiguration(&credentials); err != nil {
 			return nil, err
