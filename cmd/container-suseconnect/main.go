@@ -56,6 +56,9 @@ func main() {
 	case "container-suseconnect-zypp":
 		app.Action = runZypperPlugin
 		defaultUsageAdditionZypp = " (default)"
+	case "susecloud":
+		app.Action = runZypperUrlResolver
+		defaultUsageAdditionZypp = " (default)"
 	default:
 		app.Action = runListProducts
 		defaultUsageAdditionListProducts = " (default)"
@@ -138,6 +141,23 @@ func requestProducts() ([]cs.Product, error) {
 	}
 
 	return products, nil
+}
+
+// Read the arguments as given by zypper on the stdin and print into stdout the
+// response to be used.
+func runZypperUrlResolver(_ *cli.Context) error {
+	log.SetOutput(cs.GetLoggerFile())
+
+	if err := susebuild.ServerReachable(); err != nil {
+		return fmt.Errorf("Could not reach build server from the host: %v", err)
+	}
+
+	input, err := susebuild.ParseStdin()
+	if err != nil {
+		return fmt.Errorf("Could not parse input: %s", err)
+	}
+
+	return susebuild.PrintResponse(input)
 }
 
 // runZypperPlugin runs the application in zypper plugin mode, which dumps

@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Zypper url resolver plugin for /susecloud schemes.
-package main
+package susebuild
 
 import (
 	"bufio"
@@ -25,48 +24,11 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
-
-	cs "github.com/SUSE/container-suseconnect/internal"
-	"github.com/SUSE/container-suseconnect/internal/susebuild"
-	"github.com/urfave/cli/v2"
 )
-
-func main() {
-	app := cli.NewApp()
-	app.Copyright = fmt.Sprintf("(c) %d SUSE LCC", time.Now().Year())
-	app.Name = "susecloud"
-	app.Version = cs.Version
-	app.Usage = ""
-	app.UsageText =
-		`Zypper URL resolver plugin that transforms plugin:/susecloud urls into
-	their proper counterparts inside of a SUSE container.`
-	app.Action = runZypperUrlResolver
-
-	log.SetOutput(cs.GetLoggerFile())
-	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
-	}
-}
-
-// The main action: reads the arguments as given by zypper on the stdin, and
-// prints into stdout the response to be used.
-func runZypperUrlResolver(_ *cli.Context) error {
-	if err := susebuild.ServerReachable(); err != nil {
-		return fmt.Errorf("Could not reach build server from the host: %v", err)
-	}
-
-	input, err := parseStdin()
-	if err != nil {
-		return fmt.Errorf("Could not parse input: %s", err)
-	}
-
-	return printResponse(input)
-}
 
 // Parses the standard input as given by zypper and returns a map with the
 // parsed parameters.
-func parseStdin() (map[string]string, error) {
+func ParseStdin() (map[string]string, error) {
 	params := make(map[string]string)
 	first := true
 
@@ -101,8 +63,8 @@ func parseStdin() (map[string]string, error) {
 }
 
 // Prints to standard output with the format expected by zypper.
-func printResponse(params map[string]string) error {
-	cfg, err := susebuild.ReadConfigFromServer()
+func PrintResponse(params map[string]string) error {
+	cfg, err := ReadConfigFromServer()
 	if err != nil {
 		return err
 	}
@@ -113,7 +75,7 @@ func printResponse(params map[string]string) error {
 	}
 
 	// Safe the contents of the CA file if it doesn't exist already.
-	if err = susebuild.SafeCAFile(cfg.Ca); err != nil {
+	if err = SafeCAFile(cfg.Ca); err != nil {
 		return err
 	}
 
