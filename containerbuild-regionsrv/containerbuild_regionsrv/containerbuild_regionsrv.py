@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- encoding: utf-8 -*-
 
-# Copyright (c) 2019 SUSE LLC.
+# Copyright (c) 2020 SUSE LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import socketserver
 import json
 
 
-class SuseBuildTCPServer(socketserver.BaseRequestHandler):
+class ContainerBuildTCPServer(socketserver.BaseRequestHandler):
     """
     A TCP server that submits configuration details that are relevant to
     SUSEConnect.
@@ -84,7 +84,7 @@ def main():
     ip = os.getenv("SUSE_BUILD_IP", '127.0.0.1')
     port = int(os.getenv("SUSE_BUILD_PORT", 7956))
 
-    with socketserver.TCPServer((ip, port), SuseBuildTCPServer) as server:
+    with socketserver.TCPServer((ip, port), ContainerBuildTCPServer) as server:
         server.serve_forever()
 
 

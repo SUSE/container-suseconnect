@@ -36,16 +36,16 @@ def version():
 
 
 setup(
-    name="suse-build",
+    name="containerbuild-regionsrv",
     version=version(),
     author="SUSE Containers Team",
     author_email="containers@suse.com",
-    description="Build server that provides the needed data for SUSEConnect",
-    long_description="TCP server that listens on a given port and that replies back with the needed information for authenticating into SMT servers.",
+    description="Services that provides the needed data from cloud-regionsrv for container-suseconnect",
+    long_description="TCP server that listens on a given port and replies back with the needed information for authenticating into SMT servers running in the Public Clouds.",
     license="Apache License 2.0",
     keywords="SUSEConnect",
     url="https://github.com/SUSE/container-suseconnect",
-    packages=['suse_build'],
+    packages=['containerbuild-regionsrv'],
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache License 2.0',
@@ -53,7 +53,7 @@ setup(
     ], data_files=[],
     entry_points={
         'console_scripts': [
-            'suse-build = suse_build.suse_build:main'
+            'containerbuild-regionsrv = containerbuild_regionsrv.containerbuild_regionsrv:main'
         ]
     }
 )
