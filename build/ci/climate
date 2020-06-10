@@ -122,7 +122,7 @@ if ($cover =~ /coverage:\s?(.+)%/) {
             exit(1);
         }
     } else {
-        print "The tests are covering the $fl% of this package!\n";
+        print "The tests are covering the $fl% of the package $pkg.\n";
     }
     if ($opts{'o'}) {
         `go tool cover -html=c.out`;
@@ -131,7 +131,3 @@ if ($cover =~ /coverage:\s?(.+)%/) {
 } else {
     print "No tests found in package '$pkg'.\n";
 }
-
-# Fmt tool
-chdir("$base") or die $!;
-print `gofmt $fmtparams -d=true $pkg`;
