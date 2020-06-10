@@ -23,8 +23,17 @@ import (
 	"strings"
 )
 
-const hashFilePath = "/etc/pki/susebuild.md5"
-const caFilePath = "/etc/pki/trust/anchors/susebuild.pem"
+var (
+	hashFilePath = "/etc/pki/susebuild.md5"
+	caFilePath   = "/etc/pki/trust/anchors/susebuild.pem"
+)
+
+// commander is a very simple interface that just implements the `Run` function,
+// which returns an error. This interface has merely been introduced to ease up
+// testing.
+type commander interface {
+	Run() error
+}
 
 // Returns true if the CA file has to be updated, false otherwise.
 func updateNeeded(contents string) bool {
@@ -41,18 +50,18 @@ func updateNeeded(contents string) bool {
 	hash := md5.New()
 	io.WriteString(hash, contents)
 
-	return sum == string(hash.Sum(nil))
+	return sum != string(hash.Sum(nil))
 }
 
-// SafeCAFile creates a certificate file into the right location if it isn't
-// already there. This function will call `update-ca-certificates` whenever the
-// CA file has been updated.
-func SafeCAFile(contents string) error {
+// safeCAFile implements `SafeCAFile` by assuming a `commander` type will be
+// given.
+func safeCAFile(cmd commander, contents string) error {
 	if !updateNeeded(contents) {
 		return nil
 	}
 
 	// Nuke everything before populating things back again.
+
 	_ = os.Remove(hashFilePath)
 	_ = os.Remove(caFilePath)
 
@@ -63,7 +72,6 @@ func SafeCAFile(contents string) error {
 	}
 
 	// Execute `update-ca-certificates` now.
-	cmd := exec.Command("update-ca-certificates")
 	if err = cmd.Run(); err != nil {
 		return err
 	}
@@ -74,4 +82,12 @@ func SafeCAFile(contents string) error {
 	_ = ioutil.WriteFile(hashFilePath, hash.Sum(nil), 0644)
 
 	return nil
+}
+
+// SafeCAFile creates a certificate file into the right location if it isn't
+// already there. This function will call `update-ca-certificates` whenever the
+// CA file has been updated.
+func SafeCAFile(contents string) error {
+	cmd := exec.Command("update-ca-certificates")
+	return safeCAFile(cmd, contents)
 }

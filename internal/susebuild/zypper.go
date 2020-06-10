@@ -79,10 +79,15 @@ func PrintResponse(params map[string]string) error {
 		return err
 	}
 
+	printFromConfiguration(params["path"], cfg)
+	return nil
+}
+
+func printFromConfiguration(path string, cfg *SuseBuildConfig) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   cfg.ServerFqdn,
-		Path:   params["path"],
+		Path:   path,
 		User:   url.UserPassword(cfg.Username, "XXXX"),
 	}
 
@@ -98,5 +103,4 @@ func PrintResponse(params map[string]string) error {
 	// Message needs to be NUL-terminated
 	fmt.Printf("%s\000", u.String())
 
-	return nil
 }

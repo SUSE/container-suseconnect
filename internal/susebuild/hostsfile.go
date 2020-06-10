@@ -22,12 +22,13 @@ import (
 	"strings"
 )
 
-func UpdateHostsFile(hostname string, ip string) error {
-	hostsfile := "/etc/hosts"
+var hostsFile = "/etc/hosts"
 
-	content, err := ioutil.ReadFile(hostsfile)
+// UpdateHostsFile updates the hosts file with the given hostname and IP.
+func UpdateHostsFile(hostname string, ip string) error {
+	content, err := ioutil.ReadFile(hostsFile)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Can't read %s file: %v", hostsfile, err.Error()))
+		return errors.New(fmt.Sprintf("Can't read %s file: %v", hostsFile, err.Error()))
 	}
 
 	lines := strings.Split(string(content), "\n")
@@ -50,9 +51,9 @@ func UpdateHostsFile(hostname string, ip string) error {
 		newcontent += fmt.Sprintf("%s %s %s\n", ip, hostname, shorthost)
 	}
 
-	err = ioutil.WriteFile(hostsfile, []byte(newcontent), 0644)
+	err = ioutil.WriteFile(hostsFile, []byte(newcontent), 0644)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Can't write %s file: %v", hostsfile, err.Error()))
+		return errors.New(fmt.Sprintf("Can't write %s file: %v", hostsFile, err.Error()))
 	}
 
 	return nil
