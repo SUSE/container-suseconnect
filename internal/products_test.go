@@ -119,7 +119,7 @@ func TestInvalidRequestForProduct(t *testing.T) {
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
 	_, err := RequestProducts(data, cr, ip)
-	if err == nil || err.Error() != "Could not connect with registration server: parse :: missing protocol scheme\n" {
+	if err == nil || !strings.Contains(err.Error(), "missing protocol scheme") {
 		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
