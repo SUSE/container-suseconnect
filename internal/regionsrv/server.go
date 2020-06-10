@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Utilities for talking to a suse-build server.
-package susebuild
+package regionsrv
 
 import (
 	"encoding/json"

@@ -24,7 +24,7 @@ import (
 	"time"
 
 	cs "github.com/SUSE/container-suseconnect/internal"
-	"github.com/SUSE/container-suseconnect/internal/susebuild"
+	"github.com/SUSE/container-suseconnect/internal/regionsrv"
 	"github.com/urfave/cli/v2"
 )
 
@@ -103,9 +103,9 @@ func requestProducts() ([]cs.Product, error) {
 	// read config from "susebuild" service, if that service is running,
 	// we're running inside a public cloud instance in that case
 	// read config from "mounted" files if the service is not available
-	if err := susebuild.ServerReachable(); err == nil {
+	if err := regionsrv.ServerReachable(); err == nil {
 		log.Printf("susebuild reachable, reading config\n")
-		cloudCfg, err := susebuild.ReadConfigFromServer()
+		cloudCfg, err := regionsrv.ReadConfigFromServer()
 		if err != nil {
 			return nil, err
 		}
@@ -116,9 +116,9 @@ func requestProducts() ([]cs.Product, error) {
 		suseConnectData.Insecure = false
 
 		if cloudCfg.Ca != "" {
-			susebuild.SafeCAFile(cloudCfg.Ca)
+			regionsrv.SafeCAFile(cloudCfg.Ca)
 		}
-		susebuild.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIp)
+		regionsrv.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIp)
 	} else {
 		if err := cs.ReadConfiguration(&credentials); err != nil {
 			return nil, err
@@ -148,16 +148,16 @@ func requestProducts() ([]cs.Product, error) {
 func runZypperUrlResolver(_ *cli.Context) error {
 	log.SetOutput(cs.GetLoggerFile())
 
-	if err := susebuild.ServerReachable(); err != nil {
+	if err := regionsrv.ServerReachable(); err != nil {
 		return fmt.Errorf("Could not reach build server from the host: %v", err)
 	}
 
-	input, err := susebuild.ParseStdin()
+	input, err := regionsrv.ParseStdin()
 	if err != nil {
 		return fmt.Errorf("Could not parse input: %s", err)
 	}
 
-	return susebuild.PrintResponse(input)
+	return regionsrv.PrintResponse(input)
 }
 
 // runZypperPlugin runs the application in zypper plugin mode, which dumps
