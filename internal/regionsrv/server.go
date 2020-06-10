@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Utilities for talking to a suse-build server.
+// Package regionsrv implements all the utilities to interact with on-deman
+// Public clouds.
 package regionsrv
 
 import (
@@ -29,7 +30,7 @@ import (
 type SuseBuildConfig struct {
 	InstanceData string `json:"instance-data"`
 	ServerFqdn   string `json:"server-fqdn"`
-	ServerIp     string `json:"server-ip"`
+	ServerIP     string `json:"server-ip"`
 	Username     string `json:"username"`
 	Password     string `json:"password"`
 	Ca           string `json:"ca"`
@@ -53,7 +54,7 @@ func suseBuildAddress() string {
 	return fmt.Sprintf("%s:%s", ip, port)
 }
 
-// ServerAvailable returns true if the suse-build server is reachable, false
+// ServerReachable returns true if the suse-build server is reachable, false
 // otherwise.
 func ServerReachable() error {
 	addr, err := net.ResolveTCPAddr("tcp", suseBuildAddress())
@@ -105,7 +106,7 @@ func ReadConfigFromServer() (*SuseBuildConfig, error) {
 	// If something is really bad on the server side, it may return an empty
 	// response. Catch this error here.
 	if data.InstanceData == "" && data.ServerFqdn == "" &&
-		data.ServerIp == "" && data.Ca == "" {
+		data.ServerIP == "" && data.Ca == "" {
 		return nil, errors.New("Empty response from the server")
 	}
 	return data, nil

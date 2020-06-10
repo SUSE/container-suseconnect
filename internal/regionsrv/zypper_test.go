@@ -126,7 +126,7 @@ func TestPrintFromConfiguration(t *testing.T) {
 			printFromConfiguration("/path", &SuseBuildConfig{
 				InstanceData: "instance data",
 				ServerFqdn:   "test.fqdn.com",
-				ServerIp:     "1.1.1.1",
+				ServerIP:     "1.1.1.1",
 				Username:     "banjo",
 				Password:     "kazooie",
 				Ca:           "ca",

@@ -26,8 +26,8 @@ import (
 	"strings"
 )
 
-// Parses the standard input as given by zypper and returns a map with the
-// parsed parameters.
+// ParseStdin parses the standard input as given by zypper and returns a map
+// with the parsed parameters.
 func ParseStdin() (map[string]string, error) {
 	params := make(map[string]string)
 	first := true
@@ -62,7 +62,7 @@ func ParseStdin() (map[string]string, error) {
 	return params, nil
 }
 
-// Prints to standard output with the format expected by zypper.
+// PrintResponse prints to standard output with the format expected by zypper.
 func PrintResponse(params map[string]string) error {
 	cfg, err := ReadConfigFromServer()
 	if err != nil {

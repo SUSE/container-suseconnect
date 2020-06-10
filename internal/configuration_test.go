@@ -137,7 +137,7 @@ func (cfg ErrorAfterParseConfiguration) setValues(key, value string) {
 }
 
 func (cfg ErrorAfterParseConfiguration) afterParseCheck() error {
-	return errors.New("I'm grumpy, and I want to error!")
+	return errors.New("I'm grumpy, and I want to error")
 }
 
 func TestParseFailAfterCheck(t *testing.T) {
@@ -145,7 +145,7 @@ func TestParseFailAfterCheck(t *testing.T) {
 
 	str := strings.NewReader("")
 	err := parse(cfg, str)
-	if err == nil || err.Error() != "I'm grumpy, and I want to error!" {
+	if err == nil || err.Error() != "I'm grumpy, and I want to error" {
 		t.Fatal("Wrong error")
 	}
 }

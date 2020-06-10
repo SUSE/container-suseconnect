@@ -57,7 +57,7 @@ func main() {
 		app.Action = runZypperPlugin
 		defaultUsageAdditionZypp = " (default)"
 	case "susecloud":
-		app.Action = runZypperUrlResolver
+		app.Action = runZypperURLResolver
 		defaultUsageAdditionZypp = " (default)"
 	default:
 		app.Action = runListProducts
@@ -118,7 +118,7 @@ func requestProducts() ([]cs.Product, error) {
 		if cloudCfg.Ca != "" {
 			regionsrv.SafeCAFile(cloudCfg.Ca)
 		}
-		regionsrv.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIp)
+		regionsrv.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIP)
 	} else {
 		if err := cs.ReadConfiguration(&credentials); err != nil {
 			return nil, err
@@ -145,7 +145,7 @@ func requestProducts() ([]cs.Product, error) {
 
 // Read the arguments as given by zypper on the stdin and print into stdout the
 // response to be used.
-func runZypperUrlResolver(_ *cli.Context) error {
+func runZypperURLResolver(_ *cli.Context) error {
 	log.SetOutput(cs.GetLoggerFile())
 
 	if err := regionsrv.ServerReachable(); err != nil {

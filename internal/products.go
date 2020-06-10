@@ -24,8 +24,8 @@ import (
 	"net/url"
 )
 
-// All the information we need from repositories as given by the registration
-// server.
+// Repository has all the information we need from repositories as given by the
+// registration server.
 type Repository struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -34,7 +34,7 @@ type Repository struct {
 	Enabled     bool   `json:"enabled"`
 }
 
-// All the information we need from product as given by the registration
+// Product has all the information we need from product as given by the registration
 // server. It contains a slice of repositories in it.
 type Product struct {
 	ProductType  string       `json:"product_type"`
@@ -168,10 +168,10 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 	return parseProducts(resp.Body)
 }
 
-// Request product information to the registration server. The `data` and the
-// `credentials` parameters are used in order to establish the connection with
-// the registration server. The `installed` parameter contains the product to
-// be requested.
+// RequestProducts fetches product information to the registration server. The
+// `data` and the `credentials` parameters are used in order to establish the
+// connection with the registration server. The `installed` parameter contains
+// the product to be requested.
 func RequestProducts(data SUSEConnectData, credentials Credentials,
 	installed InstalledProduct) ([]Product, error) {
 	var products []Product

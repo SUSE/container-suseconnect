@@ -22,6 +22,7 @@ const (
 	sccURLStr = "https://scc.suse.com"
 )
 
+// SUSEConnectData has all the relevant data from SUSEConnect.
 type SUSEConnectData struct {
 	SccURL   string
 	Insecure bool
