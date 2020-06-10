@@ -97,3 +97,27 @@ func TestUpdateHostsFileSuccessful(t *testing.T) {
 		t.Fatalf("%v\nshould contain\n%v", string(after), expected)
 	}
 }
+
+func TestUpdateHostsFileUpdateExistingEntry(t *testing.T) {
+	hostsFile = copyHostFileToTemp(0644)
+	if hostsFile == "" {
+		t.Fatalf("Failed to initialize hosts file")
+	}
+
+	defer os.Remove(hostsFile)
+
+	err := UpdateHostsFile("ip6-localnet", "1.1.1.1")
+	if err != nil {
+		t.Fatalf("Expected a nil error, got: %v", err)
+	}
+
+	after, err := ioutil.ReadFile(hostsFile)
+	if err != nil {
+		t.Fatalf("Expected a nil error, got: %v", err)
+	}
+
+	expected := "1.1.1.1 ip6-localnet ip6-localnet"
+	if !strings.Contains(string(after), expected) {
+		t.Fatalf("%v\nshould contain\n%v", string(after), expected)
+	}
+}
