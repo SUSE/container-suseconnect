@@ -47,8 +47,8 @@ func productHelperSLE12(t *testing.T, product Product) {
 	if product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
 		t.Fatal("Unexpected value")
 	}
-	expectedUrl := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
-	if string(product.Repositories[3].URL) != expectedUrl {
+	expectedURL := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
+	if string(product.Repositories[3].URL) != expectedURL {
 		t.Fatalf("Unexpected repository URL: %s", product.Repositories[3].URL)
 	}
 }
@@ -62,8 +62,8 @@ func productHelperSLE15RMT(t *testing.T, product Product) {
 		t.Fatalf("Unexpected Extension Name: %v", product.Extensions[0].Repositories[2].Name)
 	}
 
-	expectedUrl := "https://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15-SP1/x86_64/product/?credentials=SCCcredentials"
-	if string(product.Extensions[0].Repositories[2].URL) != expectedUrl {
+	expectedURL := "https://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15-SP1/x86_64/product/?credentials=SCCcredentials"
+	if string(product.Extensions[0].Repositories[2].URL) != expectedURL {
 		t.Fatalf("Unexpected repository URL: %s", product.Extensions[0].Repositories[2].URL)
 	}
 }
@@ -119,7 +119,7 @@ func TestInvalidRequestForProduct(t *testing.T) {
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
 	_, err := RequestProducts(data, cr, ip)
-	if err == nil || err.Error() != "Could not connect with registration server: parse :: missing protocol scheme\n" {
+	if err == nil || !strings.Contains(err.Error(), "missing protocol scheme") {
 		t.Fatalf("There should be a proper error: %v", err)
 	}
 }
@@ -137,16 +137,16 @@ func TestFaultyRequestForProduct(t *testing.T) {
 
 func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	// We setup a fake http server that mocks a registration server.
-	first_request := true
+	firstRequest := true
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// First request should return 404 to make the function request
 		// products and return 500 in the second request
-		if first_request {
+		if firstRequest {
 			http.Error(w, "something bad happened", 404)
 		} else {
 			http.Error(w, "something bad happened", 500)
 		}
-		first_request = false
+		firstRequest = false
 	}))
 	defer ts.Close()
 

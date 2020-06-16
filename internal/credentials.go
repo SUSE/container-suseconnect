@@ -18,8 +18,9 @@ import "log"
 
 // Credentials holds the host credentials
 type Credentials struct {
-	Username string
-	Password string
+	Username     string
+	Password     string
+	InstanceData string
 }
 
 func (cr *Credentials) separator() byte {

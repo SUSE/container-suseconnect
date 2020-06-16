@@ -30,15 +30,17 @@ type ProductProvider interface {
 	Location() string
 }
 
-// Implements the ProductProvider interface so we can fetch the location of the
-// SUSE baseproduct file.
+// SUSEProductProvider implements the ProductProvider interface so we can fetch
+// the location of the SUSE baseproduct file.
 type SUSEProductProvider struct{}
 
+// Location returns the location of the base product provider.
 func (b SUSEProductProvider) Location() string {
 	return "/etc/products.d/baseproduct"
 }
 
-// Contains all the info that we need from the installed product.
+// InstalledProduct contains all the info that we need from the installed
+// product.
 type InstalledProduct struct {
 	Identifier string `xml:"name"`
 	Version    string `xml:"version"`

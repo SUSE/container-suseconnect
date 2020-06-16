@@ -8,9 +8,10 @@ It gives access to repositories during docker build and run using the host machi
 ## Command line interface
 
 The application runs as ZYpp service per default if the name of the executable
-is `container-suseconnect-zypp`. In every other case it assumes that a real user
-executes the application. The help output of container-suseconnect shows all
-available commands and indicates which one is the current default:
+is `container-suseconnect-zypp`. It will run as a ZYpp URL resolver if the name
+of the executable is `susecloud`. In every other case it assumes that a real
+user executes the application. The help output of container-suseconnect shows
+all available commands and indicates which one is the current default:
 
 ```
 container-suseconnect -h

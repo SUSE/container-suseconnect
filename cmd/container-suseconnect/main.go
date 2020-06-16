@@ -24,6 +24,7 @@ import (
 	"time"
 
 	cs "github.com/SUSE/container-suseconnect/internal"
+	"github.com/SUSE/container-suseconnect/internal/regionsrv"
 	"github.com/urfave/cli/v2"
 )
 
@@ -32,7 +33,7 @@ func main() {
 	app := cli.NewApp()
 	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
 	app.Name = "container-suseconnect"
-	app.Version = "2.2.0"
+	app.Version = cs.Version
 	app.Usage = ""
 	app.UsageText =
 		`This application can be used to retrieve basic metadata about SLES
@@ -54,6 +55,9 @@ func main() {
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
 		app.Action = runZypperPlugin
+		defaultUsageAdditionZypp = " (default)"
+	case "susecloud":
+		app.Action = runZypperURLResolver
 		defaultUsageAdditionZypp = " (default)"
 	default:
 		app.Action = runListProducts
@@ -94,8 +98,34 @@ func main() {
 // environment
 func requestProducts() ([]cs.Product, error) {
 	credentials := cs.Credentials{}
-	if err := cs.ReadConfiguration(&credentials); err != nil {
-		return nil, err
+	suseConnectData := cs.SUSEConnectData{}
+
+	// read config from "susebuild" service, if that service is running,
+	// we're running inside a public cloud instance in that case
+	// read config from "mounted" files if the service is not available
+	if err := regionsrv.ServerReachable(); err == nil {
+		log.Printf("susebuild reachable, reading config\n")
+		cloudCfg, err := regionsrv.ReadConfigFromServer()
+		if err != nil {
+			return nil, err
+		}
+		credentials.Username = cloudCfg.Username
+		credentials.Password = cloudCfg.Password
+		credentials.InstanceData = cloudCfg.InstanceData
+		suseConnectData.SccURL = "https://" + cloudCfg.ServerFqdn
+		suseConnectData.Insecure = false
+
+		if cloudCfg.Ca != "" {
+			regionsrv.SafeCAFile(cloudCfg.Ca)
+		}
+		regionsrv.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIP)
+	} else {
+		if err := cs.ReadConfiguration(&credentials); err != nil {
+			return nil, err
+		}
+		if err := cs.ReadConfiguration(&suseConnectData); err != nil {
+			return nil, err
+		}
 	}
 
 	installedProduct, err := cs.GetInstalledProduct()
@@ -103,11 +133,6 @@ func requestProducts() ([]cs.Product, error) {
 		return nil, err
 	}
 	log.Printf("Installed product: %v\n", installedProduct)
-
-	var suseConnectData cs.SUSEConnectData
-	if err := cs.ReadConfiguration(&suseConnectData); err != nil {
-		return nil, err
-	}
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
 	products, err := cs.RequestProducts(suseConnectData, credentials, installedProduct)
@@ -116,6 +141,23 @@ func requestProducts() ([]cs.Product, error) {
 	}
 
 	return products, nil
+}
+
+// Read the arguments as given by zypper on the stdin and print into stdout the
+// response to be used.
+func runZypperURLResolver(_ *cli.Context) error {
+	log.SetOutput(cs.GetLoggerFile())
+
+	if err := regionsrv.ServerReachable(); err != nil {
+		return fmt.Errorf("Could not reach build server from the host: %v", err)
+	}
+
+	input, err := regionsrv.ParseStdin()
+	if err != nil {
+		return fmt.Errorf("Could not parse input: %s", err)
+	}
+
+	return regionsrv.PrintResponse(input)
 }
 
 // runZypperPlugin runs the application in zypper plugin mode, which dumps

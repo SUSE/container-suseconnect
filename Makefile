@@ -1,5 +1,6 @@
 GO_VERBOSE := -v
 CS_BUILD_DIR := $(PWD)/build/container-suseconnect
+PROJECT := github.com/SUSE/container-suseconnect
 
 export GO111MODULE=auto
 
@@ -8,16 +9,29 @@ GO_VERBOSE=
 .SILENT:
 endif
 
-.PHONY: test
-
 all:
 	rm -rf $(CS_BUILD_DIR)
 	mkdir -p $(CS_BUILD_DIR)
 	GOBIN=$(CS_BUILD_DIR) go install -ldflags='-w -s' -a $(GO_VERBOSE) ./...
 
-test:
+.PHONY: test
+test: test-unit validate-go
+
+.PHONY: test-unit
+test-unit:
 	go test $(GO_VERBOSE) ./...
-	build/ci/climate -t 80 .
+
+.PHONY: validate-go
+validate-go:
+	build/ci/climate -t 80 -o internal
+	build/ci/climate -t 80 -o internal/regionsrv
+
+	@which gofmt >/dev/null 2>/dev/null || (echo "ERROR: gofmt not found." && false)
+	test -z "$$(gofmt -s -l . | grep -vE '^vendor/' | tee /dev/stderr)"
+	@type golint    >/dev/null 2>/dev/null || (echo "ERROR: golint not found." && false)
+	test -z "$$(golint $$(go list $(PROJECT)/... | grep -vE '^vendor/') 2>&1 | tee /dev/stderr)"
+	@go doc cmd/vet >/dev/null 2>/dev/null || (echo "ERROR: go vet not found." && false)
+	test -z "$$(go vet $$(go list $(PROJECT)/... | grep -vE '^vendor/') 2>&1 | tee /dev/stderr)"
 
 mod:
 	export GO111MODULE=on \

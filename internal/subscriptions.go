@@ -24,6 +24,7 @@ import (
 	"net/url"
 )
 
+// Subscription has all the information that we need for SLE subscriptions.
 type Subscription struct {
 	RegCode string `json:"regcode"`
 }
@@ -72,12 +73,12 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	subscriptions, err := parseSubscriptions(resp.Body)
 	if err != nil {
 		return codes, err
-	} else {
-		for _, subscription := range subscriptions {
-			codes = append(codes, subscription.RegCode)
-		}
-		return codes, err
 	}
+
+	for _, subscription := range subscriptions {
+		codes = append(codes, subscription.RegCode)
+	}
+	return codes, err
 }
 
 // Parse the product as expected from the given reader. This function already
@@ -87,19 +88,15 @@ func parseSubscriptions(reader io.Reader) ([]Subscription, error) {
 
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return subscriptions,
-			loggedError("Can't read subscriptions information: %v", err.Error())
+		return subscriptions, loggedError("Can't read subscriptions information: %v", err.Error())
 	}
 
 	err = json.Unmarshal(data, &subscriptions)
 	if err != nil {
-		return subscriptions,
-			loggedError("Can't read subscription: %v", err.Error())
+		return subscriptions, loggedError("Can't read subscription: %v", err.Error())
 	}
 	if len(subscriptions) == 0 {
-		return subscriptions,
-			loggedError("Got 0 subscriptions")
-	} else {
-		return subscriptions, nil
+		return subscriptions, loggedError("Got 0 subscriptions")
 	}
+	return subscriptions, nil
 }
