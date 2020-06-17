@@ -83,7 +83,7 @@ func PrintResponse(params map[string]string) error {
 	return nil
 }
 
-func printFromConfiguration(path string, cfg *SuseBuildConfig) {
+func printFromConfiguration(path string, cfg *ContainerBuildConfig) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   cfg.ServerFqdn,

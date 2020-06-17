@@ -32,7 +32,7 @@ type testServer struct {
 	server       net.Listener
 	bootstrapped chan bool
 	badResponse  bool
-	response     SuseBuildConfig
+	response     ContainerBuildConfig
 }
 
 // run this testServer by taking the mocking attributes into account.
@@ -119,7 +119,7 @@ func TestEmptyResponseFromServer(t *testing.T) {
 	withSuppressedLog(func() {
 		ts := &testServer{
 			bootstrapped: make(chan bool, 1),
-			response:     SuseBuildConfig{},
+			response:     ContainerBuildConfig{},
 		}
 		defer ts.close()
 
@@ -137,7 +137,7 @@ func TestValidResponse(t *testing.T) {
 	withSuppressedLog(func() {
 		ts := &testServer{
 			bootstrapped: make(chan bool, 1),
-			response: SuseBuildConfig{
+			response: ContainerBuildConfig{
 				InstanceData: "instance data",
 			},
 		}

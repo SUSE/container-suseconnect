@@ -24,8 +24,8 @@ import (
 )
 
 var (
-	hashFilePath = "/etc/pki/susebuild.md5"
-	caFilePath   = "/etc/pki/trust/anchors/susebuild.pem"
+	hashFilePath = "/etc/pki/containerbuild-regionsrv.md5"
+	caFilePath   = "/etc/pki/trust/anchors/containerbuild-regionsrv.pem"
 )
 
 // commander is a very simple interface that just implements the `Run` function,

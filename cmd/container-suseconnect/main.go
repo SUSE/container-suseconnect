@@ -100,11 +100,11 @@ func requestProducts() ([]cs.Product, error) {
 	credentials := cs.Credentials{}
 	suseConnectData := cs.SUSEConnectData{}
 
-	// read config from "susebuild" service, if that service is running,
-	// we're running inside a public cloud instance in that case
-	// read config from "mounted" files if the service is not available
+	// read config from "containerbuild-regionsrv" service, if that service is
+	// running, we're running inside a public cloud instance in that case read
+	// config from "mounted" files if the service is not available
 	if err := regionsrv.ServerReachable(); err == nil {
-		log.Printf("susebuild reachable, reading config\n")
+		log.Printf("containerbuild-regionsrv reachable, reading config\n")
 		cloudCfg, err := regionsrv.ReadConfigFromServer()
 		if err != nil {
 			return nil, err

@@ -25,9 +25,9 @@ import (
 	"os"
 )
 
-// SuseBuildConfig contains all the data that is available through the
-// suse-build server running on the host.
-type SuseBuildConfig struct {
+// ContainerBuildConfig contains all the data that is available through the
+// containerbuild-regionsrv server running on the host.
+type ContainerBuildConfig struct {
 	InstanceData string `json:"instance-data"`
 	ServerFqdn   string `json:"server-fqdn"`
 	ServerIP     string `json:"server-ip"`
@@ -36,17 +36,17 @@ type SuseBuildConfig struct {
 	Ca           string `json:"ca"`
 }
 
-// suseBuildAddress returns a string containing the full address of the TCP
-// server. You may tweak this by providing `SUSE_BUILD_IP` and/or
-// `SUSE_BUILD_PORT`, otherwise `0.0.0.0` and `7956` are taken as defaults for
+// containerBuildSrvAddress returns a string containing the full address of the TCP
+// server. You may tweak this by providing `CONTAINER_BUILD_IP` and/or
+// `CONTAINER_BUILD_PORT`, otherwise `0.0.0.0` and `7956` are taken as defaults for
 // the IP and the port respectively.
-func suseBuildAddress() string {
-	ip := os.Getenv("SUSE_BUILD_IP")
+func containerBuildSrvAddress() string {
+	ip := os.Getenv("CONTAINER_BUILD_IP")
 	if ip == "" {
 		ip = "0.0.0.0"
 	}
 
-	port := os.Getenv("SUSE_BUILD_PORT")
+	port := os.Getenv("CONTAINER_BUILD_PORT")
 	if port == "" {
 		port = "7956"
 	}
@@ -54,10 +54,10 @@ func suseBuildAddress() string {
 	return fmt.Sprintf("%s:%s", ip, port)
 }
 
-// ServerReachable returns true if the suse-build server is reachable, false
-// otherwise.
+// ServerReachable returns true if the containerbuild-regionsrv server is
+// reachable, false otherwise.
 func ServerReachable() error {
-	addr, err := net.ResolveTCPAddr("tcp", suseBuildAddress())
+	addr, err := net.ResolveTCPAddr("tcp", containerBuildSrvAddress())
 	if err != nil {
 		return err
 	}
@@ -71,11 +71,11 @@ func ServerReachable() error {
 	return nil
 }
 
-// ReadConfigFromServer performs a request agains the suse-build server running
-// in the host, and it parses the given response so it can be used as a
-// SuseBuildConfig.
-func ReadConfigFromServer() (*SuseBuildConfig, error) {
-	addr, err := net.ResolveTCPAddr("tcp", suseBuildAddress())
+// ReadConfigFromServer performs a request agains the containerbuild-regionsrv
+// server running in the host, and it parses the given response so it can be
+// used as a ContainerBuildConfig.
+func ReadConfigFromServer() (*ContainerBuildConfig, error) {
+	addr, err := net.ResolveTCPAddr("tcp", containerBuildSrvAddress())
 	log.Printf("Trying to reach suse build server at '%v'", addr.String())
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func ReadConfigFromServer() (*SuseBuildConfig, error) {
 	}
 
 	defer conn.Close()
-	log.Printf("Reading from suse build server...")
+	log.Printf("Reading from containerbuild-regionsrv ...")
 
 	// After testing it turns out that we need something a bit over 2048, but
 	// let's leave some extra room just in case...
@@ -98,7 +98,7 @@ func ReadConfigFromServer() (*SuseBuildConfig, error) {
 		return nil, err
 	}
 
-	data := &SuseBuildConfig{}
+	data := &ContainerBuildConfig{}
 	if err := json.Unmarshal(reply[:n], &data); err != nil {
 		return nil, err
 	}
