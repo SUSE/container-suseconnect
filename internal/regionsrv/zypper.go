@@ -91,7 +91,7 @@ func printFromConfiguration(path string, cfg *ContainerBuildConfig) {
 		User:   url.UserPassword(cfg.Username, "XXXX"),
 	}
 
-	log.Printf("Resulting X-Instance-Data: %s", cfg.InstanceData)
+	log.Print("Received X-Instance-Data")
 	log.Printf("Resulting URL: %s", u.String())
 
 	// Add user info to URL to avoid password appearing in logs
