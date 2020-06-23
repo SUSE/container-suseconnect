@@ -1,6 +1,7 @@
 # container-suseconnect [![Build Status](https://travis-ci.org/SUSE/container-suseconnect.svg?branch=master)](https://travis-ci.org/SUSE/container-suseconnect) [![GoDoc](https://godoc.org/github.com/SUSE/container-suseconnect?status.png)](https://godoc.org/github.com/SUSE/container-suseconnect)
 
-container-suseconnect is a [ZYpp service](http://doc.opensuse.org/projects/libzypp/HEAD/zypp-plugins.html)
+container-suseconnect provides a [ZYpp service plugin](https://doc.opensuse.org/projects/libzypp/HEAD/zypp-plugins.html#plugin-services),
+a [ZYpp url resolver plugin](https://doc.opensuse.org/projects/libzypp/HEAD/zypp-plugins.html#plugin-url-resolver)
 and command line interface.
 
 It gives access to repositories during docker build and run using the host machine credentials.
@@ -62,7 +63,7 @@ about this [here](https://docs.docker.com/userguide/dockervolumes/).
 
 Finally, if neither the default `/var/log/suseconnect.log` file nor the file
 specified through the `SUSECONNECT_LOG_FILE` environment variable are writable,
-then this program will default to the standard error.
+then this program will log to the standard error output by default.
 
 ## Example Dockerfiles:
 
@@ -129,7 +130,7 @@ RUN zypper -n in gvim
 
 Examples taken from https://www.suse.com/documentation/sles-12/book_sles_docker/data/customizing_pre-build_images.html
 
-### Notes about building images on SLE systems registered with RMT or SMT
+### Building images on SLE systems registered with RMT or SMT
 
 When the host system used for building the docker images is registered against
 RMT or SMT it is only possible to build containers for the same SLE code base
@@ -142,6 +143,49 @@ into the build. For details on how to achieve that please follow the steps
 outlined in the [Building images on non SLE distributions](#building-images-on-non-sle-distributions)
 section.
 
+### Building images on-demand SLE instances in the public cloud
+
+When building container images on SLE instances that were launched as so-called
+"on-demand" or "pay as you go" instances on a Public Cloud (as AWS, GCE or Azure)
+some additional steps have to be performed.
+
+For installing packages and updates the "on-demand" public cloud instance are
+connected to a public cloud specific update infrastructure which is based around
+RMT servers operated by SUSE on the various Public Cloud Providers.
+
+To be able access this update infrastructure instances need to perform
+additional steps to locate the required services and authenticate with them.
+More details on this are outlined in a
+[Blog Series on suse.com starting here](https://suse.com/c/a-new-update-infrastructure-for-the-public-cloud/).
+
+In order to build containers on this type of instances a new service
+was introduced, that service is called `containerbuild-regionsrv` and will be
+available in the public cloud images provided through the Marketplaces of the
+various Public Cloud Providers. So before building an image this service has
+to be started on the public cloud instance
+
+```
+systemctl start containerbuild-regionsrv
+```
+
+In order to have it started automatically (e.g. after reboot) please use:
+
+```
+systemctl enable  containerbuild-regionsrv
+```
+
+The zypper plugins provided by `container-suseconnect` will then connect to this
+service for getting authentication details and information about which update
+server to talk to. In order for that to work the container has to be built with
+host networking enabled. I.e. you need to call `docker build` with `--network host`:
+
+```
+docker build --network host <builddir>
+```
+
+Since update infrastructure in the Public Clouds is based upon RMT, the same
+restrictions with regard to building SLE images for SLE versions differing from
+the SLE version of the host apply here as well. (See above)
 
 ### Building images on non SLE distributions
 

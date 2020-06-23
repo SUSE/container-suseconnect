@@ -82,7 +82,7 @@ func TestPrintResponseBadResponseFromServer(t *testing.T) {
 	withSuppressedLog(func() {
 		ts := &testServer{
 			bootstrapped: make(chan bool, 1),
-			response:     SuseBuildConfig{},
+			response:     ContainerBuildConfig{},
 		}
 		defer ts.close()
 
@@ -102,7 +102,7 @@ func TestPrintResponseNoCredentials(t *testing.T) {
 	withSuppressedLog(func() {
 		ts := &testServer{
 			bootstrapped: make(chan bool, 1),
-			response: SuseBuildConfig{
+			response: ContainerBuildConfig{
 				InstanceData: "instance data",
 			},
 		}
@@ -123,7 +123,7 @@ func TestPrintResponseNoCredentials(t *testing.T) {
 func TestPrintFromConfiguration(t *testing.T) {
 	withSuppressedLog(func() {
 		res := capture.All(func() {
-			printFromConfiguration("/path", &SuseBuildConfig{
+			printFromConfiguration("/path", &ContainerBuildConfig{
 				InstanceData: "instance data",
 				ServerFqdn:   "test.fqdn.com",
 				ServerIP:     "1.1.1.1",

@@ -83,7 +83,7 @@ func PrintResponse(params map[string]string) error {
 	return nil
 }
 
-func printFromConfiguration(path string, cfg *SuseBuildConfig) {
+func printFromConfiguration(path string, cfg *ContainerBuildConfig) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   cfg.ServerFqdn,
@@ -91,7 +91,7 @@ func printFromConfiguration(path string, cfg *SuseBuildConfig) {
 		User:   url.UserPassword(cfg.Username, "XXXX"),
 	}
 
-	log.Printf("Resulting X-Instance-Data: %s", cfg.InstanceData)
+	log.Print("Received X-Instance-Data")
 	log.Printf("Resulting URL: %s", u.String())
 
 	// Add user info to URL to avoid password appearing in logs
