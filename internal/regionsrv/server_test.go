@@ -109,8 +109,8 @@ func TestReadConfigFromServerBadResponse(t *testing.T) {
 		<-ts.bootstrapped
 
 		_, err := ReadConfigFromServer()
-		if !strings.Contains(err.Error(), "unexpected end of JSON input") {
-			t.Fatalf("should be a 'unexpected end of JSON input', got '%v'", err)
+		if !strings.Contains(err.Error(), "invalid character '{' looking for beginning of object key string") {
+			t.Fatalf("should be a 'invalid character '{' looking for beginning of object key string', got '%v'", err)
 		}
 	})
 }

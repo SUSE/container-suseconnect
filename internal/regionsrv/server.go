@@ -89,17 +89,10 @@ func ReadConfigFromServer() (*ContainerBuildConfig, error) {
 	defer conn.Close()
 	log.Printf("Reading from containerbuild-regionsrv ...")
 
-	// After testing it turns out that we need something a bit over 2048, but
-	// let's leave some extra room just in case...
-	reply := make([]byte, 8192)
-
-	n, err := conn.Read(reply)
-	if err != nil {
-		return nil, err
-	}
+	d := json.NewDecoder(conn)
 
 	data := &ContainerBuildConfig{}
-	if err := json.Unmarshal(reply[:n], &data); err != nil {
+	if err := d.Decode(&data); err != nil {
 		return nil, err
 	}
 
