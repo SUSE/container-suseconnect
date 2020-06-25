@@ -1,3 +1,11 @@
+Wed Jun 67 13:08:02 CET 2020  Ralf Haferkamp <rhafer@suse.com>
+
+	* Update to version 2.3.0:
+		- Introduce "containerbuild-regionsrv" support and add
+		"susecloud" zypper url-resolver plugin to allow building SLE
+		containers on public cloud on-demand instances
+		- Fix usage with RMT when repositories require authentication
+
 Wed Nov 27 16:53:32 CET 2019  Ralf Haferkamp <rhafer@suse.com>
 
 	* Update to version 2.2.0:
