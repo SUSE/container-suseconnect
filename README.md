@@ -230,7 +230,7 @@ After the file creation the image can be built by executing:
 ```bash
 > export DOCKER_BUILDKIT=1
 > docker build -t sle15-go \
-    --build-arg ADDITIONAL_MODULES=PackageHub \
+    --build-arg ADDITIONAL_MODULES=sle-module-development-tools \
     --secret id=SUSEConnect,src=SUSEConnect \
     --secret id=SCCcredentials,src=SCCcredentials \
     .
