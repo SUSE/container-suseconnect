@@ -17,7 +17,7 @@ all available commands and indicates which one is the current default:
 ```
 container-suseconnect -h
 NAME:
-   container-suseconnect
+   container-suseconnect - Access zypper repositories from within containers
 
 USAGE:
    This application can be used to retrieve basic metadata about SLES
@@ -28,26 +28,27 @@ USAGE:
 
    Use the 'list-modules' subcommand for listing available modules, where
    their 'Identifier' can be used to enable them via the ADDITIONAL_MODULES
-   environment variable during container creation/run.
+   environment variable during container creation/run. When enabling multiple
+   modules the identifiers are expected to be comma-separated.
 
    The 'zypper' subcommand runs the application as zypper plugin and is only
    intended to use for debugging purposes.
 
 VERSION:
-   2.1.0
+   2.3.0
 
 COMMANDS:
-     list-products, lp  List available products (default)
-     list-modules, lm   List available modules
-     zypper, z, zypp    Run the zypper service plugin
-     help, h            Shows a list of commands or help for one command
+   list-products, lp  List available products (default)
+   list-modules, lm   List available modules
+   zypper, z, zypp    Run the zypper service plugin
+   help, h            Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --help, -h     show help
-   --version, -v  print the version
+   --help, -h     show help (default: false)
+   --version, -v  print the version (default: false)
 
 COPYRIGHT:
-   © 2018 SUSE LCC
+   © 2020 SUSE LCC
 ```
 
 ## Logging
@@ -117,7 +118,8 @@ RUN zypper -n in vim
 
 All recommended package modules are enabled by default. It is possible to enable
 additionally non-recommended modules via the `identifier` by setting the
-environment variable `ADDITIONAL_MODULES`:
+environment variable `ADDITIONAL_MODULES`. When enabling multiple modules the
+identifiers are expected to be comma-separated:
 
 ```
 FROM registry.suse.com/suse/sle15:latest
