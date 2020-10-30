@@ -44,7 +44,8 @@ func main() {
 
    Use the 'list-modules' subcommand for listing available modules, where
    their 'Identifier' can be used to enable them via the ADDITIONAL_MODULES
-   environment variable during container creation/run.
+   environment variable during container creation/run. When enabling multiple
+   modules the identifiers are expected to be comma-separated.
 
    The 'zypper' subcommand runs the application as zypper plugin and is only
    intended to use for debugging purposes.`
