@@ -54,10 +54,10 @@ func (cr *Credentials) setValues(key, value string) {
 
 func (cr *Credentials) afterParseCheck() error {
 	if cr.Username == "" {
-		return loggedError("Can't find username")
+		return loggedError(GetCredentialsError, "Can't find username")
 	}
 	if cr.Password == "" {
-		return loggedError("Can't find password")
+		return loggedError(GetCredentialsError, "Can't find password")
 	}
 	return nil
 }

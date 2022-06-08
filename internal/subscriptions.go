@@ -44,7 +44,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
 		return codes,
-			loggedError("Could not connect with registration server: %v\n", err)
+			loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
 	}
 
 	req.URL.Path = "/connect/systems/subscriptions"
@@ -67,7 +67,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 
 	if resp.StatusCode != 200 {
 		return codes,
-			loggedError("Unexpected error while retrieving regcode: %s", resp.Status)
+			loggedError(SubscriptionServerError, "Unexpected error while retrieving regcode: %s", resp.Status)
 	}
 
 	subscriptions, err := parseSubscriptions(resp.Body)
@@ -88,15 +88,15 @@ func parseSubscriptions(reader io.Reader) ([]Subscription, error) {
 
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return subscriptions, loggedError("Can't read subscriptions information: %v", err.Error())
+		return subscriptions, loggedError(SubscriptionError, "Can't read subscriptions information: %v", err.Error())
 	}
 
 	err = json.Unmarshal(data, &subscriptions)
 	if err != nil {
-		return subscriptions, loggedError("Can't read subscription: %v", err.Error())
+		return subscriptions, loggedError(SubscriptionError, "Can't read subscription: %v", err.Error())
 	}
 	if len(subscriptions) == 0 {
-		return subscriptions, loggedError("Got 0 subscriptions")
+		return subscriptions, loggedError(SubscriptionError, "Got 0 subscriptions")
 	}
 	return subscriptions, nil
 }

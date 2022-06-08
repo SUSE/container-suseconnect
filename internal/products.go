@@ -56,7 +56,7 @@ func fixRepoUrlsForRMT(p *Product) error {
 	for i := range p.Repositories {
 		repourl, err := url.Parse(p.Repositories[i].URL)
 		if err != nil {
-			loggedError("Unable to parse repository URL: %s - %v", p.Repositories[i].URL, err)
+			loggedError(RepositoryError, "Unable to parse repository URL: %s - %v", p.Repositories[i].URL, err)
 			return err
 		}
 		params := repourl.Query()
@@ -84,7 +84,7 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return products,
-			loggedError("Can't read product information: %v", err.Error())
+			loggedError(RepositoryError, "Can't read product information: %v", err.Error())
 	}
 
 	// Depending on which API was used the JSON we get passed contains
@@ -107,7 +107,7 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 	}
 	if err != nil {
 		return products,
-			loggedError("Can't read product information: %v - %s", err.Error(), data)
+			loggedError(RepositoryError, "Can't read product information: %v - %s", err.Error(), data)
 	}
 	return products, nil
 }
@@ -130,7 +130,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
 		return products,
-			loggedError("Could not connect with registration server: %v\n", err)
+			loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
 	}
 
 	values := req.URL.Query()
@@ -162,7 +162,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 			}
 		}
 		return products,
-			loggedError("Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
+			loggedError(SubscriptionServerError, "Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
 	}
 
 	return parseProducts(resp.Body)
