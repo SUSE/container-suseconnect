@@ -252,6 +252,17 @@ Please keep in mind that it is not possible to use `container-suseconnect` or
 `zypper` within the container after the build, because the secrets are not
 available any more.
 
+
+### Alternative when using podman as container runtime
+
+When using `podman` as container runtime, you can add the following lines to `/etc/containers/mounts.conf` (when building as `root`) or `~/.config/containers/mounts.conf` (when building as regular user):
+```
+<path_on_host>/SUSEConnect:/etc/SUSEConnect
+<path_on_host>/SCCcredentials:/etc/zypp/credentials.d/SCCcredentials
+```
+
+No further change are needed in `Dockerfile`. This change is already part of `podman` package on SLES host.
+
 # License
 
 Licensed under the Apache License, Version 2.0. See
