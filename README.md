@@ -261,7 +261,7 @@ When using `podman` as container runtime, add the following to `/etc/containers/
 <path_on_host>/SCCcredentials:/etc/zypp/credentials.d/SCCcredentials
 ```
 
-No further change are needed in `Dockerfile`. This change is already part of `podman` package on SLES host.
+No further change are needed in `Dockerfile`.
 
 # License
 
