@@ -253,7 +253,7 @@ Please keep in mind that it is not possible to use `container-suseconnect` or
 available any more.
 
 
-### Alternative when using podman as container runtime
+### Alternative approach when using podman as the container runtime
 
 When using `podman` as container runtime, add the following to `/etc/containers/mounts.conf` (when building containers as `root`) or `~/.config/containers/mounts.conf` (when building containers as a regular user):
 ```
