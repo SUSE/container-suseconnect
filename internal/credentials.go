@@ -17,6 +17,9 @@ package containersuseconnect
 import "log"
 
 // Credentials holds the host credentials
+// NOTE (@mssola): in SCC we have introduced the System-Token credential. For
+// now this is not affecting the normal operation of this application, but it
+// is something to keep in mind for further developments.
 type Credentials struct {
 	Username     string
 	Password     string
