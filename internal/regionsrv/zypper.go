@@ -71,7 +71,7 @@ func PrintResponse(params map[string]string) error {
 
 	// Error out if we have no information on the credentials.
 	if cfg.Username == "" && cfg.Password == "" {
-		return errors.New("No credentials given")
+		return errors.New("no credentials given")
 	}
 
 	// Safe the contents of the CA file if it doesn't exist already.

@@ -92,8 +92,8 @@ func TestPrintResponseBadResponseFromServer(t *testing.T) {
 		params := map[string]string{}
 
 		err := PrintResponse(params)
-		if err == nil || err.Error() != "Empty response from the server" {
-			t.Fatalf("Expecting an error from ReadConfigFromServer, got %v", err)
+		if err == nil || err.Error() != "empty response from the server" {
+			t.Fatalf("expecting an error from ReadConfigFromServer, got %v", err)
 		}
 	})
 }
@@ -114,8 +114,8 @@ func TestPrintResponseNoCredentials(t *testing.T) {
 		params := map[string]string{}
 
 		err := PrintResponse(params)
-		if err == nil || err.Error() != "No credentials given" {
-			t.Fatalf("Expecting a 'No credentials given' error, got %v", err)
+		if err == nil || err.Error() != "no credentials given" {
+			t.Fatalf("expecting a 'no credentials given' error, got %v", err)
 		}
 	})
 }

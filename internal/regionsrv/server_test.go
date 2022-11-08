@@ -127,8 +127,8 @@ func TestEmptyResponseFromServer(t *testing.T) {
 		<-ts.bootstrapped
 
 		_, err := ReadConfigFromServer()
-		if !strings.Contains(err.Error(), "Empty response from the server") {
-			t.Fatalf("should be a 'Empty response from the server', got '%v'", err)
+		if !strings.Contains(err.Error(), "empty response from the server") {
+			t.Fatalf("should be a 'empty response from the server', got '%v'", err)
 		}
 	})
 }

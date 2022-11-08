@@ -150,12 +150,12 @@ func runZypperURLResolver(_ *cli.Context) error {
 	log.SetOutput(cs.GetLoggerFile())
 
 	if err := regionsrv.ServerReachable(); err != nil {
-		return fmt.Errorf("Could not reach build server from the host: %v", err)
+		return fmt.Errorf("could not reach build server from the host: %v", err)
 	}
 
 	input, err := regionsrv.ParseStdin()
 	if err != nil {
-		return fmt.Errorf("Could not parse input: %s", err)
+		return fmt.Errorf("could not parse input: %s", err)
 	}
 
 	return regionsrv.PrintResponse(input)

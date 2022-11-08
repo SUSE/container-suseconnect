@@ -28,8 +28,8 @@ validate-go:
 
 	@which gofmt >/dev/null 2>/dev/null || (echo "ERROR: gofmt not found." && false)
 	test -z "$$(gofmt -s -l . | grep -vE '^vendor/' | tee /dev/stderr)"
-	@type golint    >/dev/null 2>/dev/null || (echo "ERROR: golint not found." && false)
-	test -z "$$(golint $$(go list $(PROJECT)/... | grep -vE '^vendor/') 2>&1 | tee /dev/stderr)"
+	@which staticcheck >/dev/null 2>/dev/null || echo "WARNING: staticcheck not found." || true
+	@which "staticcheck" >/dev/null 2>/dev/null && "$$(staticcheck -tests=false 2>&1 | tee /dev/stderr)" || true
 	@go doc cmd/vet >/dev/null 2>/dev/null || (echo "ERROR: go vet not found." && false)
 	test -z "$$(go vet $$(go list $(PROJECT)/... | grep -vE '^vendor/') 2>&1 | tee /dev/stderr)"
 
