@@ -100,7 +100,7 @@ func ReadConfigFromServer() (*ContainerBuildConfig, error) {
 	// response. Catch this error here.
 	if data.InstanceData == "" && data.ServerFqdn == "" &&
 		data.ServerIP == "" && data.Ca == "" {
-		return nil, errors.New("Empty response from the server")
+		return nil, errors.New("empty response from the server")
 	}
 	return data, nil
 }

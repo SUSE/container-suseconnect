@@ -27,7 +27,7 @@ var hostsFile = "/etc/hosts"
 func UpdateHostsFile(hostname string, ip string) error {
 	content, err := ioutil.ReadFile(hostsFile)
 	if err != nil {
-		return fmt.Errorf("Can't read %s file: %v", hostsFile, err.Error())
+		return fmt.Errorf("can't read %s file: %v", hostsFile, err.Error())
 	}
 
 	lines := strings.Split(string(content), "\n")
@@ -52,7 +52,7 @@ func UpdateHostsFile(hostname string, ip string) error {
 
 	err = ioutil.WriteFile(hostsFile, []byte(newcontent), 0644)
 	if err != nil {
-		return fmt.Errorf("Can't write %s file: %v", hostsFile, err.Error())
+		return fmt.Errorf("can't write %s file: %v", hostsFile, err.Error())
 	}
 
 	return nil

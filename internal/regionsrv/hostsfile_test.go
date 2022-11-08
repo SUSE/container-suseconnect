@@ -50,8 +50,8 @@ func TestUpdateHostsFileCouldNotRead(t *testing.T) {
 	hostsFile = "/bubblegloop-swamp"
 	err := UpdateHostsFile("hostname", "1.1.1.1")
 
-	if err == nil || !strings.Contains(err.Error(), "Can't read /bubblegloop-swamp file") {
-		t.Fatalf("Expected 'Can't read /bubblegloop-swamp file', got '%v'\n", err)
+	if err == nil || !strings.Contains(err.Error(), "can't read /bubblegloop-swamp file") {
+		t.Fatalf("Expected 'can't read /bubblegloop-swamp file', got '%v'\n", err)
 	}
 }
 
@@ -64,7 +64,7 @@ func TestUpdateHostsFileCouldNotWrite(t *testing.T) {
 	defer os.Remove(hostsFile)
 
 	err := UpdateHostsFile("hostname", "1.1.1.1")
-	if err == nil || !strings.Contains(err.Error(), "Can't write") {
+	if err == nil || !strings.Contains(err.Error(), "can't write") {
 		t.Fatalf("Expected a write error, got '%v'\n", err)
 	}
 }
