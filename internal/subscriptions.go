@@ -81,7 +81,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 		if strings.ToUpper(subscription.Status) != "EXPIRED" {
 			codes = append(codes, subscription.RegCode)
 		} else {
-			log.Printf("Skipping regCode: %s -- expired.", subscription.RegCode)
+			loggedError(SubscriptionServerError, "Skipping regCode: %s -- expired.", subscription.RegCode)
 		}
 	}
 	return codes, err
