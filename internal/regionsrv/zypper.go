@@ -88,14 +88,11 @@ func printFromConfiguration(path string, cfg *ContainerBuildConfig) {
 		Scheme: "https",
 		Host:   cfg.ServerFqdn,
 		Path:   path,
-		User:   url.UserPassword(cfg.Username, "XXXX"),
+		User:   url.UserPassword(cfg.Username, cfg.Password),
 	}
 
 	log.Print("Received X-Instance-Data")
-	log.Printf("Resulting URL: %s", u.String())
-
-	// Add user info to URL to avoid password appearing in logs
-	u.User = url.UserPassword(cfg.Username, cfg.Password)
+	log.Printf("Resulting URL: %s", u.Redacted())
 
 	fmt.Printf("RESOLVEDURL\n")
 	// Add an extra emptyline to separate Headers from payload
