@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/mssola/capture v1.0.0
-	github.com/urfave/cli/v2 v2.23.4
+	github.com/urfave/cli/v2 v2.23.5
 )
 
 require (
