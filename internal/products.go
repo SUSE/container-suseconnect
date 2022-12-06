@@ -184,13 +184,17 @@ func RequestProducts(data SUSEConnectData, credentials Credentials,
 	}
 
 	for _, regCode := range regCodes {
-		p, err := requestProductsFromRegCodeOrSystem(data, regCode, credentials, installed)
-		if err != nil {
-			var emptyProducts []Product
-			return emptyProducts, err
+		p, _err := requestProductsFromRegCodeOrSystem(data, regCode, credentials, installed)
+		if _err != nil {
+			err = _err
+			continue
 		}
 		products = append(products, p...)
 	}
 
-	return products, nil
+	if len(products) > 0 {
+		err = nil
+	}
+
+	return products, err
 }

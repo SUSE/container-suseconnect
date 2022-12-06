@@ -22,11 +22,13 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // Subscription has all the information that we need for SLE subscriptions.
 type Subscription struct {
 	RegCode string `json:"regcode"`
+	Status  string `json:"status"`
 }
 
 // Request registration codes to the registration server. The `data` and the
@@ -76,7 +78,11 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	}
 
 	for _, subscription := range subscriptions {
-		codes = append(codes, subscription.RegCode)
+		if strings.ToUpper(subscription.Status) != "EXPIRED" {
+			codes = append(codes, subscription.RegCode)
+		} else {
+			loggedError(SubscriptionServerError, "Skipping regCode: %s -- expired.", subscription.RegCode)
+		}
 	}
 	return codes, err
 }
