@@ -16,8 +16,8 @@ package regionsrv
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -25,7 +25,7 @@ var hostsFile = "/etc/hosts"
 
 // UpdateHostsFile updates the hosts file with the given hostname and IP.
 func UpdateHostsFile(hostname string, ip string) error {
-	content, err := ioutil.ReadFile(hostsFile)
+	content, err := os.ReadFile(hostsFile)
 	if err != nil {
 		return fmt.Errorf("can't read %s file: %v", hostsFile, err.Error())
 	}
@@ -50,7 +50,7 @@ func UpdateHostsFile(hostname string, ip string) error {
 		newcontent += fmt.Sprintf("%s %s %s\n", ip, hostname, shorthost)
 	}
 
-	err = ioutil.WriteFile(hostsFile, []byte(newcontent), 0644)
+	err = os.WriteFile(hostsFile, []byte(newcontent), 0644)
 	if err != nil {
 		return fmt.Errorf("can't write %s file: %v", hostsFile, err.Error())
 	}

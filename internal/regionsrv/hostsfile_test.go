@@ -16,7 +16,6 @@ package regionsrv
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"strings"
@@ -28,14 +27,14 @@ import (
 // temporary file instead of the original hosts file inside of the fixtures path
 // on these tests.
 func copyHostFileToTemp(mode os.FileMode) string {
-	data, err := ioutil.ReadFile(fixturesPath("hosts"))
+	data, err := os.ReadFile(fixturesPath("hosts"))
 	if err != nil {
 		fmt.Printf("Read file error: %v\n", err)
 		return ""
 	}
 
 	path := fixturesPath(fmt.Sprintf("testfile%v", rand.Int()))
-	err = ioutil.WriteFile(path, data, mode)
+	err = os.WriteFile(path, data, mode)
 	if err != nil {
 		fmt.Printf("Write file error: %v\n", err)
 		return ""
@@ -77,14 +76,14 @@ func TestUpdateHostsFileSuccessful(t *testing.T) {
 
 	defer os.Remove(hostsFile)
 
-	before, err := ioutil.ReadFile(hostsFile)
+	before, err := os.ReadFile(hostsFile)
 
 	err = UpdateHostsFile("test-hostname", "1.1.1.1")
 	if err != nil {
 		t.Fatalf("Expected a nil error, got: %v", err)
 	}
 
-	after, err := ioutil.ReadFile(hostsFile)
+	after, err := os.ReadFile(hostsFile)
 	if err != nil {
 		t.Fatalf("Expected a nil error, got: %v", err)
 	}
@@ -111,7 +110,7 @@ func TestUpdateHostsFileUpdateExistingEntry(t *testing.T) {
 		t.Fatalf("Expected a nil error, got: %v", err)
 	}
 
-	after, err := ioutil.ReadFile(hostsFile)
+	after, err := os.ReadFile(hostsFile)
 	if err != nil {
 		t.Fatalf("Expected a nil error, got: %v", err)
 	}

@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -132,7 +131,7 @@ func TestSafeCAFileSuccess(t *testing.T) {
 		t.Fatalf("Expected error to be nil: %v\n", err)
 	}
 
-	b, _ := ioutil.ReadFile(hashFilePath)
+	b, _ := os.ReadFile(hashFilePath)
 	_ = os.Remove(hashFilePath)
 
 	hash := md5.New()
@@ -141,7 +140,7 @@ func TestSafeCAFileSuccess(t *testing.T) {
 		t.Fatal("Bad checksum")
 	}
 
-	b, _ = ioutil.ReadFile(caFilePath)
+	b, _ = os.ReadFile(caFilePath)
 	if string(b) != "valid" {
 		t.Fatalf("Wrong certificate. Expected 'valid', got '%v'\n", string(b))
 	}

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 SUSE LLC. All rights reserved.
+// Copyright (c) 2023 SUSE LLC. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 package regionsrv
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -25,7 +24,7 @@ import (
 
 func TestParseStdinSuccessful(t *testing.T) {
 	content := []byte("RESOLVEURL\nkey:value1\nanother:value2")
-	tmp, err := ioutil.TempFile("", "file")
+	tmp, err := os.CreateTemp("", "file")
 	if err != nil {
 		t.Fatalf("Initialization error: %v", err)
 	}
