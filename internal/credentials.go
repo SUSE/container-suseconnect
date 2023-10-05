@@ -14,7 +14,10 @@
 
 package containersuseconnect
 
-import "log"
+import (
+	"log"
+	"os"
+)
 
 // Credentials holds the host credentials
 // NOTE (@mssola): in SCC we have introduced the System-Token credential. For
@@ -40,6 +43,16 @@ func (cr *Credentials) locations() []string {
 }
 
 func (cr *Credentials) onLocationsNotFound() bool {
+
+	env_user := os.Getenv("SCC_CREDENTIAL_USERNAME")
+	env_pass := os.Getenv("SCC_CREDENTIAL_PASSWORD")
+
+	if env_user != "" && env_pass != "" {
+		cr.Username = env_user
+		cr.Password = env_pass
+		return true
+	}
+
 	return false
 }
 
