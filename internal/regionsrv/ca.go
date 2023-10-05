@@ -17,7 +17,6 @@ package regionsrv
 import (
 	"crypto/md5"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -41,7 +40,7 @@ func updateNeeded(contents string) bool {
 		return true
 	}
 
-	data, err := ioutil.ReadFile(hashFilePath)
+	data, err := os.ReadFile(hashFilePath)
 	if err != nil {
 		return true
 	}
@@ -66,7 +65,7 @@ func safeCAFile(cmd commander, contents string) error {
 	_ = os.Remove(caFilePath)
 
 	// Safe the file
-	err := ioutil.WriteFile(caFilePath, []byte(contents), 0644)
+	err := os.WriteFile(caFilePath, []byte(contents), 0644)
 	if err != nil {
 		return err
 	}
@@ -79,7 +78,7 @@ func safeCAFile(cmd commander, contents string) error {
 	// Safe the new checksum
 	hash := md5.New()
 	io.WriteString(hash, contents)
-	_ = ioutil.WriteFile(hashFilePath, hash.Sum(nil), 0644)
+	_ = os.WriteFile(hashFilePath, hash.Sum(nil), 0644)
 
 	return nil
 }

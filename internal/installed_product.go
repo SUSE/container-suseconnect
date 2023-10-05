@@ -18,7 +18,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -56,7 +55,7 @@ func (p InstalledProduct) String() string {
 func parseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
 	// We can ignore this error because of the pre-condition of the `reader`
 	// being actually readable.
-	xmlData, _ := ioutil.ReadAll(reader)
+	xmlData, _ := io.ReadAll(reader)
 
 	var p InstalledProduct
 	err := xml.Unmarshal(xmlData, &p)

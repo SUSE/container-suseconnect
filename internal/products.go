@@ -18,7 +18,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -81,7 +80,7 @@ func fixRepoUrlsForRMT(p *Product) error {
 func parseProducts(reader io.Reader) ([]Product, error) {
 	var products []Product
 
-	data, err := ioutil.ReadAll(reader)
+	data, err := io.ReadAll(reader)
 	if err != nil {
 		return products,
 			loggedError(RepositoryError, "Can't read product information: %v", err.Error())

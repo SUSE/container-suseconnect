@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -81,7 +80,7 @@ func (ts *testServer) close() error {
 
 // Execute fn by suppressing any logger output.
 func withSuppressedLog(fn func()) {
-	log.SetOutput(ioutil.Discard)
+	log.SetOutput(io.Discard)
 	fn()
 	log.SetOutput(os.Stdout)
 }

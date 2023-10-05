@@ -18,7 +18,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -92,7 +91,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 func parseSubscriptions(reader io.Reader) ([]Subscription, error) {
 	var subscriptions []Subscription
 
-	data, err := ioutil.ReadAll(reader)
+	data, err := io.ReadAll(reader)
 	if err != nil {
 		return subscriptions, loggedError(SubscriptionError, "Can't read subscriptions information: %v", err.Error())
 	}

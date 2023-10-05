@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SUSE LLC. All rights reserved.
+// Copyright (c) 2023 SUSE LLC. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package containersuseconnect
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -96,15 +95,19 @@ func moduleEnabledInEnv(identifier string) bool {
 // moduleEnabledInProductFiles returns true if the provided `identifier` is
 // a name of a file in the  /etc/product.d/*.prod, otherwise false.
 func moduleEnabledInProductFiles(identifier string) bool {
-	files, err := ioutil.ReadDir("/etc/products.d")
+	files, err := os.ReadDir("/etc/products.d")
 	if err != nil {
 		return false
 	}
 	for _, file := range files {
 		ext := filepath.Ext(file.Name())
+		info, err := file.Info()
+		if err != nil {
+			continue
+		}
 		if ext == ".prod" &&
 			identifier == strings.TrimSuffix(file.Name(), ext) &&
-			file.Mode()&os.ModeSymlink == 0 {
+			info.Mode()&os.ModeSymlink == 0 {
 			return true
 		}
 	}
