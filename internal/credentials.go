@@ -23,6 +23,7 @@ import "log"
 type Credentials struct {
 	Username     string
 	Password     string
+	SystemToken  string
 	InstanceData string
 }
 
@@ -47,6 +48,8 @@ func (cr *Credentials) setValues(key, value string) {
 		cr.Username = value
 	} else if key == "password" {
 		cr.Password = value
+	} else if key == "system_token" {
+		cr.SystemToken = value
 	} else {
 		log.Printf("Warning: Unknown key '%v'", key)
 	}
