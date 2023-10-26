@@ -291,4 +291,4 @@ These can be passed in the container also at start time via the `docker run -e E
 # License
 
 Licensed under the Apache License, Version 2.0. See
-[LICENSE](https://github.com/SUSE/container-suseconnect/blob/master/LICENSE) for the full license text.
+[LICENSE](./LICENSE) for the full license text.
