@@ -269,14 +269,21 @@ No further change are needed in `Dockerfile`.
 ### Obtaining the SUSEConnect and SCCcredentials secrets
 
 Ideally the host system on which the container builds are executed is
-registered. Otherwise start the container that should be registered 
-and execute `SUSEConnect` inside it:
+registered. The credentials stored on the host system in
+`/etc/zypp/credentials.d/SCCcredentials`
+can be used to register containers running or building on that host as well.
+
+Otherwise start the container that should be registered and execute
+`SUSEConnect` inside it:
 
 ```bash
 SUSEConnect -e <youremailaddress> -r <yourregistrationcode>
 ```
 
-As a last resort, for example for interactive use of the container, you can
+In case you have a registration code that hasn't otherwise be used, you
+can use the USERNAME "regcode" and the given registration code as password.
+
+For example for interactive use of containers you can also
 pass the obtained username and password via environment variables
 
 ```bash
