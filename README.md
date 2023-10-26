@@ -71,7 +71,7 @@ then this program will log to the standard error output by default.
 
 Creating a SLE 15 Image
 
-The following Docker file creates a simple Docker image based on SLE 15:
+The following `Dockerfile` creates a simple container image based on SLE 15:
 
 ```Dockerfile
 FROM registry.suse.com/suse/sle15:latest
