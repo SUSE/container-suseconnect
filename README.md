@@ -96,7 +96,7 @@ RUN zypper -n in vim
 
 Creating a Custom SLE 15 SP5 Image
 
-The following Docker file creates a simple Docker image based on SLE 15 SP5:
+The following `Dockerfile` creates a simple container image based on SLE 15 SP5:
 
 ```Dockerfile
 FROM registry.suse.com/suse/sle15:15.5
