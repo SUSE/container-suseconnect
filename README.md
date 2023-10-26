@@ -210,7 +210,7 @@ registered at the SUSE Customer Center, RMT or SMT.
 A Docker version of 18.09 or above is needed to provide a secure way to mount
 the credentials into the image build process.
 
-A `Dockerfile` for building a SLE15 image which contains `go` would then look like the following:
+A `Dockerfile` for building a SLE15 image which contains `go` would then look as follows:
 
 ```Dockerfile
 # syntax=docker/dockerfile:1.0.0-experimental
