@@ -113,6 +113,9 @@ func TestIntegrationCredentials(t *testing.T) {
 	if mock.cr.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
 		t.Fatal("Unexpected password value")
 	}
+	if mock.cr.SystemToken != "36531d07-a283-441b-a02a-1cd9a88b0d5d" {
+		t.Fatal("Unexpected system_token value")
+	}
 	if mock.cr.onLocationsNotFound() {
 		t.Fatalf("It should've been false")
 	}
