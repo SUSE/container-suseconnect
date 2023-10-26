@@ -283,7 +283,7 @@ SUSEConnect -e <youremailaddress> -r <yourregistrationcode>
 In case you have a registration code that hasn't otherwise be used, you
 can use the USERNAME "regcode" and the given registration code as password.
 
-For example for interactive use of containers you can also
+For interactive use of containers you can also
 pass the obtained username and password via environment variables
 
 ```bash
