@@ -120,7 +120,7 @@ RUN zypper -n in vim
 ```
 
 All recommended package modules are enabled by default. It is possible to
-enable additionally non-recommended modules via the `identifier` by setting the
+enable additional non-recommended modules via the `identifier` by setting the
 environment variable `ADDITIONAL_MODULES`. When enabling multiple modules the
 identifiers are expected to be comma-separated:
 
@@ -268,25 +268,21 @@ No further change are needed in `Dockerfile`.
 
 ### Obtaining the SUSEConnect and SCCcredentials secrets
 
-Ideally the host system on which your container builds are running is
-registered. In all other cases, you need to manually start the container you
-would like to register and execute `SUSEConnect` inside:
+Ideally the host system on which the container builds are executed is
+registered. Otherwise start the container that should be registered 
+and execute `SUSEConnect` inside it:
 
 ```bash
 SUSEConnect -e <youremailaddress> -r <yourregistrationcode>
-cat /etc/SUSEconnect
-cat /etc/zypp/credentials.d/SCCcredentials
 ```
 
 As a last resort, for example for interactive use of the container, you can
 pass the obtained username and password via environment variables
 
 ```bash
-env SCC_CREDENTIAL_USERNAME=<credential_username>
-env SCC_CREDENTIAL_PASSWORD=<credential_password>
-```
-
-These can be passed in the container also at start time via the `docker run -e ENV=key` options.
+docker run -e SCC_CREDENTIAL_USERNAME=<credential_username> \
+    -e SCC_CREDENTIAL_PASSWORD=<credential_password> \
+    my-image
 
 # License
 
