@@ -51,6 +51,9 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	req.URL.Path = "/connect/systems/subscriptions"
 
 	auth := url.UserPassword(credentials.Username, credentials.Password)
+	if credentials.SystemToken != "" {
+		req.Header.Add("System-Token", credentials.SystemToken)
+	}
 	req.URL.User = auth
 
 	resp, err := client.Do(req)
