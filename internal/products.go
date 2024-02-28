@@ -146,6 +146,9 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 		req.URL.Path = "/connect/systems/products"
 		auth := url.UserPassword(credentials.Username, credentials.Password)
 		req.URL.User = auth
+		if credentials.SystemToken != "" {
+			req.Header.Add("System-Token", credentials.SystemToken)
+		}
 	}
 
 	resp, err := client.Do(req)
