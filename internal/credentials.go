@@ -57,13 +57,14 @@ func (cr *Credentials) onLocationsNotFound() bool {
 }
 
 func (cr *Credentials) setValues(key, value string) {
-	if key == "username" {
+	switch key {
+	case "username":
 		cr.Username = value
-	} else if key == "password" {
+	case "password":
 		cr.Password = value
-	} else if key == "system_token" {
+	case "system_token":
 		cr.SystemToken = value
-	} else {
+	default:
 		log.Printf("Warning: Unknown key '%v'", key)
 	}
 }
