@@ -3,7 +3,7 @@ module github.com/SUSE/container-suseconnect
 go 1.21
 
 require (
-	github.com/mssola/capture v1.0.0
+	github.com/mssola/capture v1.1.0
 	github.com/urfave/cli/v2 v2.27.1
 )
 
