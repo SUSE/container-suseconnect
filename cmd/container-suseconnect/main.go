@@ -47,6 +47,8 @@ func actionWrapper(action func(*cli.Context) error) func(*cli.Context) error {
 }
 
 func main() {
+	cs.SetLoggerOutput()
+
 	// Set the basic CLI metadata
 	app := cli.NewApp()
 	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
@@ -173,8 +175,6 @@ func requestProducts() ([]cs.Product, error) {
 // Read the arguments as given by zypper on the stdin and print into stdout the
 // response to be used.
 func runZypperURLResolver(_ *cli.Context) error {
-	log.SetOutput(cs.GetLoggerFile())
-
 	if err := regionsrv.ServerReachable(); err != nil {
 		return fmt.Errorf("could not reach build server from the host: %v", err)
 	}
@@ -192,8 +192,6 @@ func runZypperURLResolver(_ *cli.Context) error {
 // can be specified via the `ADDITIONAL_MODULES` environment variable, which
 // reflect the module `identifier`.
 func runZypperPlugin(_ *cli.Context) error {
-	log.SetOutput(cs.GetLoggerFile())
-
 	products, err := requestProducts()
 	if err != nil {
 		return err
