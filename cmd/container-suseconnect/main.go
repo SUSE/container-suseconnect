@@ -28,24 +28,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func actionWrapper(action func(*cli.Context) error) func(*cli.Context) error {
-	return func(ctx *cli.Context) error {
-		if err := action(ctx); err != nil {
-			switch err.(type) {
-			case *cs.SuseConnectError:
-				if err.(*cs.SuseConnectError).ErrorCode == cs.GetCredentialsError {
-					if ctx.Bool("log-credentials-errors") {
-						return err
-					}
-					return nil
-				}
-			}
-			return err
-		}
-		return nil
-	}
-}
-
 func main() {
 	cs.SetLoggerOutput()
 
@@ -75,13 +57,13 @@ func main() {
 	defaultUsageAdditionListProducts := ""
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
-		app.Action = actionWrapper(runZypperPlugin)
+		app.Action = runZypperPlugin
 		defaultUsageAdditionZypp = " (default)"
 	case "susecloud":
-		app.Action = actionWrapper(runZypperURLResolver)
+		app.Action = runZypperURLResolver
 		defaultUsageAdditionZypp = " (default)"
 	default:
-		app.Action = actionWrapper(runListProducts)
+		app.Action = runListProducts
 		defaultUsageAdditionListProducts = " (default)"
 	}
 
@@ -92,28 +74,20 @@ func main() {
 			Aliases: []string{"lp"},
 			Usage: fmt.Sprintf("List available products%v",
 				defaultUsageAdditionListProducts),
-			Action: actionWrapper(runListProducts),
+			Action: runListProducts,
 		},
 		{
 			Name:    "list-modules",
 			Aliases: []string{"lm"},
 			Usage:   "List available modules",
-			Action:  actionWrapper(runListModules),
+			Action:  runListModules,
 		},
 		{
 			Name:    "zypper",
 			Aliases: []string{"z", "zypp"},
 			Usage: fmt.Sprintf("Run the zypper service plugin%v",
 				defaultUsageAdditionZypp),
-			Action: actionWrapper(runZypperPlugin),
-		},
-	}
-
-	app.Flags = []cli.Flag{
-		&cli.BoolFlag{
-			Name:    "log-credentials-errors",
-			Usage:   "Print errors with your credentials",
-			EnvVars: []string{"CONTAINER_SUSECONNECT_LOG_CREDENTIALS_ERR"},
+			Action: runZypperPlugin,
 		},
 	}
 
