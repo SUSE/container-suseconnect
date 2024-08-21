@@ -33,7 +33,6 @@ func TestCredentials(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
-	shouldHaveLogged(t, msg)
 
 	cr.setValues("username", "suse")
 	prepareLogger()
@@ -42,7 +41,6 @@ func TestCredentials(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
-	shouldHaveLogged(t, msg)
 
 	cr.setValues("password", "1234")
 	err = cr.afterParseCheck()

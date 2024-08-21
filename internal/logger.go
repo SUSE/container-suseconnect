@@ -15,8 +15,6 @@
 package containersuseconnect
 
 import (
-	"fmt"
-	"log"
 	"os"
 )
 
@@ -46,15 +44,4 @@ func GetLoggerFile() *os.File {
 		return f
 	}
 	return os.Stderr
-}
-
-// Log the given formatted string with its parameters, and return it
-// as a new error.
-func loggedError(errorCode int, format string, params ...interface{}) *SuseConnectError {
-	msg := fmt.Sprintf(format, params...)
-	log.Print(msg)
-	return &SuseConnectError{
-		ErrorCode: errorCode,
-		message:   msg,
-	}
 }

@@ -14,6 +14,10 @@
 
 package containersuseconnect
 
+import (
+	"fmt"
+)
+
 const (
 	// GetCredentialsError indicates a failure to retrieve or parse
 	// credentials
@@ -36,10 +40,22 @@ const (
 // SuseConnectError is a custom error type allowing us to distinguish between
 // different error kinds via the `ErrorCode` field
 type SuseConnectError struct {
-	ErrorCode int
-	message   string
+	Code int
+	Err  error
 }
 
 func (s *SuseConnectError) Error() string {
-	return s.message
+	return s.Err.Error()
+}
+
+func (s *SuseConnectError) Unwrap() error {
+	return s.Err
+}
+
+func NewSuseConnectError(errorCode int, format string, params ...interface{}) *SuseConnectError {
+	err := fmt.Errorf(format, params...)
+	return &SuseConnectError{
+		Code: errorCode,
+		Err:  err,
+	}
 }

@@ -33,7 +33,7 @@ func actionWrapper(action func(*cli.Context) error) func(*cli.Context) error {
 		if err := action(ctx); err != nil {
 			switch err.(type) {
 			case *cs.SuseConnectError:
-				if err.(*cs.SuseConnectError).ErrorCode == cs.GetCredentialsError {
+				if err.(*cs.SuseConnectError).Code == cs.GetCredentialsError {
 					if ctx.Bool("log-credentials-errors") {
 						return err
 					}

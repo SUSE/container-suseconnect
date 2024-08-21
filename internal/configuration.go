@@ -68,12 +68,12 @@ func ReadConfiguration(config Configuration) error {
 		if config.onLocationsNotFound() {
 			return nil
 		}
-		return loggedError(GetCredentialsError, "Warning: SUSE credentials not found: %v - automatic handling of repositories not done.", config.locations())
+		return NewSuseConnectError(GetCredentialsError, "Warning: SUSE credentials not found: %v - automatic handling of repositories not done.", config.locations())
 	}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return loggedError(GetCredentialsError, "Can't open %s file: %v", path, err.Error())
+		return NewSuseConnectError(GetCredentialsError, "Can't open %s file: %v", path, err.Error())
 	}
 	defer file.Close()
 
@@ -96,7 +96,7 @@ func parse(config Configuration, reader io.Reader) error {
 		line := scanner.Text()
 		parts := strings.SplitN(line, string(config.separator()), 2)
 		if len(parts) != 2 {
-			return loggedError(GetCredentialsError, "Can't parse line: %v", line)
+			return NewSuseConnectError(GetCredentialsError, "Can't parse line: %v", line)
 		}
 
 		// And finally trim the key and the value and pass it to the config.
@@ -106,7 +106,7 @@ func parse(config Configuration, reader io.Reader) error {
 
 	// Final checks.
 	if err := scanner.Err(); err != nil {
-		return loggedError(GetCredentialsError, "Error when scanning configuration: %v", err)
+		return NewSuseConnectError(GetCredentialsError, "Error when scanning configuration: %v", err)
 	}
 	if err := config.afterParseCheck(); err != nil {
 		return err
