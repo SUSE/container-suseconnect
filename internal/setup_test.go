@@ -17,9 +17,6 @@ package containersuseconnect
 import (
 	"bytes"
 	"log"
-	"regexp"
-	"strings"
-	"testing"
 )
 
 // Handy functions to be used by the test suite.
@@ -32,20 +29,4 @@ var logged *bytes.Buffer
 func prepareLogger() {
 	logged = bytes.NewBuffer([]byte{})
 	log.SetOutput(logged)
-}
-
-// Make sure that the logged string matches the given expected string.
-func shouldHaveLogged(t *testing.T, str string) {
-	original := logged.String()
-	if strings.TrimSpace(original) == "" {
-		t.Fatal("Nothing has been logged.\n")
-	}
-
-	// The logged string includes the timestamp, get rid of it.
-	re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\s")
-	logStr := strings.TrimSpace(re.ReplaceAllString(original, ""))
-
-	if strings.TrimSpace(str) != logStr {
-		t.Fatalf("Should have logged: %v, not %v\n", str, logStr)
-	}
 }

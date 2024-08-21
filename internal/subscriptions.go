@@ -45,7 +45,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
 		return codes,
-			loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
+			NewSuseConnectError(NetworkError, "Could not connect with registration server: %v\n", err)
 	}
 
 	req.URL.Path = "/connect/systems/subscriptions"
@@ -71,7 +71,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 
 	if resp.StatusCode != 200 {
 		return codes,
-			loggedError(SubscriptionServerError, "Unexpected error while retrieving regcode: %s", resp.Status)
+			NewSuseConnectError(SubscriptionServerError, "Unexpected error while retrieving regcode: %s", resp.Status)
 	}
 
 	subscriptions, err := parseSubscriptions(resp.Body)
@@ -83,9 +83,10 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 		if strings.ToUpper(subscription.Status) != "EXPIRED" {
 			codes = append(codes, subscription.RegCode)
 		} else {
-			loggedError(SubscriptionServerError, "Skipping regCode: %s -- expired.", subscription.RegCode)
+			log.Println(NewSuseConnectError(SubscriptionServerError, "Skipping regCode: %s -- expired.", subscription.RegCode))
 		}
 	}
+
 	return codes, err
 }
 
@@ -96,15 +97,15 @@ func parseSubscriptions(reader io.Reader) ([]Subscription, error) {
 
 	data, err := io.ReadAll(reader)
 	if err != nil {
-		return subscriptions, loggedError(SubscriptionError, "Can't read subscriptions information: %v", err.Error())
+		return subscriptions, NewSuseConnectError(SubscriptionError, "Can't read subscriptions information: %v", err.Error())
 	}
 
 	err = json.Unmarshal(data, &subscriptions)
 	if err != nil {
-		return subscriptions, loggedError(SubscriptionError, "Can't read subscription: %v", err.Error())
+		return subscriptions, NewSuseConnectError(SubscriptionError, "Can't read subscription: %v", err.Error())
 	}
 	if len(subscriptions) == 0 {
-		return subscriptions, loggedError(SubscriptionError, "Got 0 subscriptions")
+		return subscriptions, NewSuseConnectError(SubscriptionError, "Got 0 subscriptions")
 	}
 	return subscriptions, nil
 }

@@ -61,7 +61,7 @@ func parseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
 	err := xml.Unmarshal(xmlData, &p)
 	if err != nil {
 		return InstalledProduct{},
-			loggedError(InstalledProductError, "Can't parse base product file: %v", err.Error())
+			NewSuseConnectError(InstalledProductError, "Can't parse base product file: %v", err.Error())
 	}
 	return p, nil
 }
@@ -69,13 +69,13 @@ func parseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
 // Read the product file from the standard location
 func readInstalledProduct(provider ProductProvider) (InstalledProduct, error) {
 	if _, err := os.Stat(provider.Location()); os.IsNotExist(err) {
-		return InstalledProduct{}, loggedError(InstalledProductError, "No base product detected")
+		return InstalledProduct{}, NewSuseConnectError(InstalledProductError, "No base product detected")
 	}
 
 	xmlFile, err := os.Open(provider.Location())
 	if err != nil {
 		return InstalledProduct{},
-			loggedError(InstalledProductError, "Can't open base product file: %v", err.Error())
+			NewSuseConnectError(InstalledProductError, "Can't open base product file: %v", err.Error())
 	}
 	defer xmlFile.Close()
 

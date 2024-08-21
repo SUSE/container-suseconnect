@@ -55,8 +55,7 @@ func fixRepoUrlsForRMT(p *Product) error {
 	for i := range p.Repositories {
 		repourl, err := url.Parse(p.Repositories[i].URL)
 		if err != nil {
-			loggedError(RepositoryError, "Unable to parse repository URL: %s - %v", p.Repositories[i].URL, err)
-			return err
+			return NewSuseConnectError(RepositoryError, "Unable to parse repository URL: %s - %v", p.Repositories[i].URL, err)
 		}
 		params := repourl.Query()
 		if params.Get("credentials") == "" {
@@ -83,7 +82,7 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 	data, err := io.ReadAll(reader)
 	if err != nil {
 		return products,
-			loggedError(RepositoryError, "Can't read product information: %v", err.Error())
+			NewSuseConnectError(RepositoryError, "Can't read product information: %v", err.Error())
 	}
 
 	// Depending on which API was used the JSON we get passed contains
@@ -106,7 +105,7 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 	}
 	if err != nil {
 		return products,
-			loggedError(RepositoryError, "Can't read product information: %v - %s", err.Error(), data)
+			NewSuseConnectError(RepositoryError, "Can't read product information: %v - %s", err.Error(), data)
 	}
 	return products, nil
 }
@@ -129,7 +128,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
 		return products,
-			loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
+			NewSuseConnectError(NetworkError, "Could not connect with registration server: %v\n", err)
 	}
 
 	values := req.URL.Query()
@@ -164,7 +163,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 			}
 		}
 		return products,
-			loggedError(SubscriptionServerError, "Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
+			NewSuseConnectError(SubscriptionServerError, "Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
 	}
 
 	return parseProducts(resp.Body)

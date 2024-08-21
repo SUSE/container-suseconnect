@@ -66,7 +66,6 @@ func TestNotFound(t *testing.T) {
 	if err == nil || err.Error() != "Warning: SUSE credentials not found: [] - automatic handling of repositories not done." {
 		t.Fatalf("Wrong error: %v", err)
 	}
-	shouldHaveLogged(t, "Warning: SUSE credentials not found: [] - automatic handling of repositories not done.")
 }
 
 type NotAllowedConfiguration struct{}
@@ -99,7 +98,6 @@ func TestNotAllowed(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
-	shouldHaveLogged(t, msg)
 }
 
 func TestParseInvalid(t *testing.T) {
@@ -116,7 +114,6 @@ func TestParseInvalid(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
-	shouldHaveLogged(t, msg)
 }
 
 type ErrorAfterParseConfiguration struct{}
@@ -160,5 +157,4 @@ func TestParseFailNoSeparator(t *testing.T) {
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
-	shouldHaveLogged(t, msg)
 }
