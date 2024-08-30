@@ -56,6 +56,7 @@ func getLocationPath(locations []string) string {
 			return path
 		}
 	}
+
 	return ""
 }
 
@@ -68,6 +69,7 @@ func ReadConfiguration(config Configuration) error {
 		if config.onLocationsNotFound() {
 			return nil
 		}
+
 		return loggedError(GetCredentialsError, "Warning: SUSE credentials not found: %v - automatic handling of repositories not done.", config.locations())
 	}
 
@@ -83,18 +85,21 @@ func ReadConfiguration(config Configuration) error {
 // Parses the contents given by the reader and updated the given configuration.
 func parse(config Configuration, reader io.Reader) error {
 	scanner := bufio.NewScanner(reader)
+
 	for scanner.Scan() {
 		// Comments & empty lines.
 		if strings.IndexAny(scanner.Text(), "#-") == 0 {
 			continue
 		}
+
 		if scanner.Text() == "" {
 			continue
 		}
 
-		// Each line should be constructed as 'key' 'separator' 'value'.
 		line := scanner.Text()
+		// Each line should be constructed as 'key' 'separator' 'value'.
 		parts := strings.SplitN(line, string(config.separator()), 2)
+
 		if len(parts) != 2 {
 			return loggedError(GetCredentialsError, "Can't parse line: %v", line)
 		}
@@ -108,8 +113,10 @@ func parse(config Configuration, reader io.Reader) error {
 	if err := scanner.Err(); err != nil {
 		return loggedError(GetCredentialsError, "Error when scanning configuration: %v", err)
 	}
+
 	if err := config.afterParseCheck(); err != nil {
 		return err
 	}
+
 	return nil
 }

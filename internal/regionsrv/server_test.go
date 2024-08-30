@@ -40,20 +40,24 @@ func (ts *testServer) run() (err error) {
 	if err != nil {
 		err = fmt.Errorf("could not start test server: %v", err)
 		ts.bootstrapped <- true
+
 		return
 	}
 
 	for {
 		ts.bootstrapped <- true
+
 		conn, err := ts.server.Accept()
 		if err != nil {
 			err = errors.New("could not accept connection")
 			break
 		}
+
 		if conn == nil {
 			err = errors.New("could not create connection")
 			break
 		}
+
 		if ts.badResponse {
 			io.WriteString(conn, "{")
 		}
@@ -62,8 +66,8 @@ func (ts *testServer) run() (err error) {
 		if err != nil {
 			break
 		}
-		io.WriteString(conn, string(b))
 
+		io.WriteString(conn, string(b))
 		conn.Close()
 	}
 
@@ -75,6 +79,7 @@ func (ts *testServer) close() error {
 	if ts.server == nil {
 		return nil
 	}
+
 	return ts.server.Close()
 }
 
@@ -149,6 +154,7 @@ func TestValidResponse(t *testing.T) {
 		if err != nil {
 			t.Fatalf("should be nil but got: %v", err)
 		}
+
 		if cfg.InstanceData != ts.response.InstanceData {
 			t.Fatalf("Expected '%v', got '%v'", cfg.InstanceData, ts.response.InstanceData)
 		}

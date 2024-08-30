@@ -32,6 +32,7 @@ func TestFailNonExistantProduct(t *testing.T) {
 	if err == nil {
 		t.Fatal("This file should not exist...")
 	}
+
 	if err.Error() != "No base product detected" {
 		t.Fatal("Wrong error message")
 	}
@@ -50,6 +51,7 @@ func TestFailNotAllowedProduct(t *testing.T) {
 	if err == nil {
 		t.Fatal("This file should not be available...")
 	}
+
 	if err.Error() != "Can't open base product file: open /etc/shadow: permission denied" {
 		t.Fatal("Wrong error message")
 	}
@@ -68,6 +70,7 @@ func TestFailBadFormattedProduct(t *testing.T) {
 	if err == nil {
 		t.Fatal("This file should have a bad format")
 	}
+
 	if err.Error() != "Can't parse base product file: EOF" {
 		t.Fatal("Wrong error message")
 	}
@@ -86,15 +89,19 @@ func TestMockProvider(t *testing.T) {
 	if err != nil {
 		t.Fatal("It should've read it just fine")
 	}
+
 	if p.Identifier != "SLES" {
 		t.Fatal("Wrong product name")
 	}
+
 	if p.Version != "12" {
 		t.Fatal("Wrong product version")
 	}
+
 	if p.Arch != "x86_64" {
 		t.Fatal("Wrong product arch")
 	}
+
 	if p.String() != "SLES-12-x86_64" {
 		t.Fatal("Wrong product string")
 	}
@@ -109,6 +116,7 @@ func TestSUSE(t *testing.T) {
 		if err == nil {
 			t.Fatal("It should fail")
 		}
+
 		return
 	}
 

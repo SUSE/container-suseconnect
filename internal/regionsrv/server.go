@@ -67,7 +67,8 @@ func ServerReachable() error {
 		return err
 	}
 
-	_ = conn.Close()
+	conn.Close()
+
 	return nil
 }
 
@@ -98,9 +99,9 @@ func ReadConfigFromServer() (*ContainerBuildConfig, error) {
 
 	// If something is really bad on the server side, it may return an empty
 	// response. Catch this error here.
-	if data.InstanceData == "" && data.ServerFqdn == "" &&
-		data.ServerIP == "" && data.Ca == "" {
+	if data.InstanceData == "" && data.ServerFqdn == "" && data.ServerIP == "" && data.Ca == "" {
 		return nil, errors.New("empty response from the server")
 	}
+
 	return data, nil
 }

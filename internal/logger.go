@@ -47,8 +47,7 @@ func getLogWritter(path string) (io.WriteCloser, error) {
 		return nil, fmt.Errorf("log path is not absulute: %s", path)
 	}
 
-	lf, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
-
+	lf, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o640)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +60,6 @@ func getLogWritter(path string) (io.WriteCloser, error) {
 	}
 
 	_, err = lf.WriteString(fmt.Sprintf("container-suseconnect %s\n", Version))
-
 	if err != nil {
 		lf.Close()
 		return nil, err

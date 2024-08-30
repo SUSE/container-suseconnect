@@ -58,10 +58,12 @@ func fixRepoUrlsForRMT(p *Product) error {
 			loggedError(RepositoryError, "Unable to parse repository URL: %s - %v", p.Repositories[i].URL, err)
 			return err
 		}
+
 		params := repourl.Query()
 		if params.Get("credentials") == "" {
 			params["credentials"] = []string{"SCCcredentials"}
 		}
+
 		repourl.RawQuery = params.Encode()
 		p.Repositories[i].URL = repourl.String()
 	}
@@ -72,6 +74,7 @@ func fixRepoUrlsForRMT(p *Product) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -104,10 +107,12 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 			products = append(products, product)
 		}
 	}
+
 	if err != nil {
 		return products,
 			loggedError(RepositoryError, "Can't read product information: %v - %s", err.Error(), data)
 	}
+
 	return products, nil
 }
 
@@ -117,19 +122,14 @@ func parseProducts(reader io.Reader) ([]Product, error) {
 // be requested.
 // This function relies on [/connect/subscriptions/products](https://github.com/SUSE/connect/wiki/SCC-API-%28Implemented%29#product) API.
 func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
-	credentials Credentials, installed InstalledProduct) ([]Product, error) {
+	credentials Credentials, installed InstalledProduct,
+) ([]Product, error) {
 	var products []Product
 	var err error
 
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
-		Proxy:           http.ProxyFromEnvironment,
-	}
-	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
-		return products,
-			loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
+		return products, loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
 	}
 
 	values := req.URL.Query()
@@ -137,6 +137,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 	values.Add("version", installed.Version)
 	values.Add("arch", installed.Arch)
 	req.URL.RawQuery = values.Encode()
+
 	if len(regCode) > 0 {
 		req.Header.Add("Authorization", `Token token=`+regCode)
 		req.URL.Path = "/connect/subscriptions/products"
@@ -146,25 +147,37 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 		req.URL.Path = "/connect/systems/products"
 		auth := url.UserPassword(credentials.Username, credentials.Password)
 		req.URL.User = auth
+
 		if credentials.SystemToken != "" {
 			req.Header.Add("System-Token", credentials.SystemToken)
 		}
+	}
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: data.Insecure,
+			},
+			Proxy: http.ProxyFromEnvironment,
+		},
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
 		return products, err
 	}
+
 	if resp.StatusCode != 200 {
-		dec := json.NewDecoder(resp.Body)
 		var payload map[string]interface{}
+		dec := json.NewDecoder(resp.Body)
+
 		if err := dec.Decode(&payload); err == nil {
 			if err, ok := payload["error"]; ok {
 				log.Println(err)
 			}
 		}
-		return products,
-			loggedError(SubscriptionServerError, "Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
+
+		return products, loggedError(SubscriptionServerError, "Unexpected error while retrieving products with regCode %s: %s", regCode, resp.Status)
 	}
 
 	return parseProducts(resp.Body)
@@ -175,7 +188,8 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 // connection with the registration server. The `installed` parameter contains
 // the product to be requested.
 func RequestProducts(data SUSEConnectData, credentials Credentials,
-	installed InstalledProduct) ([]Product, error) {
+	installed InstalledProduct,
+) ([]Product, error) {
 	var products []Product
 	var regCodes []string
 	var err error
@@ -191,6 +205,7 @@ func RequestProducts(data SUSEConnectData, credentials Credentials,
 			err = _err
 			continue
 		}
+
 		products = append(products, p...)
 	}
 

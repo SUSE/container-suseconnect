@@ -27,6 +27,7 @@ func TestCredentials(t *testing.T) {
 	if cr.separator() != '=' {
 		t.Fatal("Wrong separator")
 	}
+
 	prepareLogger()
 	err := cr.afterParseCheck()
 	msg := "Can't find username"
@@ -107,15 +108,19 @@ func TestIntegrationCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}
+
 	if mock.cr.Username != "SCC_a6994b1d3ae14b35agc7cef46b4fff9a" {
 		t.Fatal("Unexpected name value")
 	}
+
 	if mock.cr.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
 		t.Fatal("Unexpected password value")
 	}
+
 	if mock.cr.SystemToken != "36531d07-a283-441b-a02a-1cd9a88b0d5d" {
 		t.Fatal("Unexpected system_token value")
 	}
+
 	if mock.cr.onLocationsNotFound() {
 		t.Fatalf("It should've been false")
 	}

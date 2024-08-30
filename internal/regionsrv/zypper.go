@@ -44,6 +44,7 @@ func ParseStdin() (map[string]string, error) {
 	// are just <key>:<value> header lines and don't contain a body.
 	sr := bytes.NewReader(msg)
 	scanner := bufio.NewScanner(sr)
+
 	for scanner.Scan() {
 		if first {
 			first = false
@@ -80,6 +81,7 @@ func PrintResponse(params map[string]string) error {
 	}
 
 	printFromConfiguration(params["path"], cfg)
+
 	return nil
 }
 
@@ -99,5 +101,4 @@ func printFromConfiguration(path string, cfg *ContainerBuildConfig) {
 	fmt.Printf("X-Instance-Data:%s\n\n", cfg.InstanceData)
 	// Message needs to be NUL-terminated
 	fmt.Printf("%s\000", u.String())
-
 }

@@ -53,12 +53,15 @@ func TestParseStdinSuccessful(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseStdin returned an error: %v", err)
 	}
+
 	if len(params) != 2 {
 		t.Fatalf("There should be two entries, %v instead", len(params))
 	}
+
 	if params["key"] != "value1" {
 		t.Fatalf("Expected 'key' to contain 'value1', got '%v' instead", params["key"])
 	}
+
 	if params["another"] != "value2" {
 		t.Fatalf("Expected 'key' to contain 'value2', got '%v' instead", params["another"])
 	}
@@ -139,9 +142,11 @@ func TestPrintFromConfiguration(t *testing.T) {
 			"",
 			"https://banjo:kazooie@test.fqdn.com/path\x00",
 		}
+
 		if len(lines) != len(expected) {
 			t.Fatalf("Expected %v lines, got %v", len(expected), len(lines))
 		}
+
 		for k, v := range expected {
 			if lines[k] != v {
 				t.Fatalf("Expected '%v', got '%v'", v, lines[k])

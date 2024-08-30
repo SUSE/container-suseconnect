@@ -31,6 +31,7 @@ func TestGetLocationPath(t *testing.T) {
 		"does/not/exist",
 		"testdata/products-sle12.json",
 	}
+
 	path = getLocationPath(strs)
 	if path != "testdata/products-sle12.json" {
 		t.Fatalf("Wrong location path: %v", path)
@@ -62,10 +63,12 @@ func TestNotFound(t *testing.T) {
 	var cfg NotFoundConfiguration
 
 	prepareLogger()
+
 	err := ReadConfiguration(&cfg)
 	if err == nil || err.Error() != "Warning: SUSE credentials not found: [] - automatic handling of repositories not done." {
 		t.Fatalf("Wrong error: %v", err)
 	}
+
 	shouldHaveLogged(t, "Warning: SUSE credentials not found: [] - automatic handling of repositories not done.")
 }
 
@@ -94,11 +97,13 @@ func TestNotAllowed(t *testing.T) {
 	var cfg NotAllowedConfiguration
 
 	prepareLogger()
+
 	err := ReadConfiguration(&cfg)
 	msg := "Can't open /etc/shadow file: open /etc/shadow: permission denied"
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+
 	shouldHaveLogged(t, msg)
 }
 
@@ -110,12 +115,15 @@ func TestParseInvalid(t *testing.T) {
 		file.Close()
 		t.Fatal("There should be an error here")
 	}
+
 	prepareLogger()
+
 	err = parse(cfg, file)
 	msg := "Error when scanning configuration: invalid argument"
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+
 	shouldHaveLogged(t, msg)
 }
 
@@ -154,11 +162,14 @@ func TestParseFailNoSeparator(t *testing.T) {
 	var cfg ErrorAfterParseConfiguration
 
 	str := strings.NewReader("keywithoutvalue")
+
 	prepareLogger()
+
 	err := parse(cfg, str)
 	msg := "Can't parse line: keywithoutvalue"
 	if err == nil || err.Error() != msg {
 		t.Fatal("Wrong error")
 	}
+
 	shouldHaveLogged(t, msg)
 }

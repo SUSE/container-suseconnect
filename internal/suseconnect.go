@@ -55,5 +55,6 @@ func (data *SUSEConnectData) afterParseCheck() error {
 	if data.SccURL == "" {
 		data.SccURL = sccURLStr
 	}
+
 	return nil
 }

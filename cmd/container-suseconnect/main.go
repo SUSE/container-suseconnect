@@ -37,8 +37,7 @@ func main() {
 	app.Name = "container-suseconnect"
 	app.Version = cs.Version
 	app.Usage = "Access zypper repositories from within containers"
-	app.UsageText =
-		`This application can be used to retrieve basic metadata about SLES
+	app.UsageText = `This application can be used to retrieve basic metadata about SLES
    related products and module extensions.
 
    Please use the 'list-products' subcommand for listing all currently
@@ -55,6 +54,7 @@ func main() {
 	// Switch the default application behavior in relation to the basename
 	defaultUsageAdditionZypp := ""
 	defaultUsageAdditionListProducts := ""
+
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
 		app.Action = runZypperPlugin
@@ -108,24 +108,29 @@ func requestProducts() ([]cs.Product, error) {
 	// config from "mounted" files if the service is not available
 	if err := regionsrv.ServerReachable(); err == nil {
 		log.Printf("containerbuild-regionsrv reachable, reading config\n")
+
 		cloudCfg, err := regionsrv.ReadConfigFromServer()
 		if err != nil {
 			return nil, err
 		}
+
 		credentials.Username = cloudCfg.Username
 		credentials.Password = cloudCfg.Password
 		credentials.InstanceData = cloudCfg.InstanceData
+
 		suseConnectData.SccURL = "https://" + cloudCfg.ServerFqdn
 		suseConnectData.Insecure = false
 
 		if cloudCfg.Ca != "" {
 			regionsrv.SafeCAFile(cloudCfg.Ca)
 		}
+
 		regionsrv.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIP)
 	} else {
 		if err := cs.ReadConfiguration(&credentials); err != nil {
 			return nil, err
 		}
+
 		if err := cs.ReadConfiguration(&suseConnectData); err != nil {
 			return nil, err
 		}
@@ -135,6 +140,7 @@ func requestProducts() ([]cs.Product, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	log.Printf("Installed product: %v\n", installedProduct)
 	log.Printf("Registration server set to %v\n", suseConnectData.SccURL)
 
@@ -188,6 +194,7 @@ func runListModules(_ *cli.Context) error {
 
 	fmt.Printf("All available modules:\n\n")
 	cs.ListModules(os.Stdout, products)
+
 	return nil
 }
 
@@ -200,5 +207,6 @@ func runListProducts(_ *cli.Context) error {
 
 	fmt.Printf("All available products:\n\n")
 	cs.ListProducts(os.Stdout, products, "none")
+
 	return nil
 }
