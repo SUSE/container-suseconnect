@@ -16,36 +16,85 @@ package containersuseconnect
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
-// The default path for the logger if nothing has been specified.
-var defaultLogPath = "/var/log/suseconnect.log"
+// Default path for the log file.
+const DefaultLogPath = "/var/log/suseconnect.log"
 
-// The environment variable used to specify a custom path for the logger
-// path.
-const logEnv = "SUSECONNECT_LOG_FILE"
+// Environment variable used to specify a custom path for the log file.
+const LogEnv = "SUSECONNECT_LOG_FILE"
 
-// GetLoggerFile returns the output file for the logger. If the `logEnv` environment
-// variable has been set, it will try to output there. Otherwise, it
-// will try to output to the file as given in `defaultLogPath`. If
-// everything fails, it will just output to the standard error channel.
-func GetLoggerFile() *os.File {
-	// Determine the path to be used.
-	var path string
-	if env := os.Getenv(logEnv); env != "" {
-		path = env
-	} else {
-		path = defaultLogPath
+// getLogEnv returns the value set to the [LogEnv] environment variable.
+func getLogEnv() string {
+	return strings.TrimSpace(os.Getenv(LogEnv))
+}
+
+// getLogWritter checks if the path can be open and written to
+// and returns an [io.WriteCloser] if there are no errors.
+func getLogWritter(path string) (io.WriteCloser, error) {
+	path = strings.TrimSpace(path)
+
+	if len(path) == 0 {
+		return nil, fmt.Errorf("path is empty")
 	}
 
-	// If it's writable, use the given file, otherwise use os.Stderr.
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
+	if !filepath.IsAbs(path) {
+		return nil, fmt.Errorf("log path is not absulute: %s", path)
+	}
+
+	lf, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0640)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if fi, err := lf.Stat(); err == nil {
+		if !fi.Mode().IsRegular() {
+			lf.Close()
+			return nil, fmt.Errorf("path is not a regular file: %s", path)
+		}
+	}
+
+	_, err = lf.WriteString(fmt.Sprintf("container-suseconnect %s\n", Version))
+
+	if err != nil {
+		lf.Close()
+		return nil, err
+	}
+
+	return lf, nil
+}
+
+// SetLoggerOutput configures the logger to write to /dev/stderr
+// and to a file.
+//
+// If [LogEnv] is set and writable it writes to the file defined,
+// otherwise it writes to [DefaultLogPath].
+func SetLoggerOutput() {
+	// ensure we are logging to stderr and nowhere else
+	log.SetOutput(os.Stderr)
+
+	path := getLogEnv()
+
+	if len(path) == 0 {
+		path = DefaultLogPath
+	}
+
+	w, err := getLogWritter(path)
+
 	if err == nil {
-		return f
+		writter := io.MultiWriter(os.Stderr, w)
+		log.SetOutput(writter)
+		log.Printf("Log file location: %s\n", path)
+	} else {
+		log.Printf("Failed to set up log file '%s'\n", path)
+		log.Println(err)
 	}
-	return os.Stderr
 }
 
 // Log the given formatted string with its parameters, and return it

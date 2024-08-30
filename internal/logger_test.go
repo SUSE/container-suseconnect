@@ -15,40 +15,165 @@
 package containersuseconnect
 
 import (
+	"bytes"
+	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// The helper for testing the logger setup where:
-//
-//   - env: the value for the `logEnv` environment value.
-//   - expected: the expected path of the logger.
-//   - cleanup: whether the file has to be closed and removed.
-func testLogger(t *testing.T, env, expected string, cleanup bool) {
-	os.Setenv(logEnv, env)
-	f := GetLoggerFile()
-	if f.Name() != expected {
-		t.Fatalf("Wrong file")
-	}
+func TestGetLogWritterFromRegularFile(t *testing.T) {
+	tempFile, err := os.CreateTemp("", "prefix")
+	assert.Nil(t, err)
 
-	if cleanup {
-		f.Close()
-		err := os.Remove(f.Name())
-		if err != nil {
-			t.Fatalf("Problem when cleaning up")
-		}
-	}
+	defer os.Remove(tempFile.Name())
+
+	w, err := getLogWritter(tempFile.Name())
+	assert.Nil(t, err)
+	assert.NotNil(t, w)
+	w.Close()
 }
 
-func TestSetupLoggerDefault(t *testing.T) {
-	defaultLogPath = "suseconnect.log"
-	testLogger(t, "", defaultLogPath, true)
+func TestGetLogWritterFromRelativeFile(t *testing.T) {
+	w, err := getLogWritter("test.log")
+	assert.EqualError(t, err, "log path is not absulute: test.log")
+	assert.Nil(t, w)
 }
 
-func TestSetupLoggerCustom(t *testing.T) {
-	testLogger(t, "suse.log", "suse.log", true)
+func TestGetLogWritterFromValidDir(t *testing.T) {
+	dir, err := os.MkdirTemp("", "")
+	assert.Nil(t, err)
+	defer os.RemoveAll(dir)
+
+	w, err := getLogWritter(dir)
+	assert.EqualError(t, err, fmt.Sprintf("open %s: is a directory", dir))
+	assert.Nil(t, w)
 }
 
-func TestLoggerStdErr(t *testing.T) {
-	testLogger(t, "/var/log/suse.log", os.Stderr.Name(), false)
+func TestGetLogWritterFromMissingDir(t *testing.T) {
+	dir, err := os.MkdirTemp("", "")
+	assert.Nil(t, err)
+	defer os.RemoveAll(dir)
+
+	// ensure the path is terminated by / othewise it will be considered a file
+	path := filepath.Join(dir, "does", "not", "exits") + string(filepath.Separator)
+	w, err := getLogWritter(path)
+	assert.EqualError(t, err, fmt.Sprintf("open %s: no such file or directory", path))
+	assert.Nil(t, w)
+}
+
+func TestGetLogWritterFromMissingDirFile(t *testing.T) {
+	dir, err := os.MkdirTemp("", "")
+	assert.Nil(t, err)
+	defer os.RemoveAll(dir)
+
+	path := filepath.Join(dir, "does", "not", "exits", "test.log")
+	w, err := getLogWritter(path)
+	assert.EqualError(t, err, fmt.Sprintf("open %s: no such file or directory", path))
+	assert.Nil(t, w)
+}
+
+func TestGetLogWritterFromEmptyString(t *testing.T) {
+	w, err := getLogWritter("")
+	assert.EqualError(t, err, "path is empty")
+	assert.Nil(t, w)
+}
+
+func TestGetLogWritterFromSpaces(t *testing.T) {
+	w, err := getLogWritter("    ")
+	assert.EqualError(t, err, "path is empty")
+	assert.Nil(t, w)
+}
+
+func TestGetLogWritterFromSymbolInName(t *testing.T) {
+	dir, err := os.MkdirTemp("", "")
+	assert.Nil(t, err)
+	defer os.RemoveAll(dir)
+
+	w, err := getLogWritter(filepath.Join(dir, "@"))
+	assert.Nil(t, err)
+	assert.NotNil(t, w)
+	w.Close()
+}
+
+func TestGetLogWritterFromDevice(t *testing.T) {
+	w, err := getLogWritter("/dev/null")
+	assert.EqualError(t, err, "path is not a regular file: /dev/null")
+	assert.Nil(t, w)
+}
+
+func TestGetLogWritterFromNonWritableFile(t *testing.T) {
+	// /proc/1/mem is a valid regular file, but
+	// it is not writable by any user, even root
+	w, err := getLogWritter("/proc/1/mem")
+	// it can fail with various errors
+	// not worth checking for an exact message
+	assert.NotNil(t, err)
+	assert.Nil(t, w)
+}
+
+func TestGetLogEnvIfNotSet(t *testing.T) {
+	// ensure no variable is set
+	os.Unsetenv(LogEnv)
+	path := getLogEnv()
+	assert.Empty(t, path)
+}
+
+func TestGetLogEnvIfSet(t *testing.T) {
+	// ensure no variable is set
+	os.Unsetenv(LogEnv)
+	err := os.Setenv(LogEnv, "/path/file.log")
+	assert.Nil(t, err)
+	defer os.Unsetenv(LogEnv)
+
+	envPath := getLogEnv()
+	assert.Equal(t, "/path/file.log", envPath)
+}
+
+func TestGetLogEnvTrimSpaces(t *testing.T) {
+	// ensure no variable is set
+	os.Unsetenv(LogEnv)
+	err := os.Setenv(LogEnv, "    /path/file.log    ")
+	assert.Nil(t, err)
+	defer os.Unsetenv(LogEnv)
+
+	envPath := getLogEnv()
+	assert.Equal(t, "/path/file.log", envPath)
+}
+
+// Ensures that the log is always written to a file and Stderr.
+func TestSetLoggerOutput(t *testing.T) {
+	// ensure no variable is set
+	os.Unsetenv(LogEnv)
+
+	tempFile, err := os.CreateTemp("", "")
+	assert.Nil(t, err)
+	defer os.Remove(tempFile.Name())
+
+	err = os.Setenv(LogEnv, tempFile.Name())
+	assert.Nil(t, err)
+	defer os.Unsetenv(LogEnv)
+
+	logLine := "This in a log entry in a file and Stderr"
+
+	var stdData, fileData string
+
+	stdData, err = captureStderr(t, func() {
+		SetLoggerOutput()
+		log.Println(logLine)
+	})
+
+	assert.Nil(t, err, "Failed to capture Stderr")
+
+	buff := new(bytes.Buffer)
+	_, err = buff.ReadFrom(tempFile)
+	assert.Nil(t, err, "Failed to read temp file")
+
+	fileData = buff.String()
+
+	assert.Contains(t, fileData, logLine)
+	assert.Contains(t, stdData, logLine)
 }

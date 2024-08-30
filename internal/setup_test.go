@@ -16,7 +16,9 @@ package containersuseconnect
 
 import (
 	"bytes"
+	"io"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -48,4 +50,31 @@ func shouldHaveLogged(t *testing.T, str string) {
 	if strings.TrimSpace(str) != logStr {
 		t.Fatalf("Should have logged: %v, not %v\n", str, logStr)
 	}
+}
+
+// Capture what is written to Stderr.
+func captureStderr(t *testing.T, fn func()) (string, error) {
+	// redirect Stderr to capture the log written
+	orig := os.Stderr
+	r, w, err := os.Pipe()
+
+	if err != nil {
+		return "", err
+	}
+
+	os.Stderr = w
+
+	fn()
+
+	// restore Stderr
+	os.Stderr = orig
+	w.Close()
+
+	data, err := io.ReadAll(r)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
 }

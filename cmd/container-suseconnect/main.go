@@ -28,25 +28,9 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func actionWrapper(action func(*cli.Context) error) func(*cli.Context) error {
-	return func(ctx *cli.Context) error {
-		if err := action(ctx); err != nil {
-			switch err.(type) {
-			case *cs.SuseConnectError:
-				if err.(*cs.SuseConnectError).ErrorCode == cs.GetCredentialsError {
-					if ctx.Bool("log-credentials-errors") {
-						return err
-					}
-					return nil
-				}
-			}
-			return err
-		}
-		return nil
-	}
-}
-
 func main() {
+	cs.SetLoggerOutput()
+
 	// Set the basic CLI metadata
 	app := cli.NewApp()
 	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
@@ -73,13 +57,13 @@ func main() {
 	defaultUsageAdditionListProducts := ""
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
-		app.Action = actionWrapper(runZypperPlugin)
+		app.Action = runZypperPlugin
 		defaultUsageAdditionZypp = " (default)"
 	case "susecloud":
-		app.Action = actionWrapper(runZypperURLResolver)
+		app.Action = runZypperURLResolver
 		defaultUsageAdditionZypp = " (default)"
 	default:
-		app.Action = actionWrapper(runListProducts)
+		app.Action = runListProducts
 		defaultUsageAdditionListProducts = " (default)"
 	}
 
@@ -90,28 +74,20 @@ func main() {
 			Aliases: []string{"lp"},
 			Usage: fmt.Sprintf("List available products%v",
 				defaultUsageAdditionListProducts),
-			Action: actionWrapper(runListProducts),
+			Action: runListProducts,
 		},
 		{
 			Name:    "list-modules",
 			Aliases: []string{"lm"},
 			Usage:   "List available modules",
-			Action:  actionWrapper(runListModules),
+			Action:  runListModules,
 		},
 		{
 			Name:    "zypper",
 			Aliases: []string{"z", "zypp"},
 			Usage: fmt.Sprintf("Run the zypper service plugin%v",
 				defaultUsageAdditionZypp),
-			Action: actionWrapper(runZypperPlugin),
-		},
-	}
-
-	app.Flags = []cli.Flag{
-		&cli.BoolFlag{
-			Name:    "log-credentials-errors",
-			Usage:   "Print errors with your credentials",
-			EnvVars: []string{"CONTAINER_SUSECONNECT_LOG_CREDENTIALS_ERR"},
+			Action: runZypperPlugin,
 		},
 	}
 
@@ -173,8 +149,6 @@ func requestProducts() ([]cs.Product, error) {
 // Read the arguments as given by zypper on the stdin and print into stdout the
 // response to be used.
 func runZypperURLResolver(_ *cli.Context) error {
-	log.SetOutput(cs.GetLoggerFile())
-
 	if err := regionsrv.ServerReachable(); err != nil {
 		return fmt.Errorf("could not reach build server from the host: %v", err)
 	}
@@ -192,8 +166,6 @@ func runZypperURLResolver(_ *cli.Context) error {
 // can be specified via the `ADDITIONAL_MODULES` environment variable, which
 // reflect the module `identifier`.
 func runZypperPlugin(_ *cli.Context) error {
-	log.SetOutput(cs.GetLoggerFile())
-
 	products, err := requestProducts()
 	if err != nil {
 		return err
