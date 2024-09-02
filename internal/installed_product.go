@@ -60,9 +60,9 @@ func parseInstalledProduct(reader io.Reader) (InstalledProduct, error) {
 	var p InstalledProduct
 	err := xml.Unmarshal(xmlData, &p)
 	if err != nil {
-		return InstalledProduct{},
-			loggedError(InstalledProductError, "Can't parse base product file: %v", err.Error())
+		return InstalledProduct{}, loggedError(InstalledProductError, "Can't parse base product file: %v", err.Error())
 	}
+
 	return p, nil
 }
 
@@ -74,8 +74,7 @@ func readInstalledProduct(provider ProductProvider) (InstalledProduct, error) {
 
 	xmlFile, err := os.Open(provider.Location())
 	if err != nil {
-		return InstalledProduct{},
-			loggedError(InstalledProductError, "Can't open base product file: %v", err.Error())
+		return InstalledProduct{}, loggedError(InstalledProductError, "Can't open base product file: %v", err.Error())
 	}
 	defer xmlFile.Close()
 

@@ -83,9 +83,11 @@ func TestValidSubscriptions(t *testing.T) {
 	if err != nil {
 		t.Fatal("Unexpected error when reading a valid JSON file")
 	}
+
 	if len(subscriptions) != 2 {
 		t.Fatalf("Unexpected number of subscriptions found. Got %d, expected %d", len(subscriptions), 1)
 	}
+
 	subscriptionHelper(t, subscriptions[0])
 }
 
@@ -147,10 +149,12 @@ func TestValidRequestForRegcodes(t *testing.T) {
 	if err != nil {
 		t.Fatal("It should've run just fine...")
 	}
+
 	// This also tests that we're not including expired regcodes
 	if len(codes) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(codes), 1)
 	}
+
 	if codes[0] != "35098ff7" {
 		t.Fatalf("Got the wrong registration code: %v", codes[0])
 	}
@@ -176,6 +180,7 @@ func TestRequestEmptyRegcodes(t *testing.T) {
 	if err == nil || err.Error() != "Got 0 subscriptions" {
 		t.Fatal("Unexpected error when reading a valid JSON file")
 	}
+
 	if len(codes) != 0 {
 		t.Fatalf("It should be 0")
 	}

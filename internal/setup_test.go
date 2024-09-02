@@ -57,7 +57,6 @@ func captureStderr(t *testing.T, fn func()) (string, error) {
 	// redirect Stderr to capture the log written
 	orig := os.Stderr
 	r, w, err := os.Pipe()
-
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +70,6 @@ func captureStderr(t *testing.T, fn func()) (string, error) {
 	w.Close()
 
 	data, err := io.ReadAll(r)
-
 	if err != nil {
 		return "", err
 	}

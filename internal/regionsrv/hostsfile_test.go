@@ -55,7 +55,7 @@ func TestUpdateHostsFileCouldNotRead(t *testing.T) {
 }
 
 func TestUpdateHostsFileCouldNotWrite(t *testing.T) {
-	hostsFile = copyHostFileToTemp(0400)
+	hostsFile = copyHostFileToTemp(0o400)
 	if hostsFile == "" {
 		t.Fatalf("Failed to initialize hosts file")
 	}
@@ -69,7 +69,7 @@ func TestUpdateHostsFileCouldNotWrite(t *testing.T) {
 }
 
 func TestUpdateHostsFileSuccessful(t *testing.T) {
-	hostsFile = copyHostFileToTemp(0644)
+	hostsFile = copyHostFileToTemp(0o644)
 	if hostsFile == "" {
 		t.Fatalf("Failed to initialize hosts file")
 	}
@@ -98,7 +98,7 @@ func TestUpdateHostsFileSuccessful(t *testing.T) {
 }
 
 func TestUpdateHostsFileUpdateExistingEntry(t *testing.T) {
-	hostsFile = copyHostFileToTemp(0644)
+	hostsFile = copyHostFileToTemp(0o644)
 	if hostsFile == "" {
 		t.Fatalf("Failed to initialize hosts file")
 	}

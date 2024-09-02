@@ -43,7 +43,6 @@ func (cr *Credentials) locations() []string {
 }
 
 func (cr *Credentials) onLocationsNotFound() bool {
-
 	env_user := os.Getenv("SCC_CREDENTIAL_USERNAME")
 	env_pass := os.Getenv("SCC_CREDENTIAL_PASSWORD")
 
@@ -73,8 +72,10 @@ func (cr *Credentials) afterParseCheck() error {
 	if cr.Username == "" {
 		return loggedError(GetCredentialsError, "Can't find username")
 	}
+
 	if cr.Password == "" {
 		return loggedError(GetCredentialsError, "Can't find password")
 	}
+
 	return nil
 }

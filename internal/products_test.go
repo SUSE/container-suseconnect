@@ -41,12 +41,15 @@ func productHelper(t *testing.T, product Product, expectedVersion string) {
 
 func productHelperSLE12(t *testing.T, product Product) {
 	productHelper(t, product, "12")
+
 	if len(product.Repositories) != 4 {
 		t.Fatalf("Wrong number of repos %v", len(product.Repositories))
 	}
+
 	if product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
 		t.Fatal("Unexpected value")
 	}
+
 	expectedURL := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
 	if string(product.Repositories[3].URL) != expectedURL {
 		t.Fatalf("Unexpected repository URL: %s", product.Repositories[3].URL)
@@ -55,9 +58,11 @@ func productHelperSLE12(t *testing.T, product Product) {
 
 func productHelperSLE15RMT(t *testing.T, product Product) {
 	productHelper(t, product, "15.1")
+
 	if len(product.Repositories) != 6 {
 		t.Fatal("Wrong number of repos")
 	}
+
 	if product.Extensions[0].Repositories[2].Name != "SLE-Module-Basesystem15-SP1-Pool" {
 		t.Fatalf("Unexpected Extension Name: %v", product.Extensions[0].Repositories[2].Name)
 	}
@@ -105,9 +110,11 @@ func TestValidProduct(t *testing.T) {
 	if err != nil {
 		t.Fatal("Unexpected error when reading a valid JSON file")
 	}
+
 	if len(products) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
 	}
+
 	productHelperSLE12(t, products[0])
 }
 
@@ -181,9 +188,11 @@ func TestValidRequestForProduct(t *testing.T) {
 	if err != nil {
 		t.Fatal("It should've run just fine...")
 	}
+
 	if len(products) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
 	}
+
 	productHelperSLE12(t, products[0])
 }
 
@@ -194,6 +203,7 @@ func TestValidRequestForProductUsingRMT(t *testing.T) {
 		if r.URL.Path == "/connect/systems/subscriptions" {
 			http.Error(w, "", http.StatusNotFound)
 		}
+
 		// The result also looks slightly different
 		resFile := "testdata/products-sle15-rmt.json"
 		file, err := os.Open(resFile)
@@ -214,8 +224,10 @@ func TestValidRequestForProductUsingRMT(t *testing.T) {
 	if err != nil {
 		t.Fatal("It should've run just fine...")
 	}
+
 	if len(products) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
 	}
+
 	productHelperSLE15RMT(t, products[0])
 }

@@ -37,24 +37,27 @@ type Subscription struct {
 // This function uses SCC's "/connect/systems/subscriptions" API
 func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, error) {
 	var codes []string
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: data.Insecure},
-		Proxy:           http.ProxyFromEnvironment,
-	}
-	client := &http.Client{Transport: tr}
+
 	req, err := http.NewRequest("GET", data.SccURL, nil)
 	if err != nil {
-		return codes,
-			loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
+		return codes, loggedError(NetworkError, "Could not connect with registration server: %v\n", err)
 	}
 
 	req.URL.Path = "/connect/systems/subscriptions"
+	req.URL.User = url.UserPassword(credentials.Username, credentials.Password)
 
-	auth := url.UserPassword(credentials.Username, credentials.Password)
 	if credentials.SystemToken != "" {
 		req.Header.Add("System-Token", credentials.SystemToken)
 	}
-	req.URL.User = auth
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: data.Insecure,
+			},
+			Proxy: http.ProxyFromEnvironment,
+		},
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -66,12 +69,12 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 		// has this API. Just return a empty string
 		log.Println("Cannot fetch regcodes. Assuming it is SMT server")
 		codes = append(codes, "")
+
 		return codes, nil
 	}
 
 	if resp.StatusCode != 200 {
-		return codes,
-			loggedError(SubscriptionServerError, "Unexpected error while retrieving regcode: %s", resp.Status)
+		return codes, loggedError(SubscriptionServerError, "Unexpected error while retrieving regcode: %s", resp.Status)
 	}
 
 	subscriptions, err := parseSubscriptions(resp.Body)
@@ -86,6 +89,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 			loggedError(SubscriptionServerError, "Skipping regCode: %s -- expired.", subscription.RegCode)
 		}
 	}
+
 	return codes, err
 }
 
@@ -103,8 +107,10 @@ func parseSubscriptions(reader io.Reader) ([]Subscription, error) {
 	if err != nil {
 		return subscriptions, loggedError(SubscriptionError, "Can't read subscription: %v", err.Error())
 	}
+
 	if len(subscriptions) == 0 {
 		return subscriptions, loggedError(SubscriptionError, "Got 0 subscriptions")
 	}
+
 	return subscriptions, nil
 }

@@ -59,6 +59,7 @@ func TestNoUpdateIsNeeded(t *testing.T) {
 	if updateNeeded("valid") {
 		t.Fatal("Should not be needed")
 	}
+
 	if !updateNeeded("nope") {
 		t.Fatal("Should be needed")
 	}
@@ -92,8 +93,8 @@ func TestSafeCAFileBadWrite(t *testing.T) {
 	cmd := testCommand{shouldFail: false}
 
 	err := safeCAFile(cmd, "valid")
-	_ = os.Remove(hashFilePath)
-	_ = os.Remove(caFilePath)
+	os.Remove(hashFilePath)
+	os.Remove(caFilePath)
 
 	if err == nil {
 		t.Fatal("Should've failed")
@@ -108,12 +109,13 @@ func TestSafeCAFileBadCommand(t *testing.T) {
 	cmd := testCommand{shouldFail: true}
 
 	err := safeCAFile(cmd, "valid")
-	_ = os.Remove(hashFilePath)
-	_ = os.Remove(caFilePath)
+	os.Remove(hashFilePath)
+	os.Remove(caFilePath)
 
 	if err == nil {
 		t.Fatal("Expected error to be non-nil\n")
 	}
+
 	if err.Error() != "I AM ERROR" {
 		t.Fatalf("Expected another error, got: %v\n", err)
 	}
@@ -127,12 +129,12 @@ func TestSafeCAFileSuccess(t *testing.T) {
 
 	err := safeCAFile(cmd, "valid")
 	if err != nil {
-		_ = os.Remove(hashFilePath)
+		os.Remove(hashFilePath)
 		t.Fatalf("Expected error to be nil: %v\n", err)
 	}
 
 	b, _ := os.ReadFile(hashFilePath)
-	_ = os.Remove(hashFilePath)
+	os.Remove(hashFilePath)
 
 	hash := md5.New()
 	io.WriteString(hash, "valid")

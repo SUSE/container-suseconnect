@@ -28,26 +28,31 @@ func TestSUSEConnectData(t *testing.T) {
 	if data.separator() != ':' {
 		t.Fatal("Wrong separator")
 	}
+
 	err := data.afterParseCheck()
 	if err != nil {
 		t.Fatal("There should not be an error")
 	}
+
 	if data.SccURL != sccURLStr {
 		t.Fatal("The URL should be the one from sccURLstr")
 	}
 
 	locs := data.locations()
+
 	if locs[0] != "/etc/SUSEConnect" {
 		t.Fatal("Wrong location")
 	}
+
 	if locs[1] != "/run/secrets/SUSEConnect" {
 		t.Fatal("Wrong location")
 	}
 
-	// It should log a proper warning.
 	buffer := bytes.NewBuffer([]byte{})
 	log.SetOutput(buffer)
 	data.setValues("unknown", "value")
+
+	// It should log a proper warning.
 	if !strings.Contains(buffer.String(), "Warning: Unknown key 'unknown'") {
 		t.Fatal("Wrong warning!")
 	}
@@ -68,6 +73,7 @@ func (mock *SUSEConnectDataMock) locations() []string {
 	if locationShouldBeFound {
 		return []string{"testdata/suseconnect.txt"}
 	}
+
 	return []string{"testdata/notfound.txt"}
 }
 
@@ -96,9 +102,11 @@ func TestIntegrationSUSEConnectData(t *testing.T) {
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}
+
 	if mock.data.SccURL != "https://smt.test.lan" {
 		t.Fatal("Unexpected URL value")
 	}
+
 	if !mock.data.Insecure {
 		t.Fatal("Unexpected Insecure value")
 	}
@@ -113,6 +121,7 @@ func TestLocationsNotFound(t *testing.T) {
 	if err != nil {
 		t.Fatal("This should've been a successful run")
 	}
+
 	if mock.data.SccURL != "https://scc.suse.com" {
 		t.Fatal("It should've been scc.suse.com")
 	}

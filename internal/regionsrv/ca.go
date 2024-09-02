@@ -44,12 +44,11 @@ func updateNeeded(contents string) bool {
 	if err != nil {
 		return true
 	}
-	sum := strings.TrimSpace(string(data))
 
 	hash := md5.New()
 	io.WriteString(hash, contents)
 
-	return sum != string(hash.Sum(nil))
+	return strings.TrimSpace(string(data)) != string(hash.Sum(nil))
 }
 
 // safeCAFile implements `SafeCAFile` by assuming a `commander` type will be
@@ -60,12 +59,11 @@ func safeCAFile(cmd commander, contents string) error {
 	}
 
 	// Nuke everything before populating things back again.
-
-	_ = os.Remove(hashFilePath)
-	_ = os.Remove(caFilePath)
+	os.Remove(hashFilePath)
+	os.Remove(caFilePath)
 
 	// Safe the file
-	err := os.WriteFile(caFilePath, []byte(contents), 0644)
+	err := os.WriteFile(caFilePath, []byte(contents), 0o644)
 	if err != nil {
 		return err
 	}
@@ -78,7 +76,7 @@ func safeCAFile(cmd commander, contents string) error {
 	// Safe the new checksum
 	hash := md5.New()
 	io.WriteString(hash, contents)
-	_ = os.WriteFile(hashFilePath, hash.Sum(nil), 0644)
+	os.WriteFile(hashFilePath, hash.Sum(nil), 0o644)
 
 	return nil
 }

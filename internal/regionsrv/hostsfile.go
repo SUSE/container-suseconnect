@@ -34,6 +34,7 @@ func UpdateHostsFile(hostname string, ip string) error {
 	newcontent := ""
 	hostChecked := false
 	shorthost := strings.Split(hostname, ".")[0]
+
 	for _, line := range lines {
 		fields := strings.Fields(line)
 		if len(fields) >= 2 && fields[1] == hostname {
@@ -41,8 +42,10 @@ func UpdateHostsFile(hostname string, ip string) error {
 				log.Printf("updating hosts entry for %s", hostname)
 				line = fmt.Sprintf("%s %s %s\n", ip, hostname, shorthost)
 			}
+
 			hostChecked = true
 		}
+
 		newcontent += line + "\n"
 	}
 
@@ -50,7 +53,7 @@ func UpdateHostsFile(hostname string, ip string) error {
 		newcontent += fmt.Sprintf("%s %s %s\n", ip, hostname, shorthost)
 	}
 
-	err = os.WriteFile(hostsFile, []byte(newcontent), 0644)
+	err = os.WriteFile(hostsFile, []byte(newcontent), 0o644)
 	if err != nil {
 		return fmt.Errorf("can't write %s file: %v", hostsFile, err.Error())
 	}
