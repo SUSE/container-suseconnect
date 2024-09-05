@@ -23,11 +23,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetLogWritterFromRegularFile(t *testing.T) {
 	tempFile, err := os.CreateTemp("", "prefix")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	defer os.Remove(tempFile.Name())
 
@@ -45,7 +46,7 @@ func TestGetLogWritterFromRelativeFile(t *testing.T) {
 
 func TestGetLogWritterFromValidDir(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.RemoveAll(dir)
 
 	w, err := getLogWritter(dir)
@@ -55,7 +56,7 @@ func TestGetLogWritterFromValidDir(t *testing.T) {
 
 func TestGetLogWritterFromMissingDir(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.RemoveAll(dir)
 
 	// ensure the path is terminated by / othewise it will be considered a file
@@ -67,7 +68,7 @@ func TestGetLogWritterFromMissingDir(t *testing.T) {
 
 func TestGetLogWritterFromMissingDirFile(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.RemoveAll(dir)
 
 	path := filepath.Join(dir, "does", "not", "exits", "test.log")
@@ -90,7 +91,7 @@ func TestGetLogWritterFromSpaces(t *testing.T) {
 
 func TestGetLogWritterFromSymbolInName(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.RemoveAll(dir)
 
 	w, err := getLogWritter(filepath.Join(dir, "@"))
@@ -126,7 +127,7 @@ func TestGetLogEnvIfSet(t *testing.T) {
 	// ensure no variable is set
 	os.Unsetenv(LogEnv)
 	err := os.Setenv(LogEnv, "/path/file.log")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.Unsetenv(LogEnv)
 
 	envPath := getLogEnv()
@@ -137,7 +138,7 @@ func TestGetLogEnvTrimSpaces(t *testing.T) {
 	// ensure no variable is set
 	os.Unsetenv(LogEnv)
 	err := os.Setenv(LogEnv, "    /path/file.log    ")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.Unsetenv(LogEnv)
 
 	envPath := getLogEnv()
@@ -150,11 +151,11 @@ func TestSetLoggerOutput(t *testing.T) {
 	os.Unsetenv(LogEnv)
 
 	tempFile, err := os.CreateTemp("", "")
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.Remove(tempFile.Name())
 
 	err = os.Setenv(LogEnv, tempFile.Name())
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	defer os.Unsetenv(LogEnv)
 
 	logLine := "This in a log entry in a file and Stderr"

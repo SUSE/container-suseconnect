@@ -17,58 +17,45 @@ package containersuseconnect
 import (
 	"bytes"
 	"log"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCredentials(t *testing.T) {
 	cr := &Credentials{}
-
-	if cr.separator() != '=' {
-		t.Fatal("Wrong separator")
-	}
+	require.EqualValues(t, '=', cr.separator())
 
 	prepareLogger()
 	err := cr.afterParseCheck()
+	assert.NotNil(t, err)
 	msg := "Can't find username"
-	if err == nil || err.Error() != msg {
-		t.Fatal("Wrong error")
-	}
+	assert.EqualError(t, err, msg)
 	shouldHaveLogged(t, msg)
 
 	cr.setValues("username", "suse")
 	prepareLogger()
-	msg = "Can't find password"
 	err = cr.afterParseCheck()
-	if err == nil || err.Error() != msg {
-		t.Fatal("Wrong error")
-	}
+	assert.NotNil(t, err)
+	msg = "Can't find password"
+	assert.EqualError(t, err, msg)
 	shouldHaveLogged(t, msg)
 
 	cr.setValues("password", "1234")
 	err = cr.afterParseCheck()
-	if err != nil {
-		t.Fatal("There should not be an error")
-	}
+	assert.Nil(t, err)
 
 	locs := cr.locations()
-	if locs[0] != "/etc/zypp/credentials.d/SCCcredentials" {
-		t.Fatal("Wrong location")
-	}
-	if locs[1] != "/run/secrets/SCCcredentials" {
-		t.Fatal("Wrong location")
-	}
-	if locs[2] != "/run/secrets/credentials.d/SCCcredentials" {
-		t.Fatal("Wrong location")
-	}
+	assert.Contains(t, locs, "/etc/zypp/credentials.d/SCCcredentials")
+	assert.Contains(t, locs, "/run/secrets/SCCcredentials")
+	assert.Contains(t, locs, "/run/secrets/credentials.d/SCCcredentials")
 
 	// It should log a proper warning.
 	buffer := bytes.NewBuffer([]byte{})
 	log.SetOutput(buffer)
 	cr.setValues("unknown", "value")
-	if !strings.Contains(buffer.String(), "Warning: Unknown key 'unknown'") {
-		t.Fatal("Wrong warning!")
-	}
+	assert.Contains(t, buffer.String(), "Warning: Unknown key 'unknown'")
 }
 
 // In the following test we will create a mock that just wraps up the
@@ -105,23 +92,10 @@ func TestIntegrationCredentials(t *testing.T) {
 	mock := CredentialsMock{cr: &credentials}
 
 	err := ReadConfiguration(&mock)
-	if err != nil {
-		t.Fatal("This should've been a successful run")
-	}
+	require.Nil(t, err)
 
-	if mock.cr.Username != "SCC_a6994b1d3ae14b35agc7cef46b4fff9a" {
-		t.Fatal("Unexpected name value")
-	}
-
-	if mock.cr.Password != "10yb1x6bd159g741ad420fd5aa5083e4" {
-		t.Fatal("Unexpected password value")
-	}
-
-	if mock.cr.SystemToken != "36531d07-a283-441b-a02a-1cd9a88b0d5d" {
-		t.Fatal("Unexpected system_token value")
-	}
-
-	if mock.cr.onLocationsNotFound() {
-		t.Fatalf("It should've been false")
-	}
+	assert.Equal(t, "SCC_a6994b1d3ae14b35agc7cef46b4fff9a", mock.cr.Username)
+	assert.Equal(t, "10yb1x6bd159g741ad420fd5aa5083e4", mock.cr.Password)
+	assert.Equal(t, "36531d07-a283-441b-a02a-1cd9a88b0d5d", mock.cr.SystemToken)
+	assert.False(t, mock.cr.onLocationsNotFound())
 }

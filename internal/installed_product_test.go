@@ -17,6 +17,9 @@ package containersuseconnect
 import (
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type NotFoundProvider struct{}
@@ -29,13 +32,8 @@ func TestFailNonExistantProduct(t *testing.T) {
 	var b NotFoundProvider
 
 	_, err := readInstalledProduct(b)
-	if err == nil {
-		t.Fatal("This file should not exist...")
-	}
-
-	if err.Error() != "No base product detected" {
-		t.Fatal("Wrong error message")
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "No base product detected")
 }
 
 type NotAllowedProvider struct{}
@@ -48,13 +46,8 @@ func TestFailNotAllowedProduct(t *testing.T) {
 	var b NotAllowedProvider
 
 	_, err := readInstalledProduct(b)
-	if err == nil {
-		t.Fatal("This file should not be available...")
-	}
-
-	if err.Error() != "Can't open base product file: open /etc/shadow: permission denied" {
-		t.Fatal("Wrong error message")
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Can't open base product file: open /etc/shadow: permission denied")
 }
 
 type BadFormattedProvider struct{}
@@ -67,13 +60,8 @@ func TestFailBadFormattedProduct(t *testing.T) {
 	var b BadFormattedProvider
 
 	_, err := readInstalledProduct(b)
-	if err == nil {
-		t.Fatal("This file should have a bad format")
-	}
-
-	if err.Error() != "Can't parse base product file: EOF" {
-		t.Fatal("Wrong error message")
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Can't parse base product file: EOF")
 }
 
 type MockProvider struct{}
@@ -86,25 +74,12 @@ func TestMockProvider(t *testing.T) {
 	var b MockProvider
 
 	p, err := readInstalledProduct(b)
-	if err != nil {
-		t.Fatal("It should've read it just fine")
-	}
+	require.Nil(t, err)
 
-	if p.Identifier != "SLES" {
-		t.Fatal("Wrong product name")
-	}
-
-	if p.Version != "12" {
-		t.Fatal("Wrong product version")
-	}
-
-	if p.Arch != "x86_64" {
-		t.Fatal("Wrong product arch")
-	}
-
-	if p.String() != "SLES-12-x86_64" {
-		t.Fatal("Wrong product string")
-	}
+	assert.Equal(t, "SLES", p.Identifier)
+	assert.Equal(t, "12", p.Version)
+	assert.Equal(t, "x86_64", p.Arch)
+	assert.Equal(t, "SLES-12-x86_64", p.String())
 }
 
 // This test is useless outside SUSE. Added so the go cover tool is happy.
@@ -113,15 +88,11 @@ func TestSUSE(t *testing.T) {
 
 	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
 		_, err = GetInstalledProduct()
-		if err == nil {
-			t.Fatal("It should fail")
-		}
+		assert.NotNil(t, err)
 
 		return
 	}
 
 	_, err := GetInstalledProduct()
-	if err != nil {
-		t.Fatal("We assume that is SUSE, so this should be fine")
-	}
+	assert.Nil(t, err)
 }

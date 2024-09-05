@@ -22,103 +22,46 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func productHelper(t *testing.T, product Product, expectedVersion string) {
-	if product.ProductType != "base" {
-		t.Fatal("Wrong base for product")
-	}
-	if product.Identifier != "SLES" {
-		t.Fatal("Wrong identifier for product")
-	}
-	if product.Version != expectedVersion {
-		t.Fatal("Wrong version for product")
-	}
-	if product.Arch != "x86_64" {
-		t.Fatal("Wrong arch for product")
-	}
-}
-
-func productHelperSLE12(t *testing.T, product Product) {
-	productHelper(t, product, "12")
-
-	if len(product.Repositories) != 4 {
-		t.Fatalf("Wrong number of repos %v", len(product.Repositories))
-	}
-
-	if product.Repositories[3].Name != "SLES12-Debuginfo-Pool" {
-		t.Fatal("Unexpected value")
-	}
-
-	expectedURL := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
-	if string(product.Repositories[3].URL) != expectedURL {
-		t.Fatalf("Unexpected repository URL: %s", product.Repositories[3].URL)
-	}
-}
-
-func productHelperSLE15RMT(t *testing.T, product Product) {
-	productHelper(t, product, "15.1")
-
-	if len(product.Repositories) != 6 {
-		t.Fatal("Wrong number of repos")
-	}
-
-	if product.Extensions[0].Repositories[2].Name != "SLE-Module-Basesystem15-SP1-Pool" {
-		t.Fatalf("Unexpected Extension Name: %v", product.Extensions[0].Repositories[2].Name)
-	}
-
-	expectedURL := "https://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15-SP1/x86_64/product/?credentials=SCCcredentials"
-	if string(product.Extensions[0].Repositories[2].URL) != expectedURL {
-		t.Fatalf("Unexpected repository URL: %s", product.Extensions[0].Repositories[2].URL)
-	}
-}
-
-// Tests for the parseProduct function.
-
 func TestUnreadableProduct(t *testing.T) {
-	file, err := os.Open("non-existant-file")
-	if err == nil {
-		file.Close()
-		t.Fatal("This should've been an error...")
-	}
-
-	_, err = parseProducts(file)
-	if err == nil || err.Error() != "Can't read product information: invalid argument" {
-		t.Fatal("This is not the proper error we're expecting")
-	}
+	invalidFile := (*os.File)(nil)
+	_, err := parseProducts(invalidFile)
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Can't read product information: invalid argument")
 }
 
 func TestInvalidJsonForProduct(t *testing.T) {
 	reader := strings.NewReader("invalid json is invalid")
 	_, err := parseProducts(reader)
-
-	if err == nil ||
-		err.Error() != "Can't read product information: invalid character 'i' looking for beginning of value - invalid json is invalid" {
-
-		t.Fatalf("This is not the proper error we're expecting: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Can't read product information: invalid character 'i' looking for beginning of value - invalid json is invalid")
 }
 
 func TestValidProduct(t *testing.T) {
 	file, err := os.Open("testdata/products-sle12.json")
-	if err != nil {
-		t.Fatal("Something went wrong when reading the JSON file")
-	}
+	require.Nil(t, err)
 	defer file.Close()
 
 	products, err := parseProducts(file)
-	if err != nil {
-		t.Fatal("Unexpected error when reading a valid JSON file")
-	}
+	require.Nil(t, err)
+	require.Len(t, products, 1)
 
-	if len(products) != 1 {
-		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
-	}
+	product := products[0]
+	assert.Equal(t, "12", product.Version)
+	assert.Equal(t, "base", product.ProductType)
+	assert.Equal(t, "SLES", product.Identifier)
+	assert.Equal(t, "x86_64", product.Arch)
 
-	productHelperSLE12(t, products[0])
+	if assert.Len(t, product.Repositories, 4) {
+		assert.Equal(t, "SLES12-Debuginfo-Pool", product.Repositories[3].Name)
+		expectedURL := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
+		assert.Equal(t, expectedURL, product.Repositories[3].URL)
+	}
 }
-
-// Tests for the requestProduct function.
 
 func TestInvalidRequestForProduct(t *testing.T) {
 	var cr Credentials
@@ -126,9 +69,8 @@ func TestInvalidRequestForProduct(t *testing.T) {
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
 	_, err := RequestProducts(data, cr, ip)
-	if err == nil || !strings.Contains(err.Error(), "missing protocol scheme") {
-		t.Fatalf("There should be a proper error: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.ErrorContains(t, err, "missing protocol scheme")
 }
 
 func TestFaultyRequestForProduct(t *testing.T) {
@@ -137,9 +79,8 @@ func TestFaultyRequestForProduct(t *testing.T) {
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
 	_, err := RequestProducts(data, cr, ip)
-	if err == nil || !strings.HasSuffix(err.Error(), "no Host in request URL") {
-		t.Fatalf("There should be a proper error: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.ErrorContains(t, err, "no Host in request URL")
 }
 
 func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
@@ -162,9 +103,8 @@ func TestRemoteErrorWhileRequestingProducts(t *testing.T) {
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
 	_, err := RequestProducts(data, cr, ip)
-	if err == nil || err.Error() != "Unexpected error while retrieving products with regCode : 500 Internal Server Error" {
-		t.Fatalf("It should have a proper error: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Unexpected error while retrieving products with regCode : 500 Internal Server Error")
 }
 
 func TestValidRequestForProduct(t *testing.T) {
@@ -185,15 +125,20 @@ func TestValidRequestForProduct(t *testing.T) {
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
 	products, err := RequestProducts(data, cr, ip)
-	if err != nil {
-		t.Fatal("It should've run just fine...")
-	}
+	require.Nil(t, err)
+	require.Len(t, products, 1)
 
-	if len(products) != 1 {
-		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
-	}
+	product := products[0]
+	assert.Equal(t, "12", product.Version)
+	assert.Equal(t, "base", product.ProductType)
+	assert.Equal(t, "SLES", product.Identifier)
+	assert.Equal(t, "x86_64", product.Arch)
 
-	productHelperSLE12(t, products[0])
+	if assert.Len(t, product.Repositories, 4) {
+		assert.Equal(t, "SLES12-Debuginfo-Pool", product.Repositories[3].Name)
+		expectedURL := "https://smt.test.lan/repo/SUSE/Products/SLE-SERVER/12/x86_64/product_debug"
+		assert.Equal(t, expectedURL, product.Repositories[3].URL)
+	}
 }
 
 func TestValidRequestForProductUsingRMT(t *testing.T) {
@@ -221,13 +166,18 @@ func TestValidRequestForProductUsingRMT(t *testing.T) {
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
 	products, err := RequestProducts(data, cr, ip)
-	if err != nil {
-		t.Fatal("It should've run just fine...")
-	}
+	require.Nil(t, err)
+	require.Len(t, products, 1)
 
-	if len(products) != 1 {
-		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
-	}
+	product := products[0]
+	assert.Equal(t, "15.1", product.Version)
+	assert.Equal(t, "base", product.ProductType)
+	assert.Equal(t, "SLES", product.Identifier)
+	assert.Equal(t, "x86_64", product.Arch)
 
-	productHelperSLE15RMT(t, products[0])
+	if assert.Len(t, product.Repositories, 6) && assert.Len(t, product.Extensions, 1) {
+		assert.Equal(t, "SLE-Module-Basesystem15-SP1-Pool", product.Extensions[0].Repositories[2].Name)
+		expectedURL := "https://smt-ec2.susecloud.net/repo/SUSE/Products/SLE-Module-Basesystem/15-SP1/x86_64/product/?credentials=SCCcredentials"
+		assert.Equal(t, expectedURL, product.Extensions[0].Repositories[2].URL)
+	}
 }

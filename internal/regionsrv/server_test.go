@@ -22,8 +22,10 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // testServer implements a net.Listener with some mocking attributes.
@@ -90,14 +92,10 @@ func withSuppressedLog(fn func()) {
 	log.SetOutput(os.Stdout)
 }
 
-// Test suite below
-
 func TestReadConfigFromServerFailConnection(t *testing.T) {
 	withSuppressedLog(func() {
 		_, err := ReadConfigFromServer()
-		if !strings.Contains(err.Error(), "connection refused") {
-			t.Fatalf("should be a connection refused error, got '%v'", err)
-		}
+		assert.ErrorContains(t, err, "connection refused")
 	})
 }
 
@@ -113,9 +111,7 @@ func TestReadConfigFromServerBadResponse(t *testing.T) {
 		<-ts.bootstrapped
 
 		_, err := ReadConfigFromServer()
-		if !strings.Contains(err.Error(), "invalid character '{' looking for beginning of object key string") {
-			t.Fatalf("should be a 'invalid character '{' looking for beginning of object key string', got '%v'", err)
-		}
+		assert.ErrorContains(t, err, "invalid character '{' looking for beginning of object key string")
 	})
 }
 
@@ -131,9 +127,7 @@ func TestEmptyResponseFromServer(t *testing.T) {
 		<-ts.bootstrapped
 
 		_, err := ReadConfigFromServer()
-		if !strings.Contains(err.Error(), "empty response from the server") {
-			t.Fatalf("should be a 'empty response from the server', got '%v'", err)
-		}
+		assert.ErrorContains(t, err, "empty response from the server")
 	})
 }
 
@@ -151,22 +145,15 @@ func TestValidResponse(t *testing.T) {
 		<-ts.bootstrapped
 
 		cfg, err := ReadConfigFromServer()
-		if err != nil {
-			t.Fatalf("should be nil but got: %v", err)
-		}
-
-		if cfg.InstanceData != ts.response.InstanceData {
-			t.Fatalf("Expected '%v', got '%v'", cfg.InstanceData, ts.response.InstanceData)
-		}
+		require.Nil(t, err)
+		assert.Equal(t, cfg.InstanceData, ts.response.InstanceData)
 	})
 }
 
 func TestServerReachableNope(t *testing.T) {
 	withSuppressedLog(func() {
 		err := ServerReachable()
-		if !strings.Contains(err.Error(), "connection refused") {
-			t.Fatalf("should be a connection refused error, got '%v'", err)
-		}
+		assert.ErrorContains(t, err, "connection refused")
 	})
 }
 
@@ -179,8 +166,6 @@ func TestServerReachableSuccessful(t *testing.T) {
 		<-ts.bootstrapped
 
 		err := ServerReachable()
-		if err != nil {
-			t.Fatalf("should be nil but got: %v", err)
-		}
+		assert.Nil(t, err)
 	})
 }

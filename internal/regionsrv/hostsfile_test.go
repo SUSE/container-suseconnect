@@ -18,8 +18,10 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // copyHostFileToTemp copies the hosts file from the fixtures directory into a
@@ -43,80 +45,51 @@ func copyHostFileToTemp(mode os.FileMode) string {
 	return path
 }
 
-// Test suite below
-
 func TestUpdateHostsFileCouldNotRead(t *testing.T) {
 	hostsFile = "/bubblegloop-swamp"
 	err := UpdateHostsFile("hostname", "1.1.1.1")
-
-	if err == nil || !strings.Contains(err.Error(), "can't read /bubblegloop-swamp file") {
-		t.Fatalf("Expected 'can't read /bubblegloop-swamp file', got '%v'\n", err)
-	}
+	assert.NotNil(t, err)
+	assert.ErrorContains(t, err, "can't read /bubblegloop-swamp file")
 }
 
 func TestUpdateHostsFileCouldNotWrite(t *testing.T) {
 	hostsFile = copyHostFileToTemp(0o400)
-	if hostsFile == "" {
-		t.Fatalf("Failed to initialize hosts file")
-	}
-
+	require.NotEmpty(t, hostsFile)
 	defer os.Remove(hostsFile)
 
 	err := UpdateHostsFile("hostname", "1.1.1.1")
-	if err == nil || !strings.Contains(err.Error(), "can't write") {
-		t.Fatalf("Expected a write error, got '%v'\n", err)
-	}
+	assert.NotNil(t, err)
+	assert.ErrorContains(t, err, "can't write")
 }
 
 func TestUpdateHostsFileSuccessful(t *testing.T) {
 	hostsFile = copyHostFileToTemp(0o644)
-	if hostsFile == "" {
-		t.Fatalf("Failed to initialize hosts file")
-	}
-
+	require.NotEmpty(t, hostsFile)
 	defer os.Remove(hostsFile)
 
 	before, err := os.ReadFile(hostsFile)
+	require.Nil(t, err)
 
 	err = UpdateHostsFile("test-hostname", "1.1.1.1")
-	if err != nil {
-		t.Fatalf("Expected a nil error, got: %v", err)
-	}
+	require.Nil(t, err)
 
 	after, err := os.ReadFile(hostsFile)
-	if err != nil {
-		t.Fatalf("Expected a nil error, got: %v", err)
-	}
-	if !strings.Contains(string(after), string(before)) {
-		t.Fatalf("%v\nshould contain\n%v", string(after), string(before))
-	}
+	require.Nil(t, err)
 
-	expected := "1.1.1.1 test-hostname test-hostname"
-	if !strings.Contains(string(after), expected) {
-		t.Fatalf("%v\nshould contain\n%v", string(after), expected)
-	}
+	assert.Contains(t, string(after), string(before))
+	assert.Contains(t, string(after), "1.1.1.1 test-hostname test-hostname")
 }
 
 func TestUpdateHostsFileUpdateExistingEntry(t *testing.T) {
 	hostsFile = copyHostFileToTemp(0o644)
-	if hostsFile == "" {
-		t.Fatalf("Failed to initialize hosts file")
-	}
-
+	require.NotEmpty(t, hostsFile)
 	defer os.Remove(hostsFile)
 
 	err := UpdateHostsFile("ip6-localnet", "1.1.1.1")
-	if err != nil {
-		t.Fatalf("Expected a nil error, got: %v", err)
-	}
+	require.Nil(t, err)
 
 	after, err := os.ReadFile(hostsFile)
-	if err != nil {
-		t.Fatalf("Expected a nil error, got: %v", err)
-	}
+	require.Nil(t, err)
 
-	expected := "1.1.1.1 ip6-localnet ip6-localnet"
-	if !strings.Contains(string(after), expected) {
-		t.Fatalf("%v\nshould contain\n%v", string(after), expected)
-	}
+	assert.Contains(t, string(after), "1.1.1.1 ip6-localnet ip6-localnet")
 }

@@ -19,13 +19,14 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetLocationPath(t *testing.T) {
 	path := getLocationPath([]string{})
-	if path != "" {
-		t.Fatal("It should be empty")
-	}
+	assert.Empty(t, path)
 
 	strs := []string{
 		"does/not/exist",
@@ -33,9 +34,7 @@ func TestGetLocationPath(t *testing.T) {
 	}
 
 	path = getLocationPath(strs)
-	if path != "testdata/products-sle12.json" {
-		t.Fatalf("Wrong location path: %v", path)
-	}
+	assert.Equal(t, "testdata/products-sle12.json", path)
 }
 
 type NotFoundConfiguration struct{}
@@ -65,11 +64,11 @@ func TestNotFound(t *testing.T) {
 	prepareLogger()
 
 	err := ReadConfiguration(&cfg)
-	if err == nil || err.Error() != "Warning: SUSE credentials not found: [] - automatic handling of repositories not done." {
-		t.Fatalf("Wrong error: %v", err)
-	}
+	require.NotNil(t, err)
 
-	shouldHaveLogged(t, "Warning: SUSE credentials not found: [] - automatic handling of repositories not done.")
+	msg := "Warning: SUSE credentials not found: [] - automatic handling of repositories not done."
+	assert.EqualError(t, err, msg)
+	shouldHaveLogged(t, msg)
 }
 
 type NotAllowedConfiguration struct{}
@@ -99,31 +98,26 @@ func TestNotAllowed(t *testing.T) {
 	prepareLogger()
 
 	err := ReadConfiguration(&cfg)
-	msg := "Can't open /etc/shadow file: open /etc/shadow: permission denied"
-	if err == nil || err.Error() != msg {
-		t.Fatal("Wrong error")
-	}
+	require.NotNil(t, err)
 
+	msg := "Can't open /etc/shadow file: open /etc/shadow: permission denied"
+	assert.EqualError(t, err, msg)
 	shouldHaveLogged(t, msg)
 }
 
 func TestParseInvalid(t *testing.T) {
 	var cfg NotAllowedConfiguration
 
-	file, err := os.Open("/etc/shadow")
-	if err == nil {
-		file.Close()
-		t.Fatal("There should be an error here")
-	}
+	file, err := os.Open("testdata/suseconnect.txt")
+	require.Nil(t, err)
 
 	prepareLogger()
 
 	err = parse(cfg, file)
-	msg := "Error when scanning configuration: invalid argument"
-	if err == nil || err.Error() != msg {
-		t.Fatal("Wrong error")
-	}
+	assert.NotNil(t, err)
 
+	msg := "Can't parse line: insecure: true"
+	assert.EqualError(t, err, msg)
 	shouldHaveLogged(t, msg)
 }
 
@@ -153,9 +147,8 @@ func TestParseFailAfterCheck(t *testing.T) {
 
 	str := strings.NewReader("")
 	err := parse(cfg, str)
-	if err == nil || err.Error() != "I'm grumpy, and I want to error" {
-		t.Fatal("Wrong error")
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "I'm grumpy, and I want to error")
 }
 
 func TestParseFailNoSeparator(t *testing.T) {
@@ -166,10 +159,9 @@ func TestParseFailNoSeparator(t *testing.T) {
 	prepareLogger()
 
 	err := parse(cfg, str)
-	msg := "Can't parse line: keywithoutvalue"
-	if err == nil || err.Error() != msg {
-		t.Fatal("Wrong error")
-	}
+	assert.NotNil(t, err)
 
+	msg := "Can't parse line: keywithoutvalue"
+	assert.EqualError(t, err, msg)
 	shouldHaveLogged(t, msg)
 }
