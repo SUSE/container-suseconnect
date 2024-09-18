@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "******************************************"
+echo "* Checking for bugs with static analysis *"
+echo "******************************************"
+
+go install honnef.co/go/tools/cmd/staticcheck@latest
+
+staticcheck -tests=false ./...

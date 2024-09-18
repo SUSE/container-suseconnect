@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "*************************"
+echo "* Checking code styling *"
+echo "*************************"
+
+go install mvdan.cc/gofumpt@latest
+
+gofmt -s -d .
+gofumpt -d .

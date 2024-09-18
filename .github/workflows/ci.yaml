@@ -1,24 +1,55 @@
-name: Golang Tests
-
-on: [push, pull_request]
-
+name: CI
+on:
+  schedule:
+    - cron: '0 12 * * SUN'
+  push:
+  pull_request:
+  repository_dispatch:
 jobs:
-  build:
-
+  checks:
+    name: Static code checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.21
+          go-version: 1.22
+      - name: Verify modules
+        run: ./build/ci/verify
+      - name: Code formatting check
+        run: ./build/ci/formatting
+      - name: Constructs check
+        run: ./build/ci/vet
+      - name: Static analysis check
+        run: ./build/ci/staticcheck
 
-      - name: Install Staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    container:
+      image: registry.suse.com/bci/golang:1.22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hack for Git dubious ownership
+        run: git config --global --add safe.directory $PWD
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+      - name: Test
+        run: ./build/ci/unittest
+      - name: Code coverage check
+        run: ./build/ci/coverage
 
+  build:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
       - name: Build
-        run: go build -v ./...
-
-      - name: make tests
-        run: make test
+        run: ./build/ci/build

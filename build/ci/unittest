@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "*************"
+echo "* Unit test *"
+echo "*************"
+
+go test -v ./...
