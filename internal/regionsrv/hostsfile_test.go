@@ -53,6 +53,12 @@ func TestUpdateHostsFileCouldNotRead(t *testing.T) {
 }
 
 func TestUpdateHostsFileCouldNotWrite(t *testing.T) {
+	// TODO: is there a better way to test this?
+	//       root can read/write anything
+	if os.Getuid() == 0 {
+		t.Skip("Running as root")
+	}
+
 	hostsFile = copyHostFileToTemp(0o400)
 	require.NotEmpty(t, hostsFile)
 	defer os.Remove(hostsFile)

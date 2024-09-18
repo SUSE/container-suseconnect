@@ -94,12 +94,12 @@ func TestSafeCAFileBadWrite(t *testing.T) {
 	hashFilePath = fixturesPath(fmt.Sprintf("file%v.md5", rand.Int()))
 	defer os.Remove(hashFilePath)
 
-	caFilePath = "/wubalubadubdub"
+	caFilePath = "/path/that/does/not/exist/file"
 	defer os.Remove(caFilePath)
 
 	err := safeCAFile(NewSuccessCmd(), "valid")
 	assert.NotNil(t, err)
-	assert.EqualError(t, err, "open /wubalubadubdub: permission denied")
+	assert.EqualError(t, err, "open /path/that/does/not/exist/file: no such file or directory")
 }
 
 func TestSafeCAFileBadCommand(t *testing.T) {

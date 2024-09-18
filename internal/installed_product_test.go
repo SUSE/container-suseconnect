@@ -22,77 +22,60 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type NotFoundProvider struct{}
-
-func (m NotFoundProvider) Location() string {
-	return "testdata/not-found.xml"
+type testProductProvider struct {
+	location string
 }
 
-func TestFailNonExistantProduct(t *testing.T) {
-	var b NotFoundProvider
-
-	_, err := readInstalledProduct(b)
-	assert.NotNil(t, err)
-	assert.EqualError(t, err, "No base product detected")
+func (p testProductProvider) Location() string {
+	return p.location
 }
 
-type NotAllowedProvider struct{}
+func TestValidProductFile(t *testing.T) {
+	p := testProductProvider{
+		location: "testdata/installed.xml",
+	}
 
-func (m NotAllowedProvider) Location() string {
-	return "/etc/shadow"
+	ip, err := readInstalledProduct(p)
+	require.Nil(t, err)
+
+	assert.Equal(t, ip.Vendor, "SUSE")
+	assert.Equal(t, ip.Identifier, "SLES")
+	assert.Equal(t, ip.Version, "12")
+	assert.Equal(t, ip.Arch, "x86_64")
+	assert.Equal(t, ip.String(), "SLES-12-x86_64")
 }
 
-func TestFailNotAllowedProduct(t *testing.T) {
-	var b NotAllowedProvider
+func TestInvalidProductFile(t *testing.T) {
+	p := testProductProvider{
+		location: "testdata/bad.xml",
+	}
 
-	_, err := readInstalledProduct(b)
-	assert.NotNil(t, err)
-	assert.EqualError(t, err, "Can't open base product file: open /etc/shadow: permission denied")
-}
+	_, err := readInstalledProduct(p)
 
-type BadFormattedProvider struct{}
-
-func (m BadFormattedProvider) Location() string {
-	return "testdata/bad.xml"
-}
-
-func TestFailBadFormattedProduct(t *testing.T) {
-	var b BadFormattedProvider
-
-	_, err := readInstalledProduct(b)
-	assert.NotNil(t, err)
 	assert.EqualError(t, err, "Can't parse base product file: EOF")
 }
 
-type MockProvider struct{}
-
-func (m MockProvider) Location() string {
-	return "testdata/installed.xml"
-}
-
-func TestMockProvider(t *testing.T) {
-	var b MockProvider
-
-	p, err := readInstalledProduct(b)
-	require.Nil(t, err)
-
-	assert.Equal(t, "SLES", p.Identifier)
-	assert.Equal(t, "12", p.Version)
-	assert.Equal(t, "x86_64", p.Arch)
-	assert.Equal(t, "SLES-12-x86_64", p.String())
-}
-
-// This test is useless outside SUSE. Added so the go cover tool is happy.
-func TestSUSE(t *testing.T) {
-	var b SUSEProductProvider
-
-	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
-		_, err = GetInstalledProduct()
-		assert.NotNil(t, err)
-
-		return
+func TestMissingProductFile(t *testing.T) {
+	p := testProductProvider{
+		location: "/path/that/does/not/exists/file.xml",
 	}
 
-	_, err := GetInstalledProduct()
+	_, err := readInstalledProduct(p)
+
+	assert.EqualError(t, err, "No base product detected")
+}
+
+func TestGetInstalledProduct(t *testing.T) {
+	var b SUSEProductProvider
+
+	// if the file does not exist is not SUSE
+	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
+		t.Skip("Not a SUSE-based system")
+	}
+
+	ip, err := GetInstalledProduct()
 	assert.Nil(t, err)
+
+	// if the file exist, it should be SUSE/openSUSE
+	assert.Contains(t, []string{"SUSE", "openSUSE"}, ip.Vendor)
 }

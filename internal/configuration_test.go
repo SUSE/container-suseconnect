@@ -16,13 +16,40 @@ package containersuseconnect
 
 import (
 	"errors"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+type testConfiguration struct {
+	loc  []string
+	fail bool
+}
+
+func (cfg testConfiguration) separator() byte {
+	return '.'
+}
+
+func (cfg testConfiguration) locations() []string {
+	return cfg.loc
+}
+
+func (cfg testConfiguration) onLocationsNotFound() bool {
+	return false
+}
+
+func (cfg testConfiguration) setValues(key, value string) {
+}
+
+func (cfg testConfiguration) afterParseCheck() error {
+	if cfg.fail {
+		return errors.New("I'm grumpy, and I want to error")
+	}
+
+	return nil
+}
 
 func TestGetLocationPath(t *testing.T) {
 	path := getLocationPath([]string{})
@@ -37,131 +64,59 @@ func TestGetLocationPath(t *testing.T) {
 	assert.Equal(t, "testdata/products-sle12.json", path)
 }
 
-type NotFoundConfiguration struct{}
-
-func (cfg NotFoundConfiguration) separator() byte {
-	return '.'
+func TestGetLocationPathEmpty(t *testing.T) {
+	path := getLocationPath([]string{})
+	assert.Empty(t, path)
 }
 
-func (cfg NotFoundConfiguration) locations() []string {
-	return []string{}
-}
-
-func (cfg NotFoundConfiguration) onLocationsNotFound() bool {
-	return false
-}
-
-func (cfg NotFoundConfiguration) setValues(key, value string) {
-}
-
-func (cfg NotFoundConfiguration) afterParseCheck() error {
-	return nil
-}
-
-func TestNotFound(t *testing.T) {
-	var cfg NotFoundConfiguration
-
+func TestReadConfigurationNotFound(t *testing.T) {
 	prepareLogger()
+
+	cfg := testConfiguration{
+		loc: []string{"/path/not/found/cfg"},
+	}
 
 	err := ReadConfiguration(&cfg)
 	require.NotNil(t, err)
 
-	msg := "Warning: SUSE credentials not found: [] - automatic handling of repositories not done."
-	assert.EqualError(t, err, msg)
-	shouldHaveLogged(t, msg)
-}
-
-type NotAllowedConfiguration struct{}
-
-func (cfg NotAllowedConfiguration) separator() byte {
-	return '.'
-}
-
-func (cfg NotAllowedConfiguration) locations() []string {
-	return []string{"/etc/shadow"}
-}
-
-func (cfg NotAllowedConfiguration) onLocationsNotFound() bool {
-	return false
-}
-
-func (cfg NotAllowedConfiguration) setValues(key, value string) {
-}
-
-func (cfg NotAllowedConfiguration) afterParseCheck() error {
-	return nil
-}
-
-func TestNotAllowed(t *testing.T) {
-	var cfg NotAllowedConfiguration
-
-	prepareLogger()
-
-	err := ReadConfiguration(&cfg)
-	require.NotNil(t, err)
-
-	msg := "Can't open /etc/shadow file: open /etc/shadow: permission denied"
+	msg := "Warning: SUSE credentials not found: [/path/not/found/cfg] - automatic handling of repositories not done."
 	assert.EqualError(t, err, msg)
 	shouldHaveLogged(t, msg)
 }
 
 func TestParseInvalid(t *testing.T) {
-	var cfg NotAllowedConfiguration
-
-	file, err := os.Open("testdata/suseconnect.txt")
-	require.Nil(t, err)
-
 	prepareLogger()
 
-	err = parse(cfg, file)
-	assert.NotNil(t, err)
-
-	msg := "Can't parse line: insecure: true"
+	var cfg testConfiguration
+	str := strings.NewReader("@")
+	err := parse(cfg, str)
+	msg := "Can't parse line: @"
 	assert.EqualError(t, err, msg)
+
 	shouldHaveLogged(t, msg)
 }
 
-type ErrorAfterParseConfiguration struct{}
-
-func (cfg ErrorAfterParseConfiguration) separator() byte {
-	return '.'
-}
-
-func (cfg ErrorAfterParseConfiguration) locations() []string {
-	return []string{}
-}
-
-func (cfg ErrorAfterParseConfiguration) onLocationsNotFound() bool {
-	return false
-}
-
-func (cfg ErrorAfterParseConfiguration) setValues(key, value string) {
-}
-
-func (cfg ErrorAfterParseConfiguration) afterParseCheck() error {
-	return errors.New("I'm grumpy, and I want to error")
-}
-
 func TestParseFailAfterCheck(t *testing.T) {
-	var cfg ErrorAfterParseConfiguration
+	cfg := testConfiguration{
+		fail: true,
+	}
 
 	str := strings.NewReader("")
 	err := parse(cfg, str)
-	assert.NotNil(t, err)
-	assert.EqualError(t, err, "I'm grumpy, and I want to error")
+	msg := "I'm grumpy, and I want to error"
+	assert.EqualError(t, err, msg)
 }
 
 func TestParseFailNoSeparator(t *testing.T) {
-	var cfg ErrorAfterParseConfiguration
-
-	str := strings.NewReader("keywithoutvalue")
-
 	prepareLogger()
 
+	var cfg testConfiguration
+	str := strings.NewReader("keywithoutvalue")
 	err := parse(cfg, str)
 	assert.NotNil(t, err)
 
 	msg := "Can't parse line: keywithoutvalue"
 	assert.EqualError(t, err, msg)
+
 	shouldHaveLogged(t, msg)
 }
