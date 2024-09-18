@@ -23,20 +23,31 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // testCommand implements the commander interface with an attribute for mocking
 // purposes.
 type testCommand struct {
-	shouldFail bool
+	fail bool
 }
 
-// Returns an error if `shouldFail` is set to true and nil otherwise.
 func (t testCommand) Run() error {
-	if t.shouldFail {
-		return errors.New("I AM ERROR")
+	if t.fail {
+		return errors.New("I am an error")
 	}
+
 	return nil
+}
+
+func NewSuccessCmd() commander {
+	return testCommand{fail: false}
+}
+
+func NewErrorCmd() commander {
+	return testCommand{fail: true}
 }
 
 // Run this before each test to get the fixtures path right.
@@ -51,99 +62,75 @@ func fixturesPath(file string) string {
 	return filepath.Join(path, "fixtures", file)
 }
 
-// Tests start here
-
-func TestNoUpdateIsNeeded(t *testing.T) {
+func TestUpdateIsNeededHashMismatch(t *testing.T) {
 	beforeTest()
 
-	if updateNeeded("valid") {
-		t.Fatal("Should not be needed")
-	}
+	assert.True(t, updateNeeded("nope"))
+}
 
-	if !updateNeeded("nope") {
-		t.Fatal("Should be needed")
-	}
+func TestNoUpdateIsNeededHashMatch(t *testing.T) {
+	beforeTest()
+
+	assert.False(t, updateNeeded("valid"))
 }
 
 func TestUpdateIsNeededNoFile(t *testing.T) {
 	beforeTest()
 
 	hashFilePath = "/tmp/wubalubadubdub"
-	b := updateNeeded("thing")
-	if !b {
-		t.Fatal("Expected update to be needed")
-	}
+	assert.True(t, updateNeeded("thing"))
 }
 
 func TestUpdateIsNeededCouldNotReadFile(t *testing.T) {
 	beforeTest()
 
 	hashFilePath = "/proc/1/mem"
-	b := updateNeeded("thing")
-	if !b {
-		t.Fatal("Expected update to be needed")
-	}
+	assert.True(t, updateNeeded("thing"))
 }
 
 func TestSafeCAFileBadWrite(t *testing.T) {
 	beforeTest()
 
 	hashFilePath = fixturesPath(fmt.Sprintf("file%v.md5", rand.Int()))
-	caFilePath = "/wubalubadubdub"
-	cmd := testCommand{shouldFail: false}
+	defer os.Remove(hashFilePath)
 
-	err := safeCAFile(cmd, "valid")
-	os.Remove(hashFilePath)
-	os.Remove(caFilePath)
+	caFilePath = "/path/that/does/not/exist/file"
+	defer os.Remove(caFilePath)
 
-	if err == nil {
-		t.Fatal("Should've failed")
-	}
+	err := safeCAFile(NewSuccessCmd(), "valid")
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "open /path/that/does/not/exist/file: no such file or directory")
 }
 
 func TestSafeCAFileBadCommand(t *testing.T) {
 	beforeTest()
 
 	hashFilePath = fixturesPath(fmt.Sprintf("file%v.md5", rand.Int()))
+	defer os.Remove(hashFilePath)
+
 	caFilePath = fixturesPath(fmt.Sprintf("file%v.pem", rand.Int()))
-	cmd := testCommand{shouldFail: true}
+	defer os.Remove(caFilePath)
 
-	err := safeCAFile(cmd, "valid")
-	os.Remove(hashFilePath)
-	os.Remove(caFilePath)
-
-	if err == nil {
-		t.Fatal("Expected error to be non-nil\n")
-	}
-
-	if err.Error() != "I AM ERROR" {
-		t.Fatalf("Expected another error, got: %v\n", err)
-	}
+	err := safeCAFile(NewErrorCmd(), "valid")
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "I am an error")
 }
 
 func TestSafeCAFileSuccess(t *testing.T) {
 	beforeTest()
 
 	hashFilePath = fixturesPath("tmp.md5")
-	cmd := testCommand{shouldFail: false}
+	defer os.Remove(hashFilePath)
 
-	err := safeCAFile(cmd, "valid")
-	if err != nil {
-		os.Remove(hashFilePath)
-		t.Fatalf("Expected error to be nil: %v\n", err)
-	}
+	err := safeCAFile(NewSuccessCmd(), "valid")
+	require.Nil(t, err)
 
 	b, _ := os.ReadFile(hashFilePath)
-	os.Remove(hashFilePath)
 
 	hash := md5.New()
 	io.WriteString(hash, "valid")
-	if string(b) != string(hash.Sum(nil)) {
-		t.Fatal("Bad checksum")
-	}
+	assert.Equal(t, string(b), string(hash.Sum(nil)))
 
 	b, _ = os.ReadFile(caFilePath)
-	if string(b) != "valid" {
-		t.Fatalf("Wrong certificate. Expected 'valid', got '%v'\n", string(b))
-	}
+	assert.Equal(t, "valid", string(b))
 }

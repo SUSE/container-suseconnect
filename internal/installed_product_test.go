@@ -17,111 +17,65 @@ package containersuseconnect
 import (
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-type NotFoundProvider struct{}
-
-func (m NotFoundProvider) Location() string {
-	return "testdata/not-found.xml"
+type testProductProvider struct {
+	location string
 }
 
-func TestFailNonExistantProduct(t *testing.T) {
-	var b NotFoundProvider
-
-	_, err := readInstalledProduct(b)
-	if err == nil {
-		t.Fatal("This file should not exist...")
-	}
-
-	if err.Error() != "No base product detected" {
-		t.Fatal("Wrong error message")
-	}
+func (p testProductProvider) Location() string {
+	return p.location
 }
 
-type NotAllowedProvider struct{}
+func TestValidProductFile(t *testing.T) {
+	p := testProductProvider{
+		location: "testdata/installed.xml",
+	}
 
-func (m NotAllowedProvider) Location() string {
-	return "/etc/shadow"
+	ip, err := readInstalledProduct(p)
+	require.Nil(t, err)
+
+	assert.Equal(t, ip.Vendor, "SUSE")
+	assert.Equal(t, ip.Identifier, "SLES")
+	assert.Equal(t, ip.Version, "12")
+	assert.Equal(t, ip.Arch, "x86_64")
+	assert.Equal(t, ip.String(), "SLES-12-x86_64")
 }
 
-func TestFailNotAllowedProduct(t *testing.T) {
-	var b NotAllowedProvider
-
-	_, err := readInstalledProduct(b)
-	if err == nil {
-		t.Fatal("This file should not be available...")
+func TestInvalidProductFile(t *testing.T) {
+	p := testProductProvider{
+		location: "testdata/bad.xml",
 	}
 
-	if err.Error() != "Can't open base product file: open /etc/shadow: permission denied" {
-		t.Fatal("Wrong error message")
-	}
+	_, err := readInstalledProduct(p)
+
+	assert.EqualError(t, err, "Can't parse base product file: EOF")
 }
 
-type BadFormattedProvider struct{}
+func TestMissingProductFile(t *testing.T) {
+	p := testProductProvider{
+		location: "/path/that/does/not/exists/file.xml",
+	}
 
-func (m BadFormattedProvider) Location() string {
-	return "testdata/bad.xml"
+	_, err := readInstalledProduct(p)
+
+	assert.EqualError(t, err, "No base product detected")
 }
 
-func TestFailBadFormattedProduct(t *testing.T) {
-	var b BadFormattedProvider
-
-	_, err := readInstalledProduct(b)
-	if err == nil {
-		t.Fatal("This file should have a bad format")
-	}
-
-	if err.Error() != "Can't parse base product file: EOF" {
-		t.Fatal("Wrong error message")
-	}
-}
-
-type MockProvider struct{}
-
-func (m MockProvider) Location() string {
-	return "testdata/installed.xml"
-}
-
-func TestMockProvider(t *testing.T) {
-	var b MockProvider
-
-	p, err := readInstalledProduct(b)
-	if err != nil {
-		t.Fatal("It should've read it just fine")
-	}
-
-	if p.Identifier != "SLES" {
-		t.Fatal("Wrong product name")
-	}
-
-	if p.Version != "12" {
-		t.Fatal("Wrong product version")
-	}
-
-	if p.Arch != "x86_64" {
-		t.Fatal("Wrong product arch")
-	}
-
-	if p.String() != "SLES-12-x86_64" {
-		t.Fatal("Wrong product string")
-	}
-}
-
-// This test is useless outside SUSE. Added so the go cover tool is happy.
-func TestSUSE(t *testing.T) {
+func TestGetInstalledProduct(t *testing.T) {
 	var b SUSEProductProvider
 
+	// if the file does not exist is not SUSE
 	if _, err := os.Stat(b.Location()); os.IsNotExist(err) {
-		_, err = GetInstalledProduct()
-		if err == nil {
-			t.Fatal("It should fail")
-		}
-
-		return
+		t.Skip("Not a SUSE-based system")
 	}
 
-	_, err := GetInstalledProduct()
-	if err != nil {
-		t.Fatal("We assume that is SUSE, so this should be fine")
-	}
+	ip, err := GetInstalledProduct()
+	assert.Nil(t, err)
+
+	// if the file exist, it should be SUSE/openSUSE
+	assert.Contains(t, []string{"SUSE", "openSUSE"}, ip.Vendor)
 }

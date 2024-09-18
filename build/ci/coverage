@@ -1,0 +1,33 @@
+#!/bin/sh
+
+echo "**************************"
+echo "* Checking code coverage *"
+echo "**************************"
+
+COVFILE=test.coverage
+COVPERCENTAGE=85.0
+CODE=0
+
+go test --cover ./... > $COVFILE
+
+while read line; do
+  # TODO: this package should be tested in the future
+  if [[ $line == *"github.com/SUSE/container-suseconnect/cmd/container-suseconnect"* ]]; then
+    continue
+  fi
+
+  echo $line
+  GOTPERCENTAGE=$(grep -oP '(?<=coverage: ).*(?=% of statements)' <<< $line)
+  RET=$(perl -E "if ($GOTPERCENTAGE < $COVPERCENTAGE) {printf 1}")
+  if [ "$RET" = "1" ]; then
+    echo -e "Coverage lower than expected."
+    CODE=1
+  else
+    echo -e "Coverage meets expectations."
+  fi
+  echo -e "\tExpected: $COVPERCENTAGE%\n\tGot: $GOTPERCENTAGE%\n"
+done < $COVFILE
+
+rm $COVFILE
+
+exit $CODE

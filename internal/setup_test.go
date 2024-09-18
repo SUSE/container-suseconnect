@@ -22,6 +22,9 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Handy functions to be used by the test suite.
@@ -38,18 +41,14 @@ func prepareLogger() {
 
 // Make sure that the logged string matches the given expected string.
 func shouldHaveLogged(t *testing.T, str string) {
-	original := logged.String()
-	if strings.TrimSpace(original) == "" {
-		t.Fatal("Nothing has been logged.\n")
-	}
+	original := strings.TrimSpace(logged.String())
+	require.NotEmpty(t, original)
 
 	// The logged string includes the timestamp, get rid of it.
 	re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\s")
 	logStr := strings.TrimSpace(re.ReplaceAllString(original, ""))
 
-	if strings.TrimSpace(str) != logStr {
-		t.Fatalf("Should have logged: %v, not %v\n", str, logStr)
-	}
+	assert.Equal(t, logStr, strings.TrimSpace(str))
 }
 
 // Capture what is written to Stderr.

@@ -20,27 +20,25 @@ import (
 	"testing"
 
 	"github.com/mssola/capture"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParseStdinSuccessful(t *testing.T) {
 	content := []byte("RESOLVEURL\nkey:value1\nanother:value2")
 	tmp, err := os.CreateTemp("", "file")
-	if err != nil {
-		t.Fatalf("Initialization error: %v", err)
-	}
+	require.Nil(t, err)
 
 	defer func() {
 		tmp.Close()
 		os.Remove(tmp.Name())
 	}()
 
-	if _, err := tmp.Write(content); err != nil {
-		t.Fatalf("Initialization error: %v", err)
-	}
+	_, err = tmp.Write(content)
+	require.Nil(t, err)
 
-	if _, err := tmp.Seek(0, 0); err != nil {
-		t.Fatalf("Initialization error: %v", err)
-	}
+	_, err = tmp.Seek(0, 0)
+	require.Nil(t, err)
 
 	// stdin switcheroo
 	old := os.Stdin
@@ -50,21 +48,10 @@ func TestParseStdinSuccessful(t *testing.T) {
 	os.Stdin = tmp
 
 	params, err := ParseStdin()
-	if err != nil {
-		t.Fatalf("ParseStdin returned an error: %v", err)
-	}
-
-	if len(params) != 2 {
-		t.Fatalf("There should be two entries, %v instead", len(params))
-	}
-
-	if params["key"] != "value1" {
-		t.Fatalf("Expected 'key' to contain 'value1', got '%v' instead", params["key"])
-	}
-
-	if params["another"] != "value2" {
-		t.Fatalf("Expected 'key' to contain 'value2', got '%v' instead", params["another"])
-	}
+	require.Nil(t, err)
+	assert.Len(t, params, 2)
+	assert.Equal(t, "value1", params["key"])
+	assert.Equal(t, "value2", params["another"])
 }
 
 func TestParseStdinBadInput(t *testing.T) {
@@ -75,9 +62,8 @@ func TestParseStdinBadInput(t *testing.T) {
 	os.Stdin = nil
 
 	_, err := ParseStdin()
-	if err.Error() != "invalid argument" {
-		t.Fatalf("Expected there to be an invalid argument error, got '%v' instead", err)
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "invalid argument")
 }
 
 func TestPrintResponseBadResponseFromServer(t *testing.T) {
@@ -94,9 +80,8 @@ func TestPrintResponseBadResponseFromServer(t *testing.T) {
 		params := map[string]string{}
 
 		err := PrintResponse(params)
-		if err == nil || err.Error() != "empty response from the server" {
-			t.Fatalf("expecting an error from ReadConfigFromServer, got %v", err)
-		}
+		assert.NotNil(t, err)
+		assert.EqualError(t, err, "empty response from the server")
 	})
 }
 
@@ -116,9 +101,8 @@ func TestPrintResponseNoCredentials(t *testing.T) {
 		params := map[string]string{}
 
 		err := PrintResponse(params)
-		if err == nil || err.Error() != "no credentials given" {
-			t.Fatalf("expecting a 'no credentials given' error, got %v", err)
-		}
+		assert.NotNil(t, err)
+		assert.EqualError(t, err, "no credentials given")
 	})
 }
 
@@ -143,14 +127,10 @@ func TestPrintFromConfiguration(t *testing.T) {
 			"https://banjo:kazooie@test.fqdn.com/path\x00",
 		}
 
-		if len(lines) != len(expected) {
-			t.Fatalf("Expected %v lines, got %v", len(expected), len(lines))
-		}
+		require.Equal(t, len(expected), len(lines))
 
 		for k, v := range expected {
-			if lines[k] != v {
-				t.Fatalf("Expected '%v', got '%v'", v, lines[k])
-			}
+			assert.Equal(t, v, lines[k])
 		}
 	})
 }
