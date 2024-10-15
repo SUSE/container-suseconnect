@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "**************************************"
+echo "* Checking for suspicious constructs *"
+echo "**************************************"
+
+go list ./...
+
+go vet ./...

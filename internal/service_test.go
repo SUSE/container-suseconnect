@@ -16,10 +16,11 @@ package containersuseconnect
 
 import (
 	"bytes"
-	"fmt"
-	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func testServiceOutput(
@@ -29,34 +30,18 @@ func testServiceOutput(
 	dumpFunction func(*bytes.Buffer, []Product),
 ) {
 	reader, err := os.Open(filePath)
-	if err != nil {
-		t.Fatal("Could not read JSON file...")
-	}
+	require.Nil(t, err)
 	defer reader.Close()
 
 	products, err := parseProducts(reader)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-	if len(products) != 1 {
-		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
-	}
+	require.Nil(t, err)
+	require.Len(t, products, 1)
 
 	buf := bytes.Buffer{}
 	dumpFunction(&buf, products)
 
 	result := buf.String()
-	if result != expectedOutput {
-		t.Errorf(result)
-	}
-
-	file, err := os.Create("result.txt")
-	if err != nil {
-		log.Fatal("Cannot create file", err)
-	}
-	defer file.Close()
-
-	fmt.Fprintf(file, result)
+	assert.Equal(t, expectedOutput, result)
 }
 
 func TestServiceOutputSLE12(t *testing.T) {
