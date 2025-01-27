@@ -280,16 +280,17 @@ Otherwise start the container that should be registered and execute
 SUSEConnect -e <youremailaddress> -r <yourregistrationcode>
 ```
 
-In case you have a registration code that hasn't otherwise be used, you
-can use the USERNAME "regcode" and the given registration code as password.
+In case you have an unused registration code, you can connect with the username "regcode" and use the registration code as the password.
 
 For interactive use of containers you can also
-pass the obtained username and password via environment variables
+pass the obtained username, password and system token via environment variables:
 
 ```bash
 docker run -e SCC_CREDENTIAL_USERNAME=<credential_username> \
     -e SCC_CREDENTIAL_PASSWORD=<credential_password> \
+    -e SCC_CREDENTIAL_SYSTEM_TOKEN=<system_token> \
     my-image
+```
 
 # License
 
