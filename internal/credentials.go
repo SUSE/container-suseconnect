@@ -45,10 +45,12 @@ func (cr *Credentials) locations() []string {
 func (cr *Credentials) onLocationsNotFound() bool {
 	env_user := os.Getenv("SCC_CREDENTIAL_USERNAME")
 	env_pass := os.Getenv("SCC_CREDENTIAL_PASSWORD")
+	env_system_token := os.Getenv("SCC_CREDENTIAL_SYSTEM_TOKEN")
 
 	if env_user != "" && env_pass != "" {
 		cr.Username = env_user
 		cr.Password = env_pass
+		cr.SystemToken = env_system_token
 		return true
 	}
 
