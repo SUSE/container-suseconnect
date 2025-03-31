@@ -18,44 +18,28 @@ package containersuseconnect
 import (
 	"bytes"
 	"log"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSUSEConnectData(t *testing.T) {
 	data := &SUSEConnectData{}
-
-	if data.separator() != ':' {
-		t.Fatal("Wrong separator")
-	}
+	require.EqualValues(t, ':', data.separator())
 
 	err := data.afterParseCheck()
-	if err != nil {
-		t.Fatal("There should not be an error")
-	}
-
-	if data.SccURL != sccURLStr {
-		t.Fatal("The URL should be the one from sccURLstr")
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, sccURLStr, data.SccURL)
 
 	locs := data.locations()
-
-	if locs[0] != "/etc/SUSEConnect" {
-		t.Fatal("Wrong location")
-	}
-
-	if locs[1] != "/run/secrets/SUSEConnect" {
-		t.Fatal("Wrong location")
-	}
+	assert.Contains(t, locs, "/etc/SUSEConnect")
+	assert.Contains(t, locs, "/run/secrets/SUSEConnect")
 
 	buffer := bytes.NewBuffer([]byte{})
 	log.SetOutput(buffer)
 	data.setValues("unknown", "value")
-
-	// It should log a proper warning.
-	if !strings.Contains(buffer.String(), "Warning: Unknown key 'unknown'") {
-		t.Fatal("Wrong warning!")
-	}
+	assert.Contains(t, buffer.String(), "Warning: Unknown key 'unknown'")
 }
 
 // In the following test we will create a mock that just wraps up the
@@ -99,17 +83,9 @@ func TestIntegrationSUSEConnectData(t *testing.T) {
 	mock := SUSEConnectDataMock{data: &data}
 
 	err := ReadConfiguration(&mock)
-	if err != nil {
-		t.Fatal("This should've been a successful run")
-	}
-
-	if mock.data.SccURL != "https://smt.test.lan" {
-		t.Fatal("Unexpected URL value")
-	}
-
-	if !mock.data.Insecure {
-		t.Fatal("Unexpected Insecure value")
-	}
+	require.Nil(t, err)
+	assert.Equal(t, "https://smt.test.lan", mock.data.SccURL)
+	assert.True(t, mock.data.Insecure)
 }
 
 func TestLocationsNotFound(t *testing.T) {
@@ -118,11 +94,8 @@ func TestLocationsNotFound(t *testing.T) {
 	mock := SUSEConnectDataMock{data: &data}
 
 	err := ReadConfiguration(&mock)
-	if err != nil {
-		t.Fatal("This should've been a successful run")
-	}
+	require.Nil(t, err)
 
-	if mock.data.SccURL != "https://scc.suse.com" {
-		t.Fatal("It should've been scc.suse.com")
-	}
+	assert.Equal(t, "https://scc.suse.com", mock.data.SccURL)
+	assert.False(t, mock.data.Insecure)
 }

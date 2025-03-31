@@ -22,85 +22,56 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func subscriptionHelper(t *testing.T, subscription Subscription) {
-	if subscription.RegCode != "35098ff7" {
-		t.Fatal("Wrong regcode for subscription")
-	}
-}
-
-// Tests for the parseSubscriptions function.
-
 func TestUnreadableSubscription(t *testing.T) {
-	file, err := os.Open("non-existant-file")
-	if err == nil {
-		file.Close()
-		t.Fatal("This should've been an error...")
-	}
-
-	_, err = parseSubscriptions(file)
-	if err == nil || err.Error() != "Can't read subscriptions information: invalid argument" {
-		t.Fatalf("This is not the proper error we're expecting: %v", err)
-	}
+	invalidFile := (*os.File)(nil)
+	_, err := parseSubscriptions(invalidFile)
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Can't read subscriptions information: invalid argument")
 }
 
 func TestInvalidJsonForSubscriptions(t *testing.T) {
 	reader := strings.NewReader("invalid json is invalid")
 	_, err := parseSubscriptions(reader)
-
-	if err == nil ||
-		err.Error() != "Can't read subscription: invalid character 'i' looking for beginning of value" {
-
-		t.Fatalf("This is not the proper error we're expecting: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Can't read subscription: invalid character 'i' looking for beginning of value")
 }
 
 func TestEmptySubscriptions(t *testing.T) {
 	file, err := os.Open("testdata/empty-subscriptions.json")
-	if err != nil {
-		t.Fatal("Something went wrong when reading the JSON file")
-	}
+	require.NotNil(t, file)
 	defer file.Close()
 
 	subscriptions, err := parseSubscriptions(file)
-	if err == nil || err.Error() != "Got 0 subscriptions" {
-		t.Fatal("Unexpected error when reading a valid JSON file")
-	}
-	if len(subscriptions) != 0 {
-		t.Fatalf("It should be empty")
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Got 0 subscriptions")
+	assert.Empty(t, subscriptions)
 }
 
 func TestValidSubscriptions(t *testing.T) {
 	file, err := os.Open("testdata/subscriptions.json")
-	if err != nil {
-		t.Fatal("Something went wrong when reading the JSON file")
-	}
+	require.NotNil(t, file)
 	defer file.Close()
 
 	subscriptions, err := parseSubscriptions(file)
-	if err != nil {
-		t.Fatal("Unexpected error when reading a valid JSON file")
-	}
+	require.Nil(t, err)
 
-	if len(subscriptions) != 2 {
-		t.Fatalf("Unexpected number of subscriptions found. Got %d, expected %d", len(subscriptions), 1)
+	if assert.Len(t, subscriptions, 2) {
+		assert.Equal(t, "35098ff7", subscriptions[0].RegCode)
 	}
-
-	subscriptionHelper(t, subscriptions[0])
 }
-
-// Tests for the requestRegcodes function.
 
 func TestInvalidRequestForRegcodes(t *testing.T) {
 	var cr Credentials
 	data := SUSEConnectData{SccURL: ":", Insecure: true}
 
 	_, err := requestRegcodes(data, cr)
-	if err == nil || !strings.Contains(err.Error(), "missing protocol scheme") {
-		t.Fatalf("There should be a proper error: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.ErrorContains(t, err, "missing protocol scheme")
 }
 
 func TestFaultyRequestForRegcodes(t *testing.T) {
@@ -108,9 +79,8 @@ func TestFaultyRequestForRegcodes(t *testing.T) {
 	data := SUSEConnectData{SccURL: "http://", Insecure: true}
 
 	_, err := requestRegcodes(data, cr)
-	if err == nil || !strings.Contains(err.Error(), "no Host in request URL") {
-		t.Fatalf("There should be a proper error: %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.ErrorContains(t, err, "no Host in request URL")
 }
 
 func TestRemoteErrorWhileRequestingRegcodes(t *testing.T) {
@@ -124,9 +94,8 @@ func TestRemoteErrorWhileRequestingRegcodes(t *testing.T) {
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
 	_, err := requestRegcodes(data, cr)
-	if err == nil || err.Error() != "Unexpected error while retrieving regcode: 500 Internal Server Error" {
-		t.Fatalf("There should be a proper error:  %v", err)
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Unexpected error while retrieving regcode: 500 Internal Server Error")
 }
 
 func TestValidRequestForRegcodes(t *testing.T) {
@@ -146,17 +115,10 @@ func TestValidRequestForRegcodes(t *testing.T) {
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
 	codes, err := requestRegcodes(data, cr)
-	if err != nil {
-		t.Fatal("It should've run just fine...")
-	}
+	require.Nil(t, err)
 
-	// This also tests that we're not including expired regcodes
-	if len(codes) != 1 {
-		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(codes), 1)
-	}
-
-	if codes[0] != "35098ff7" {
-		t.Fatalf("Got the wrong registration code: %v", codes[0])
+	if assert.Len(t, codes, 1) {
+		assert.Equal(t, "35098ff7", codes[0])
 	}
 }
 
@@ -177,11 +139,7 @@ func TestRequestEmptyRegcodes(t *testing.T) {
 	data := SUSEConnectData{SccURL: ts.URL, Insecure: true}
 
 	codes, err := requestRegcodes(data, cr)
-	if err == nil || err.Error() != "Got 0 subscriptions" {
-		t.Fatal("Unexpected error when reading a valid JSON file")
-	}
-
-	if len(codes) != 0 {
-		t.Fatalf("It should be 0")
-	}
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Got 0 subscriptions")
+	assert.Empty(t, codes)
 }

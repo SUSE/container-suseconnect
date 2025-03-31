@@ -41,6 +41,7 @@ func (b SUSEProductProvider) Location() string {
 // InstalledProduct contains all the info that we need from the installed
 // product.
 type InstalledProduct struct {
+	Vendor     string `xml:"vendor"`
 	Identifier string `xml:"name"`
 	Version    string `xml:"version"`
 	Arch       string `xml:"arch"`
