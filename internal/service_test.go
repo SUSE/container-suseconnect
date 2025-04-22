@@ -36,7 +36,7 @@ func testServiceOutput(
 
 	products, err := parseProducts(reader)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 	if len(products) != 1 {
 		t.Fatalf("Unexpected number of products found. Got %d, expected %d", len(products), 1)
@@ -47,7 +47,7 @@ func testServiceOutput(
 
 	result := buf.String()
 	if result != expectedOutput {
-		t.Errorf(result)
+		t.Error(result)
 	}
 
 	file, err := os.Create("result.txt")
@@ -56,7 +56,7 @@ func testServiceOutput(
 	}
 	defer file.Close()
 
-	fmt.Fprintf(file, result)
+	fmt.Fprint(file, result)
 }
 
 func TestServiceOutputSLE12(t *testing.T) {

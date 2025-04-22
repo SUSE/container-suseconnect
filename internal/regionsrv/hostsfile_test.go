@@ -77,6 +77,9 @@ func TestUpdateHostsFileSuccessful(t *testing.T) {
 	defer os.Remove(hostsFile)
 
 	before, err := os.ReadFile(hostsFile)
+	if err != nil {
+		t.Fatalf("os.ReadFile failed with: %v", err)
+	}
 
 	err = UpdateHostsFile("test-hostname", "1.1.1.1")
 	if err != nil {

@@ -42,11 +42,12 @@ func (data *SUSEConnectData) onLocationsNotFound() bool {
 }
 
 func (data *SUSEConnectData) setValues(key, value string) {
-	if key == "url" {
+	switch key {
+	case "url":
 		data.SccURL = value
-	} else if key == "insecure" {
+	case "insecure":
 		data.Insecure = value == "true"
-	} else {
+	default:
 		log.Printf("Warning: Unknown key '%v'", key)
 	}
 }

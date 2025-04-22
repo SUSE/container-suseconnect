@@ -49,7 +49,6 @@ func (ts *testServer) run() (err error) {
 
 		conn, err := ts.server.Accept()
 		if err != nil {
-			err = errors.New("could not accept connection")
 			break
 		}
 

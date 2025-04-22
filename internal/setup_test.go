@@ -44,7 +44,7 @@ func shouldHaveLogged(t *testing.T, str string) {
 	}
 
 	// The logged string includes the timestamp, get rid of it.
-	re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\s")
+	re := regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\s`)
 	logStr := strings.TrimSpace(re.ReplaceAllString(original, ""))
 
 	if strings.TrimSpace(str) != logStr {
