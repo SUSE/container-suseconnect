@@ -17,6 +17,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -25,74 +26,80 @@ import (
 
 	cs "github.com/SUSE/container-suseconnect/internal"
 	"github.com/SUSE/container-suseconnect/internal/regionsrv"
-	"github.com/urfave/cli/v2"
 )
 
+func init() {
+	flag.BoolFunc("version", "print version and exit", func(string) error {
+		fmt.Println(cs.Version)
+		os.Exit(0)
+		return nil
+	})
+
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(),
+			"container-suseconnect: Access zypper repositories from within containers"+
+				" (© %d SUSE LCC)\n", time.Now().Year())
+		fmt.Fprintf(flag.CommandLine.Output(),
+			`
+Usage of container-suseconnect:
+
+This application can be used to retrieve basic metadata about SLES
+related products and module extensions.
+
+Please use the 'lp|list-products' subcommand for listing all currently
+available products including their repositories and a short description.
+
+Use the 'lm|list-modules' subcommand for listing available modules, where
+their 'Identifier' can be used to enable them via the ADDITIONAL_MODULES
+environment variable during container creation/run. When enabling multiple
+modules the identifiers are expected to be comma-separated.
+
+The 'z|zypp|zypper' subcommand runs the application as zypper plugin and is only
+intended to use for debugging purposes.
+
+`)
+		flag.PrintDefaults()
+	}
+}
+
 func main() {
-	cs.SetLoggerOutput()
-
-	// Set the basic CLI metadata
-	app := cli.NewApp()
-	app.Copyright = fmt.Sprintf("© %d SUSE LCC", time.Now().Year())
-	app.Name = "container-suseconnect"
-	app.Version = cs.Version
-	app.Usage = "Access zypper repositories from within containers"
-	app.UsageText = `This application can be used to retrieve basic metadata about SLES
-   related products and module extensions.
-
-   Please use the 'list-products' subcommand for listing all currently
-   available products including their repositories and a short description.
-
-   Use the 'list-modules' subcommand for listing available modules, where
-   their 'Identifier' can be used to enable them via the ADDITIONAL_MODULES
-   environment variable during container creation/run. When enabling multiple
-   modules the identifiers are expected to be comma-separated.
-
-   The 'zypper' subcommand runs the application as zypper plugin and is only
-   intended to use for debugging purposes.`
-
 	// Switch the default application behavior in relation to the basename
-	defaultUsageAdditionZypp := ""
-	defaultUsageAdditionListProducts := ""
+	appAction := runListProducts
 
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
-		app.Action = runZypperPlugin
-		defaultUsageAdditionZypp = " (default)"
+		appAction = runZypperPlugin
 	case "susecloud":
-		app.Action = runZypperURLResolver
-		defaultUsageAdditionZypp = " (default)"
-	default:
-		app.Action = runListProducts
-		defaultUsageAdditionListProducts = " (default)"
+		appAction = runZypperURLResolver
 	}
 
-	// Set additional actions, which are always available
-	app.Commands = cli.Commands{
-		{
-			Name:    "list-products",
-			Aliases: []string{"lp"},
-			Usage: fmt.Sprintf("List available products%v",
-				defaultUsageAdditionListProducts),
-			Action: runListProducts,
-		},
-		{
-			Name:    "list-modules",
-			Aliases: []string{"lm"},
-			Usage:   "List available modules",
-			Action:  runListModules,
-		},
-		{
-			Name:    "zypper",
-			Aliases: []string{"z", "zypp"},
-			Usage: fmt.Sprintf("Run the zypper service plugin%v",
-				defaultUsageAdditionZypp),
-			Action: runZypperPlugin,
-		},
+	flag.Parse()
+
+	switch flag.Arg(0) {
+	case "lp":
+		fallthrough
+	case "list-products":
+		appAction = runListProducts
+	case "lm":
+		fallthrough
+	case "list-modules":
+		appAction = runListModules
+	case "susecloud":
+		appAction = runZypperURLResolver
+	case "z":
+		fallthrough
+	case "zypp":
+		fallthrough
+	case "zypper":
+		appAction = runZypperPlugin
+	default:
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	// Run the application
-	if err := app.Run(os.Args); err != nil {
+	cs.SetLoggerOutput()
+	if err := appAction(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -154,7 +161,7 @@ func requestProducts() ([]cs.Product, error) {
 
 // Read the arguments as given by zypper on the stdin and print into stdout the
 // response to be used.
-func runZypperURLResolver(_ *cli.Context) error {
+func runZypperURLResolver() error {
 	if err := regionsrv.ServerReachable(); err != nil {
 		return fmt.Errorf("could not reach build server from the host: %v", err)
 	}
@@ -171,7 +178,7 @@ func runZypperURLResolver(_ *cli.Context) error {
 // all available repositories for the installed product. Additional modules
 // can be specified via the `ADDITIONAL_MODULES` environment variable, which
 // reflect the module `identifier`.
-func runZypperPlugin(_ *cli.Context) error {
+func runZypperPlugin() error {
 	products, err := requestProducts()
 	if err != nil {
 		return err
@@ -186,7 +193,7 @@ func runZypperPlugin(_ *cli.Context) error {
 
 // runListModules lists all available modules and their metadata, which
 // includes the `Name`, `Identifier` and the `Recommended` flag.
-func runListModules(_ *cli.Context) error {
+func runListModules() error {
 	products, err := requestProducts()
 	if err != nil {
 		return err
@@ -199,7 +206,7 @@ func runListModules(_ *cli.Context) error {
 }
 
 // runListProducts lists all available products and their metadata
-func runListProducts(_ *cli.Context) error {
+func runListProducts() error {
 	products, err := requestProducts()
 	if err != nil {
 		return err
