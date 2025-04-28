@@ -63,41 +63,36 @@ intended to use for debugging purposes.
 }
 
 func main() {
-	// Switch the default application behavior in relation to the basename
-	appAction := runListProducts
+	// Determine the application's action based on the binary name or command-line arguments.
+	var appAction func() error
 
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
 		appAction = runZypperPlugin
 	case "susecloud":
 		appAction = runZypperURLResolver
+	default:
+		appAction = runListProducts // Default action
 	}
 
 	flag.Parse()
 
+	// Override default action based on command-line arguments.
 	switch flag.Arg(0) {
-	case "lp":
-		fallthrough
-	case "list-products":
+	case "lp", "list-products":
 		appAction = runListProducts
-	case "lm":
-		fallthrough
-	case "list-modules":
+	case "lm", "list-modules":
 		appAction = runListModules
 	case "susecloud":
 		appAction = runZypperURLResolver
-	case "z":
-		fallthrough
-	case "zypp":
-		fallthrough
-	case "zypper":
+	case "z", "zypp", "zypper":
 		appAction = runZypperPlugin
 	default:
 		flag.Usage()
 		os.Exit(1)
 	}
 
-	// Run the application
+	// Run the application with the selected action.
 	cs.SetLoggerOutput()
 	if err := appAction(); err != nil {
 		log.Fatal(err)
