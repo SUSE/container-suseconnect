@@ -35,6 +35,10 @@ func init() {
 		return nil
 	})
 
+	flag.BoolFunc("log-credentials-errors", "obsolete (always on)", func(string) error {
+		return nil
+	})
+
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(),
 			"container-suseconnect: Access zypper repositories from within containers"+
@@ -72,23 +76,22 @@ func main() {
 	case "susecloud":
 		appAction = runZypperURLResolver
 	default:
-		// This is the default action
-		// even when no arguments are given
-		appAction = runListProducts
-	}
+		flag.Parse()
 
-	flag.Parse()
-
-	// Override default action based on command-line arguments.
-	switch flag.Arg(0) {
-	case "lp", "list-products":
-		appAction = runListProducts
-	case "lm", "list-modules":
-		appAction = runListModules
-	case "susecloud":
-		appAction = runZypperURLResolver
-	case "z", "zypp", "zypper":
-		appAction = runZypperPlugin
+		// Override default action based on command-line arguments.
+		switch flag.Arg(0) {
+		case "lp", "list-products":
+			appAction = runListProducts
+		case "lm", "list-modules":
+			appAction = runListModules
+		case "susecloud":
+			appAction = runZypperURLResolver
+		case "z", "zypp", "zypper":
+			appAction = runZypperPlugin
+		default:
+			flag.Usage()
+			os.Exit(1)
+		}
 	}
 
 	// Run the application with the selected action.
