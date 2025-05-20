@@ -35,6 +35,10 @@ func init() {
 		return nil
 	})
 
+	flag.BoolFunc("log-credentials-errors", "obsolete (always on)", func(string) error {
+		return nil
+	})
+
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(),
 			"container-suseconnect: Access zypper repositories from within containers"+
