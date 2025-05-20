@@ -72,7 +72,9 @@ func main() {
 	case "susecloud":
 		appAction = runZypperURLResolver
 	default:
-		appAction = runListProducts // Default action
+		// This is the default action
+		// even when no arguments are given
+		appAction = runListProducts
 	}
 
 	flag.Parse()
@@ -87,9 +89,6 @@ func main() {
 		appAction = runZypperURLResolver
 	case "z", "zypp", "zypper":
 		appAction = runZypperPlugin
-	default:
-		flag.Usage()
-		os.Exit(1)
 	}
 
 	// Run the application with the selected action.
