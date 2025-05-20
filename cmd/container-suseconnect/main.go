@@ -65,6 +65,7 @@ intended to use for debugging purposes.
 func main() {
 	// Determine the application's action based on the binary name or command-line arguments.
 	var appAction func() error
+	var defaultArg0 bool
 
 	switch filepath.Base(os.Args[0]) {
 	case "container-suseconnect-zypp":
@@ -72,15 +73,17 @@ func main() {
 	case "susecloud":
 		appAction = runZypperURLResolver
 	default:
-		// This is the default action
-		// even when no arguments are given
-		appAction = runListProducts
+		defaultArg0 = true
 	}
 
 	flag.Parse()
 
 	// Override default action based on command-line arguments.
 	switch flag.Arg(0) {
+	case "":
+		if defaultArg0 {
+			appAction = runListProducts
+		}
 	case "lp", "list-products":
 		appAction = runListProducts
 	case "lm", "list-modules":
@@ -89,6 +92,9 @@ func main() {
 		appAction = runZypperURLResolver
 	case "z", "zypp", "zypper":
 		appAction = runZypperPlugin
+	default:
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	// Run the application with the selected action.
