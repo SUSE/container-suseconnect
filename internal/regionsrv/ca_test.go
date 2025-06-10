@@ -15,7 +15,7 @@
 package regionsrv
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
@@ -41,7 +41,7 @@ func (t testCommand) Run() error {
 
 // Run this before each test to get the fixtures path right.
 func beforeTest() {
-	hashFilePath = fixturesPath("valid.md5")
+	hashFilePath = fixturesPath("valid.sha256")
 	caFilePath = fixturesPath("valid.pem")
 }
 
@@ -85,14 +85,14 @@ func TestUpdateIsNeededCouldNotReadFile(t *testing.T) {
 	}
 }
 
-func TestSafeCAFileBadWrite(t *testing.T) {
+func TestSaveCAFileBadWrite(t *testing.T) {
 	beforeTest()
 
-	hashFilePath = fixturesPath(fmt.Sprintf("file%v.md5", rand.Int()))
+	hashFilePath = fixturesPath(fmt.Sprintf("file%v.sha256", rand.Int()))
 	caFilePath = "/wubalubadubdub"
 	cmd := testCommand{shouldFail: false}
 
-	err := safeCAFile(cmd, "valid")
+	err := saveCAFile(cmd, "valid")
 	os.Remove(hashFilePath)
 	os.Remove(caFilePath)
 
@@ -101,14 +101,14 @@ func TestSafeCAFileBadWrite(t *testing.T) {
 	}
 }
 
-func TestSafeCAFileBadCommand(t *testing.T) {
+func TestSaveCAFileBadCommand(t *testing.T) {
 	beforeTest()
 
-	hashFilePath = fixturesPath(fmt.Sprintf("file%v.md5", rand.Int()))
+	hashFilePath = fixturesPath(fmt.Sprintf("file%v.sha256", rand.Int()))
 	caFilePath = fixturesPath(fmt.Sprintf("file%v.pem", rand.Int()))
 	cmd := testCommand{shouldFail: true}
 
-	err := safeCAFile(cmd, "valid")
+	err := saveCAFile(cmd, "valid")
 	os.Remove(hashFilePath)
 	os.Remove(caFilePath)
 
@@ -121,13 +121,13 @@ func TestSafeCAFileBadCommand(t *testing.T) {
 	}
 }
 
-func TestSafeCAFileSuccess(t *testing.T) {
+func TestSaveCAFileSuccess(t *testing.T) {
 	beforeTest()
 
-	hashFilePath = fixturesPath("tmp.md5")
+	hashFilePath = fixturesPath("tmp.sha256")
 	cmd := testCommand{shouldFail: false}
 
-	err := safeCAFile(cmd, "valid")
+	err := saveCAFile(cmd, "valid")
 	if err != nil {
 		os.Remove(hashFilePath)
 		t.Fatalf("Expected error to be nil: %v\n", err)
@@ -136,7 +136,7 @@ func TestSafeCAFileSuccess(t *testing.T) {
 	b, _ := os.ReadFile(hashFilePath)
 	os.Remove(hashFilePath)
 
-	hash := md5.New()
+	hash := sha256.New()
 	io.WriteString(hash, "valid")
 	if string(b) != string(hash.Sum(nil)) {
 		t.Fatal("Bad checksum")
