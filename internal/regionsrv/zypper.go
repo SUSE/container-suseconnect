@@ -75,8 +75,8 @@ func PrintResponse(params map[string]string) error {
 		return errors.New("no credentials given")
 	}
 
-	// Safe the contents of the CA file if it doesn't exist already.
-	if err = SafeCAFile(cfg.Ca); err != nil {
+	// Save the contents of the CA file if it doesn't exist already.
+	if err = SaveCAFile(cfg.Ca); err != nil {
 		return err
 	}
 

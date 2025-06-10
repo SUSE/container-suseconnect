@@ -15,7 +15,7 @@
 package regionsrv
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"io"
 	"os"
 	"os/exec"
@@ -23,8 +23,9 @@ import (
 )
 
 var (
-	hashFilePath = "/etc/pki/containerbuild-regionsrv.md5"
-	caFilePath   = "/etc/pki/trust/anchors/containerbuild-regionsrv.pem"
+	oldHashFilePath = "/etc/pki/containerbuild-regionsrv.md5"
+	hashFilePath    = "/etc/pki/containerbuild-regionsrv.sha256"
+	caFilePath      = "/etc/pki/trust/anchors/containerbuild-regionsrv.pem"
 )
 
 // commander is a very simple interface that just implements the `Run` function,
@@ -34,7 +35,7 @@ type commander interface {
 	Run() error
 }
 
-// Returns true if the CA file has to be updated, false otherwise.
+// Returns true if the CA file needs an update, false otherwise.
 func updateNeeded(contents string) bool {
 	if _, err := os.Stat(hashFilePath); os.IsNotExist(err) {
 		return true
@@ -45,24 +46,25 @@ func updateNeeded(contents string) bool {
 		return true
 	}
 
-	hash := md5.New()
+	hash := sha256.New()
 	io.WriteString(hash, contents)
 
 	return strings.TrimSpace(string(data)) != string(hash.Sum(nil))
 }
 
-// safeCAFile implements `SafeCAFile` by assuming a `commander` type will be
+// saveCAFile implements `SaveCAFile` by assuming a `commander` type will be
 // given.
-func safeCAFile(cmd commander, contents string) error {
+func saveCAFile(cmd commander, contents string) error {
 	if !updateNeeded(contents) {
 		return nil
 	}
 
 	// Nuke everything before populating things back again.
+	os.Remove(oldHashFilePath)
 	os.Remove(hashFilePath)
 	os.Remove(caFilePath)
 
-	// Safe the file
+	// Save the file
 	err := os.WriteFile(caFilePath, []byte(contents), 0o644)
 	if err != nil {
 		return err
@@ -73,18 +75,18 @@ func safeCAFile(cmd commander, contents string) error {
 		return err
 	}
 
-	// Safe the new checksum
-	hash := md5.New()
+	// Save the new checksum
+	hash := sha256.New()
 	io.WriteString(hash, contents)
 	os.WriteFile(hashFilePath, hash.Sum(nil), 0o644)
 
 	return nil
 }
 
-// SafeCAFile creates a certificate file into the right location if it isn't
+// SaveCAFile creates a certificate file into the right location if it isn't
 // already there. This function will call `update-ca-certificates` whenever the
 // CA file has been updated.
-func SafeCAFile(contents string) error {
+func SaveCAFile(contents string) error {
 	cmd := exec.Command("update-ca-certificates")
-	return safeCAFile(cmd, contents)
+	return saveCAFile(cmd, contents)
 }

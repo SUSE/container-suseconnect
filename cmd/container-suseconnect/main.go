@@ -126,7 +126,7 @@ func requestProducts() ([]cs.Product, error) {
 		suseConnectData.Insecure = false
 
 		if cloudCfg.Ca != "" {
-			regionsrv.SafeCAFile(cloudCfg.Ca)
+			regionsrv.SaveCAFile(cloudCfg.Ca)
 		}
 
 		regionsrv.UpdateHostsFile(cloudCfg.ServerFqdn, cloudCfg.ServerIP)
