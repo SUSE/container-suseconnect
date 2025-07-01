@@ -97,7 +97,9 @@ func main() {
 	// Run the application with the selected action.
 	cs.SetLoggerOutput()
 	if err := appAction(); err != nil {
-		log.Fatal(err)
+		if !cs.IsCredentialsError(err) {
+			log.Fatal(err)
+		}
 	}
 }
 
