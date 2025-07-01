@@ -22,20 +22,31 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	cs "github.com/SUSE/container-suseconnect/internal"
 	"github.com/SUSE/container-suseconnect/internal/regionsrv"
 )
 
+var logCredentialsErrors = false
+
 func init() {
+	value := os.Getenv("CONTAINER_SUSECONNECT_LOG_CREDENTIALS_ERR")
+	enabled, err := strconv.ParseBool(value)
+
+	if err == nil && enabled {
+		logCredentialsErrors = true
+	}
+
 	flag.BoolFunc("version", "print version and exit", func(string) error {
 		fmt.Println(cs.Version)
 		os.Exit(0)
 		return nil
 	})
 
-	flag.BoolFunc("log-credentials-errors", "obsolete (always on)", func(string) error {
+	flag.BoolFunc("log-credentials-errors", "log missing credentials and exit with 1", func(string) error {
+		logCredentialsErrors = true
 		return nil
 	})
 
@@ -97,7 +108,9 @@ func main() {
 	// Run the application with the selected action.
 	cs.SetLoggerOutput()
 	if err := appAction(); err != nil {
-		log.Fatal(err)
+		if !cs.IsCredentialsNotFoundError(err) || logCredentialsErrors {
+			log.Fatal(err)
+		}
 	}
 }
 
