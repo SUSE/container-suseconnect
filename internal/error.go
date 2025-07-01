@@ -14,6 +14,8 @@
 
 package containersuseconnect
 
+import "errors"
+
 const (
 	// GetCredentialsError indicates a failure to retrieve or parse
 	// credentials
@@ -42,4 +44,14 @@ type SuseConnectError struct {
 
 func (s *SuseConnectError) Error() string {
 	return s.message
+}
+
+func IsCredentialsError(err error) bool {
+	var scerr *SuseConnectError
+
+	if errors.As(err, &scerr) {
+		return scerr.ErrorCode == GetCredentialsError
+	}
+
+	return false
 }
