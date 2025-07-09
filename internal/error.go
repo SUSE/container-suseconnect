@@ -14,10 +14,13 @@
 
 package containersuseconnect
 
+import "errors"
+
 const (
-	// GetCredentialsError indicates a failure to retrieve or parse
-	// credentials
-	GetCredentialsError = iota
+	// CredentialsNotFoundError means missing credentials
+	CredentialsNotFoundError = iota
+	// InvalidCredentialsError indicates an error parsing credentials
+	InvalidCredentialsError
 	// NetworkError is a placeholder for generic network communication
 	// errors
 	NetworkError
@@ -42,4 +45,14 @@ type SuseConnectError struct {
 
 func (s *SuseConnectError) Error() string {
 	return s.message
+}
+
+func IsCredentialsNotFoundError(err error) bool {
+	var scerr *SuseConnectError
+
+	if errors.As(err, &scerr) {
+		return scerr.ErrorCode == CredentialsNotFoundError
+	}
+
+	return false
 }
