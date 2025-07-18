@@ -65,11 +65,11 @@ func TestNotFound(t *testing.T) {
 	prepareLogger()
 
 	err := ReadConfiguration(&cfg)
-	if err == nil || err.Error() != "Warning: SUSE credentials not found: [] - automatic handling of repositories not done." {
+	if err == nil || err.Error() != "SUSE Credentials not found at []. Skipping automatic handling of repositories." {
 		t.Fatalf("Wrong error: %v", err)
 	}
 
-	shouldHaveLogged(t, "Warning: SUSE credentials not found: [] - automatic handling of repositories not done.")
+	shouldHaveLogged(t, "SUSE Credentials not found at []. Skipping automatic handling of repositories.")
 }
 
 type NotAllowedConfiguration struct{}
