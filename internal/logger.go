@@ -59,7 +59,7 @@ func getLogWritter(path string) (io.WriteCloser, error) {
 		}
 	}
 
-	_, err = fmt.Fprintf(lf, "container-suseconnect %s\n", Version)
+	_, err = fmt.Fprintf(lf, "container-suseconnect %s\n", GetVersion())
 	if err != nil {
 		lf.Close()
 		return nil, err
