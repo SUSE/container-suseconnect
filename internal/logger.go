@@ -34,9 +34,9 @@ func getLogEnv() string {
 	return strings.TrimSpace(os.Getenv(LogEnv))
 }
 
-// getLogWritter checks if the path can be open and written to
+// getLogWriter checks if the path can be open and written to
 // and returns an [io.WriteCloser] if there are no errors.
-func getLogWritter(path string) (io.WriteCloser, error) {
+func getLogWriter(path string) (io.WriteCloser, error) {
 	path = strings.TrimSpace(path)
 
 	if len(path) == 0 {
@@ -44,7 +44,7 @@ func getLogWritter(path string) (io.WriteCloser, error) {
 	}
 
 	if !filepath.IsAbs(path) {
-		return nil, fmt.Errorf("log path is not absulute: %s", path)
+		return nil, fmt.Errorf("log path is not absolute: %s", path)
 	}
 
 	lf, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o640)
@@ -83,11 +83,11 @@ func SetLoggerOutput() {
 		path = DefaultLogPath
 	}
 
-	w, err := getLogWritter(path)
+	w, err := getLogWriter(path)
 
 	if err == nil {
-		writter := io.MultiWriter(os.Stderr, w)
-		log.SetOutput(writter)
+		writer := io.MultiWriter(os.Stderr, w)
+		log.SetOutput(writer)
 		log.Printf("Log file location: %s\n", path)
 	} else {
 		log.Printf("Failed to set up log file '%s'\n", path)

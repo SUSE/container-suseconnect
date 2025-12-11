@@ -53,7 +53,7 @@ func init() {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(),
 			"container-suseconnect: Access zypper repositories from within containers"+
-				" (© %d SUSE LCC)\n", time.Now().Year())
+				" (© %d SUSE LLC)\n", time.Now().Year())
 		fmt.Fprintf(flag.CommandLine.Output(),
 			`
 Usage of container-suseconnect:

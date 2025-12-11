@@ -48,7 +48,7 @@ GLOBAL OPTIONS:
    --version, -v  print the version (default: false)
 
 COPYRIGHT:
-   © 2020 SUSE LCC
+   © 2020 SUSE LLC
 ```
 
 ## Logging
@@ -264,7 +264,7 @@ user):
 <path_on_host>/SCCcredentials:/etc/zypp/credentials.d/SCCcredentials
 ```
 
-No further change are needed in `Dockerfile`.
+No further changes are needed in `Dockerfile`.
 
 ### Obtaining the SUSEConnect and SCCcredentials secrets
 

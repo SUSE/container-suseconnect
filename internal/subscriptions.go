@@ -65,8 +65,8 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	}
 
 	if resp.StatusCode == 404 {
-		// we cannot requesting regcodes from s SMT server. It does not
-		// has this API. Just return a empty string
+		// We cannot request regcodes from a SMT server.
+		// It does not have this API. Just return an empty string
 		log.Println("Cannot fetch regcodes. Assuming it is SMT server")
 		codes = append(codes, "")
 
