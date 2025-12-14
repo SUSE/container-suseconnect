@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package regionsrv implements all the utilities to interact with on-deman
+// Package regionsrv implements all the utilities to interact with on-demand
 // Public clouds.
 package regionsrv
 
@@ -72,7 +72,7 @@ func ServerReachable() error {
 	return nil
 }
 
-// ReadConfigFromServer performs a request agains the containerbuild-regionsrv
+// ReadConfigFromServer performs a request against the containerbuild-regionsrv
 // server running in the host, and it parses the given response so it can be
 // used as a ContainerBuildConfig.
 func ReadConfigFromServer() (*ContainerBuildConfig, error) {

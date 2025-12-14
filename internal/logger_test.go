@@ -25,90 +25,90 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetLogWritterFromRegularFile(t *testing.T) {
+func TestGetLogWriterFromRegularFile(t *testing.T) {
 	tempFile, err := os.CreateTemp("", "prefix")
 	assert.Nil(t, err)
 
 	defer os.Remove(tempFile.Name())
 
-	w, err := getLogWritter(tempFile.Name())
+	w, err := getLogWriter(tempFile.Name())
 	assert.Nil(t, err)
 	assert.NotNil(t, w)
 	w.Close()
 }
 
-func TestGetLogWritterFromRelativeFile(t *testing.T) {
-	w, err := getLogWritter("test.log")
-	assert.EqualError(t, err, "log path is not absulute: test.log")
+func TestGetLogWriterFromRelativeFile(t *testing.T) {
+	w, err := getLogWriter("test.log")
+	assert.EqualError(t, err, "log path is not absolute: test.log")
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromValidDir(t *testing.T) {
+func TestGetLogWriterFromValidDir(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
 	assert.Nil(t, err)
 	defer os.RemoveAll(dir)
 
-	w, err := getLogWritter(dir)
+	w, err := getLogWriter(dir)
 	assert.EqualError(t, err, fmt.Sprintf("open %s: is a directory", dir))
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromMissingDir(t *testing.T) {
+func TestGetLogWriterFromMissingDir(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
 	assert.Nil(t, err)
 	defer os.RemoveAll(dir)
 
 	// ensure the path is terminated by / othewise it will be considered a file
 	path := filepath.Join(dir, "does", "not", "exits") + string(filepath.Separator)
-	w, err := getLogWritter(path)
+	w, err := getLogWriter(path)
 	assert.EqualError(t, err, fmt.Sprintf("open %s: no such file or directory", path))
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromMissingDirFile(t *testing.T) {
+func TestGetLogWriterFromMissingDirFile(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
 	assert.Nil(t, err)
 	defer os.RemoveAll(dir)
 
 	path := filepath.Join(dir, "does", "not", "exits", "test.log")
-	w, err := getLogWritter(path)
+	w, err := getLogWriter(path)
 	assert.EqualError(t, err, fmt.Sprintf("open %s: no such file or directory", path))
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromEmptyString(t *testing.T) {
-	w, err := getLogWritter("")
+func TestGetLogWriterFromEmptyString(t *testing.T) {
+	w, err := getLogWriter("")
 	assert.EqualError(t, err, "path is empty")
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromSpaces(t *testing.T) {
-	w, err := getLogWritter("    ")
+func TestGetLogWriterFromSpaces(t *testing.T) {
+	w, err := getLogWriter("    ")
 	assert.EqualError(t, err, "path is empty")
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromSymbolInName(t *testing.T) {
+func TestGetLogWriterFromSymbolInName(t *testing.T) {
 	dir, err := os.MkdirTemp("", "")
 	assert.Nil(t, err)
 	defer os.RemoveAll(dir)
 
-	w, err := getLogWritter(filepath.Join(dir, "@"))
+	w, err := getLogWriter(filepath.Join(dir, "@"))
 	assert.Nil(t, err)
 	assert.NotNil(t, w)
 	w.Close()
 }
 
-func TestGetLogWritterFromDevice(t *testing.T) {
-	w, err := getLogWritter("/dev/null")
+func TestGetLogWriterFromDevice(t *testing.T) {
+	w, err := getLogWriter("/dev/null")
 	assert.EqualError(t, err, "path is not a regular file: /dev/null")
 	assert.Nil(t, w)
 }
 
-func TestGetLogWritterFromNonWritableFile(t *testing.T) {
+func TestGetLogWriterFromNonWritableFile(t *testing.T) {
 	// /proc/1/mem is a valid regular file, but
 	// it is not writable by any user, even root
-	w, err := getLogWritter("/proc/1/mem")
+	w, err := getLogWriter("/proc/1/mem")
 	// it can fail with various errors
 	// not worth checking for an exact message
 	assert.NotNil(t, err)

@@ -97,7 +97,7 @@ func printFromConfiguration(path string, cfg *ContainerBuildConfig) {
 	log.Printf("Resulting URL: %s", u.Redacted())
 
 	fmt.Printf("RESOLVEDURL\n")
-	// Add an extra emptyline to separate Headers from payload
+	// Add an extra empty line to separate Headers from payload
 	fmt.Printf("X-Instance-Data:%s\n\n", cfg.InstanceData)
 	// Message needs to be NUL-terminated
 	fmt.Printf("%s\000", u.String())
