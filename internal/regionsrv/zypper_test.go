@@ -15,11 +15,10 @@
 package regionsrv
 
 import (
+	"io"
 	"os"
 	"strings"
 	"testing"
-
-	"github.com/mssola/capture"
 )
 
 func TestParseStdinSuccessful(t *testing.T) {
@@ -120,7 +119,7 @@ func TestPrintResponseNoCredentials(t *testing.T) {
 
 func TestPrintFromConfiguration(t *testing.T) {
 	withSuppressedLog(func() {
-		res := capture.All(func() {
+		stdout := captureStdout(t, func() {
 			printFromConfiguration("/path", &ContainerBuildConfig{
 				InstanceData: "instance data",
 				ServerFqdn:   "test.fqdn.com",
@@ -131,7 +130,7 @@ func TestPrintFromConfiguration(t *testing.T) {
 			})
 		})
 
-		lines := strings.Split(string(res.Stdout), "\n")
+		lines := strings.Split(stdout, "\n")
 		expected := []string{
 			"RESOLVEDURL",
 			"X-Instance-Data:instance data",
@@ -149,4 +148,30 @@ func TestPrintFromConfiguration(t *testing.T) {
 			}
 		}
 	})
+}
+
+func captureStdout(t *testing.T, fn func()) string {
+	t.Helper()
+
+	orig := os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Failed to create pipe: %v", err)
+	}
+	defer r.Close()
+
+	os.Stdout = w
+	defer func() {
+		os.Stdout = orig
+	}()
+
+	fn()
+	w.Close()
+
+	data, err := io.ReadAll(r)
+	if err != nil {
+		t.Fatalf("Failed to read captured stdout: %v", err)
+	}
+
+	return string(data)
 }
