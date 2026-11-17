@@ -1,6 +1,6 @@
 module github.com/SUSE/container-suseconnect
 
-go 1.26.0
+go 1.27.0
 
 require (
 	github.com/mssola/capture v1.1.0

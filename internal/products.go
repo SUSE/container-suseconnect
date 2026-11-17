@@ -168,7 +168,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 	}
 
 	if resp.StatusCode != 200 {
-		var payload map[string]interface{}
+		var payload map[string]any
 		dec := json.NewDecoder(resp.Body)
 
 		if err := dec.Decode(&payload); err == nil {
