@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -83,13 +84,9 @@ func dumpRepositoriesRecursive(
 // moduleEnabledInEnv returns true if the provided `identifier` is included in
 // the `ADDITIONAL_MODULES` environment variable, otherwise false.
 func moduleEnabledInEnv(identifier string) bool {
-	for _, i := range strings.Split(os.Getenv("ADDITIONAL_MODULES"), ",") {
-		if identifier == i {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(strings.Split(os.Getenv("ADDITIONAL_MODULES"), ","), func(s string) bool {
+		return identifier == strings.TrimSpace(s)
+	})
 }
 
 // moduleEnabledInProductFiles returns true if the provided `identifier` is

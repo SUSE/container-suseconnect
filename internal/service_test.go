@@ -615,3 +615,98 @@ Repositories:
 			ListProducts(buffer, products, "none")
 		})
 }
+
+func TestModuleEnabledInEnv(t *testing.T) {
+	tests := []struct {
+		name       string
+		env        string
+		unsetEnv   bool
+		identifier string
+		expected   bool
+	}{
+		{
+			name:       "env unset",
+			unsetEnv:   true,
+			identifier: "sle-module-containers",
+			expected:   false,
+		},
+		{
+			name:       "env empty",
+			env:        "",
+			identifier: "sle-module-containers",
+			expected:   false,
+		},
+		{
+			name:       "single module match",
+			env:        "sle-module-containers",
+			identifier: "sle-module-containers",
+			expected:   true,
+		},
+		{
+			name:       "single module mismatch",
+			env:        "sle-module-containers",
+			identifier: "sle-module-basesystem",
+			expected:   false,
+		},
+		{
+			name:       "partial prefix does not match",
+			env:        "sle-module-containers",
+			identifier: "sle-module",
+			expected:   false,
+		},
+		{
+			name:       "multiple modules first match",
+			env:        "sle-module-containers,sle-module-basesystem,sle-module-desktop-applications",
+			identifier: "sle-module-containers",
+			expected:   true,
+		},
+		{
+			name:       "multiple modules middle match",
+			env:        "sle-module-containers,sle-module-basesystem,sle-module-desktop-applications",
+			identifier: "sle-module-basesystem",
+			expected:   true,
+		},
+		{
+			name:       "multiple modules last match",
+			env:        "sle-module-containers,sle-module-basesystem,sle-module-desktop-applications",
+			identifier: "sle-module-desktop-applications",
+			expected:   true,
+		},
+		{
+			name:       "multiple modules no match",
+			env:        "sle-module-containers,sle-module-basesystem,sle-module-desktop-applications",
+			identifier: "sle-module-server-applications",
+			expected:   false,
+		},
+		{
+			name:       "whitespace around comma is trimmed",
+			env:        "sle-module-containers, sle-module-basesystem",
+			identifier: "sle-module-basesystem",
+			expected:   true,
+		},
+		{
+			name:       "case sensitive",
+			env:        "sle-module-containers",
+			identifier: "SLE-MODULE-CONTAINERS",
+			expected:   false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.unsetEnv {
+				// t.Setenv ensures the original value is restored after the subtest.
+				t.Setenv("ADDITIONAL_MODULES", "")
+				os.Unsetenv("ADDITIONAL_MODULES")
+			} else {
+				t.Setenv("ADDITIONAL_MODULES", tc.env)
+			}
+
+			got := moduleEnabledInEnv(tc.identifier)
+			if got != tc.expected {
+				t.Fatalf("moduleEnabledInEnv(%q) with ADDITIONAL_MODULES=%q = %v, want %v",
+					tc.identifier, os.Getenv("ADDITIONAL_MODULES"), got, tc.expected)
+			}
+		})
+	}
+}
