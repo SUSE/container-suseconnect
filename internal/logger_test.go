@@ -23,16 +23,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetLogWriterFromRegularFile(t *testing.T) {
-	tempFile, err := os.CreateTemp("", "prefix")
-	assert.Nil(t, err)
-
-	defer os.Remove(tempFile.Name())
+	tempFile, err := os.CreateTemp(t.TempDir(), "prefix")
+	require.NoError(t, err)
+	defer tempFile.Close()
 
 	w, err := getLogWriter(tempFile.Name())
-	assert.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, w)
 	w.Close()
 }
@@ -44,9 +44,7 @@ func TestGetLogWriterFromRelativeFile(t *testing.T) {
 }
 
 func TestGetLogWriterFromValidDir(t *testing.T) {
-	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	w, err := getLogWriter(dir)
 	assert.EqualError(t, err, fmt.Sprintf("open %s: is a directory", dir))
@@ -54,9 +52,7 @@ func TestGetLogWriterFromValidDir(t *testing.T) {
 }
 
 func TestGetLogWriterFromMissingDir(t *testing.T) {
-	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	// ensure the path is terminated by / othewise it will be considered a file
 	path := filepath.Join(dir, "does", "not", "exits") + string(filepath.Separator)
@@ -66,9 +62,7 @@ func TestGetLogWriterFromMissingDir(t *testing.T) {
 }
 
 func TestGetLogWriterFromMissingDirFile(t *testing.T) {
-	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	path := filepath.Join(dir, "does", "not", "exits", "test.log")
 	w, err := getLogWriter(path)
@@ -89,12 +83,10 @@ func TestGetLogWriterFromSpaces(t *testing.T) {
 }
 
 func TestGetLogWriterFromSymbolInName(t *testing.T) {
-	dir, err := os.MkdirTemp("", "")
-	assert.Nil(t, err)
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 
 	w, err := getLogWriter(filepath.Join(dir, "@"))
-	assert.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, w)
 	w.Close()
 }
@@ -116,29 +108,20 @@ func TestGetLogWriterFromNonWritableFile(t *testing.T) {
 }
 
 func TestGetLogEnvIfNotSet(t *testing.T) {
-	// ensure no variable is set
-	os.Unsetenv(LogEnv)
+	t.Setenv(LogEnv, "")
 	path := getLogEnv()
 	assert.Empty(t, path)
 }
 
 func TestGetLogEnvIfSet(t *testing.T) {
-	// ensure no variable is set
-	os.Unsetenv(LogEnv)
-	err := os.Setenv(LogEnv, "/path/file.log")
-	assert.Nil(t, err)
-	defer os.Unsetenv(LogEnv)
+	t.Setenv(LogEnv, "/path/file.log")
 
 	envPath := getLogEnv()
 	assert.Equal(t, "/path/file.log", envPath)
 }
 
 func TestGetLogEnvTrimSpaces(t *testing.T) {
-	// ensure no variable is set
-	os.Unsetenv(LogEnv)
-	err := os.Setenv(LogEnv, "    /path/file.log    ")
-	assert.Nil(t, err)
-	defer os.Unsetenv(LogEnv)
+	t.Setenv(LogEnv, "    /path/file.log    ")
 
 	envPath := getLogEnv()
 	assert.Equal(t, "/path/file.log", envPath)
@@ -146,16 +129,11 @@ func TestGetLogEnvTrimSpaces(t *testing.T) {
 
 // Ensures that the log is always written to a file and Stderr.
 func TestSetLoggerOutput(t *testing.T) {
-	// ensure no variable is set
-	os.Unsetenv(LogEnv)
+	tempFile, err := os.CreateTemp(t.TempDir(), "")
+	require.NoError(t, err)
+	defer tempFile.Close()
 
-	tempFile, err := os.CreateTemp("", "")
-	assert.Nil(t, err)
-	defer os.Remove(tempFile.Name())
-
-	err = os.Setenv(LogEnv, tempFile.Name())
-	assert.Nil(t, err)
-	defer os.Unsetenv(LogEnv)
+	t.Setenv(LogEnv, tempFile.Name())
 
 	logLine := "This in a log entry in a file and Stderr"
 
@@ -166,11 +144,11 @@ func TestSetLoggerOutput(t *testing.T) {
 		log.Println(logLine)
 	})
 
-	assert.Nil(t, err, "Failed to capture Stderr")
+	require.NoError(t, err, "Failed to capture Stderr")
 
 	buff := new(bytes.Buffer)
 	_, err = buff.ReadFrom(tempFile)
-	assert.Nil(t, err, "Failed to read temp file")
+	require.NoError(t, err, "Failed to read temp file")
 
 	fileData = buff.String()
 

@@ -201,7 +201,7 @@ enabled=0
 }
 
 func TestServiceOutputSLE15WithCustomModules(t *testing.T) {
-	os.Setenv(
+	t.Setenv(
 		"ADDITIONAL_MODULES",
 		"sle-module-desktop-applications,sle-module-development-tools",
 	)

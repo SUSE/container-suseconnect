@@ -24,15 +24,11 @@ import (
 
 func TestParseStdinSuccessful(t *testing.T) {
 	content := []byte("RESOLVEURL\nkey:value1\nanother:value2")
-	tmp, err := os.CreateTemp("", "file")
+	tmp, err := os.CreateTemp(t.TempDir(), "file")
 	if err != nil {
 		t.Fatalf("Initialization error: %v", err)
 	}
-
-	defer func() {
-		tmp.Close()
-		os.Remove(tmp.Name())
-	}()
+	defer tmp.Close()
 
 	if _, err := tmp.Write(content); err != nil {
 		t.Fatalf("Initialization error: %v", err)
