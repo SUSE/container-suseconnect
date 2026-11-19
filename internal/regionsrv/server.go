@@ -77,10 +77,10 @@ func ServerReachable() error {
 // used as a ContainerBuildConfig.
 func ReadConfigFromServer() (*ContainerBuildConfig, error) {
 	addr, err := net.ResolveTCPAddr("tcp", containerBuildSrvAddress())
-	log.Printf("Trying to reach suse build server at '%v'", addr.String())
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("Trying to reach suse build server at '%v'", addr.String())
 
 	conn, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {

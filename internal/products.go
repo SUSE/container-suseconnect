@@ -166,6 +166,7 @@ func requestProductsFromRegCodeOrSystem(data SUSEConnectData, regCode string,
 	if err != nil {
 		return products, err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		var payload map[string]interface{}

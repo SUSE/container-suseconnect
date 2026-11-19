@@ -63,6 +63,7 @@ func requestRegcodes(data SUSEConnectData, credentials Credentials) ([]string, e
 	if err != nil {
 		return codes, err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode == 404 {
 		// We cannot request regcodes from a SMT server.
