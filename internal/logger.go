@@ -97,7 +97,7 @@ func SetLoggerOutput() {
 
 // Log the given formatted string with its parameters, and return it
 // as a new error.
-func loggedError(errorCode int, format string, params ...interface{}) *SuseConnectError {
+func loggedError(errorCode int, format string, params ...any) *SuseConnectError {
 	msg := fmt.Sprintf(format, params...)
 	log.Print(msg)
 	return &SuseConnectError{
